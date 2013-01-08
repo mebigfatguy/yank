@@ -82,6 +82,7 @@ public class Downloader implements Runnable {
                     }
                 }
 
+                project.log("download successful: " + artifact);
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -91,6 +92,7 @@ public class Downloader implements Runnable {
                 Closer.close(con);
             }
 
+            project.log("download failed: " + artifact);
             artifact.setStatus(Artifact.Status.FAILED);
         }
     }
