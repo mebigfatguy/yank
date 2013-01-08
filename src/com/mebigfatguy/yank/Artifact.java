@@ -46,13 +46,26 @@ public class Artifact {
         return version;
     }
 
-
     public Status getStatus() {
         return status;
     }
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public int hashCode() {
+        return groupId.hashCode() ^ artifactId.hashCode() ^ version.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Artifact))
+            return false;
+
+        Artifact that = (Artifact) o;
+        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && version.equals(that.version);
     }
 
     public URL toURL(String server) {

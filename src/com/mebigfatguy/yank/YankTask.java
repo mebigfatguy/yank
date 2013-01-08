@@ -23,8 +23,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -89,14 +92,44 @@ public class YankTask extends Task {
         try {
 
             List<Artifact> artifacts = readArtifactList();
-            List<Future<?>> futures = new ArrayList<Future<?>>();
+            List<Future<?>> downloadFutures = new ArrayList<Future<?>>();
+            Project project = getProject();
 
             for (Artifact artifact : artifacts) {
-                futures.add(pool.submit(new Downloader(getProject(), artifact, servers, destination, stripVersions)));
+                downloadFutures.add(pool.submit(new Downloader(project, artifact, servers, destination, stripVersions)));
             }
 
-            for (Future<?> f : futures) {
+            List<Future<List<Artifact>>> transitiveFutures = new ArrayList<Future<List<Artifact>>>();
+            if (reportMissingDependencies) {
+                for (Artifact artifact : artifacts) {
+                    transitiveFutures.add(pool.submit(new DiscoverTransitives(project, artifact, servers)));
+                }
+            }
+
+            for (Future<?> f : downloadFutures) {
                 f.get();
+            }
+
+            if (reportMissingDependencies) {
+                Set<Artifact> requiredArtifacts = new HashSet<Artifact>();
+                for (Future<List<Artifact>> f : transitiveFutures) {
+                    requiredArtifacts.addAll(f.get());
+                }
+
+                Iterator<Artifact> it = requiredArtifacts.iterator();
+                while (it.hasNext()) {
+                    if (artifacts.contains(it.next()))
+                        it.remove();
+                }
+
+                if (!requiredArtifacts.isEmpty()) {
+                    project.log("");
+                    project.log("Required (but missing) transitive dependencies");
+                    project.log("");
+                    for (Artifact a : requiredArtifacts) {
+                        project.log(a.toString());
+                    }
+                }
             }
 
         } catch (Exception e) {
@@ -173,6 +206,8 @@ public class YankTask extends Task {
 
         yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
+        yt.setStripVersions(true);
+        yt.setReportMissingDependencies(true);
         ServerTask st = new ServerTask();
         st.setUrl("http://repo1.maven.org/maven2");
         yt.addConfiguredServer(st);
