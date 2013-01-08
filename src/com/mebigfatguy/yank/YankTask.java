@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -83,9 +84,14 @@ public class YankTask extends Task {
         try {
 
             List<Artifact> artifacts = readArtifactList();
+            List<Future<?>> futures = new ArrayList<Future<?>>();
 
             for (Artifact artifact : artifacts) {
-                pool.submit(new Downloader(getProject(), artifact, servers, destination));
+                futures.add(pool.submit(new Downloader(getProject(), artifact, servers, destination)));
+            }
+
+            for (Future<?> f : futures) {
+                f.get();
             }
 
         } catch (Exception e) {
