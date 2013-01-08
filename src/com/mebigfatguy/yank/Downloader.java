@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayDeque;
@@ -48,6 +49,7 @@ public class Downloader implements Runnable {
     @Override
     public void run() {
 
+        File destinationFile = new File(destination, artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar");
         for (String server : servers) {
             URL u = artifact.toURL(server);
             HttpURLConnection con = null;
@@ -55,31 +57,32 @@ public class Downloader implements Runnable {
             BufferedOutputStream bos = null;
 
             try {
-                con = (HttpURLConnection) u.openConnection();
-                con.setConnectTimeout(CONNECTION_TIMEOUT);
-                con.connect();
+                if (!isUpToDate(u, destinationFile)) {
+                    con = (HttpURLConnection) u.openConnection();
+                    con.setConnectTimeout(CONNECTION_TIMEOUT);
+                    con.connect();
 
-                bis = new BufferedInputStream(con.getInputStream());
-                bos = new BufferedOutputStream(new FileOutputStream(new File(destination, artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar")));
-                Deque<TransferBuffer> dq = new ArrayDeque<TransferBuffer>();
+                    bis = new BufferedInputStream(con.getInputStream());
+                    bos = new BufferedOutputStream(new FileOutputStream(destinationFile));
+                    Deque<TransferBuffer> dq = new ArrayDeque<TransferBuffer>();
 
-                ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE);
-                Thread rt = new Thread(r);
-                rt.start();
+                    ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE);
+                    Thread rt = new Thread(r);
+                    rt.start();
 
-                ArtifactWriter w = new ArtifactWriter(project, bos, dq);
-                Thread wt = new Thread(w);
-                wt.start();
+                    ArtifactWriter w = new ArtifactWriter(project, bos, dq);
+                    Thread wt = new Thread(w);
+                    wt.start();
 
-                rt.join();
-                wt.join();
+                    rt.join();
+                    wt.join();
 
-                if (r.wasSuccessful() && w.wasSuccessful()) {
-                    artifact.setStatus(Artifact.Status.DOWNLOADED);
+                    if (r.wasSuccessful() && w.wasSuccessful()) {
+                        artifact.setStatus(Artifact.Status.DOWNLOADED);
+                    }
                 }
 
                 return;
-
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -89,6 +92,33 @@ public class Downloader implements Runnable {
             }
 
             artifact.setStatus(Artifact.Status.FAILED);
+        }
+    }
+
+    private boolean isUpToDate(URL u, File destination) throws IOException {
+        if (!destination.isFile()) {
+            return false;
+        }
+
+        HttpURLConnection con = null;
+
+        try {
+            con = (HttpURLConnection) u.openConnection();
+            con.setConnectTimeout(CONNECTION_TIMEOUT);
+            con.setRequestMethod("HEAD");
+            con.connect();
+
+            String serverLen = con.getHeaderField("Content-Length");
+            if (serverLen != null) {
+                long contentLength = Long.parseLong(serverLen);
+                if (destination.length() != contentLength) {
+                    return false;
+                }
+            }
+
+            return true;
+        } finally {
+            Closer.close(con);
         }
     }
 }
