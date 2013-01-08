@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -41,6 +43,7 @@ public class YankTask extends Task {
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies = false;
+    private int threadPoolSize = 64;
     private List<String> servers = new ArrayList<String>();
 
     public void setYankFile(File xls) {
@@ -55,8 +58,15 @@ public class YankTask extends Task {
         reportMissingDependencies = report;
     }
 
+    public void setThreadPoolSize(int size) {
+        threadPoolSize = size;
+    }
+
     public void addConfiguredServer(ServerTask server) {
-        servers.add(server.getUrl());
+        String url = server.getUrl();
+        if (!url.endsWith("/"))
+            url += "/";
+        servers.add(url);
     }
 
     public void execute() throws BuildException {
@@ -69,11 +79,19 @@ public class YankTask extends Task {
 
         destination.mkdirs();
 
+        ExecutorService pool = Executors.newFixedThreadPool(threadPoolSize);
         try {
 
             List<Artifact> artifacts = readArtifactList();
+
+            for (Artifact artifact : artifacts) {
+                pool.submit(new Downloader(getProject(), artifact, servers, destination));
+            }
+
         } catch (Exception e) {
             throw new BuildException("Failed yanking files", e);
+        } finally {
+            pool.shutdown();
         }
     }
 

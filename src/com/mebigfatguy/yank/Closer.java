@@ -18,6 +18,7 @@
 package com.mebigfatguy.yank;
 
 import java.io.Closeable;
+import java.net.HttpURLConnection;
 
 public class Closer {
 
@@ -28,6 +29,15 @@ public class Closer {
         try {
             if (c != null) {
                 c.close();
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    public static void close(HttpURLConnection c) {
+        try {
+            if (c != null) {
+                c.disconnect();
             }
         } catch (Exception e) {
         }

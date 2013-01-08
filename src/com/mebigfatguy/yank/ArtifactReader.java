@@ -22,14 +22,14 @@ import java.util.Deque;
 
 import org.apache.tools.ant.Project;
 
-class Reader implements Runnable {
+class ArtifactReader implements Runnable {
     private final Project project;
     private final InputStream inputStream;
     private final Deque<TransferBuffer> dq;
     private final int bufferSize;
     private boolean success = false;
 
-    public Reader(Project p, final InputStream is, final Deque<TransferBuffer> queue, int bufferSize) {
+    public ArtifactReader(Project p, final InputStream is, final Deque<TransferBuffer> queue, int bufferSize) {
         project = p;
         inputStream = is;
         dq = queue;

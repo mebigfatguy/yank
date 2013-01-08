@@ -17,10 +17,16 @@
  */
 package com.mebigfatguy.yank;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class Artifact {
+    public enum Status {UPTODATE, DOWNLOADED, FAILED, UNKNOWN};
+
     private String groupId;
     private String artifactId;
     private String version;
+    private Status status = Status.UNKNOWN;
 
     public Artifact(String groupId, String artifactId, String version) {
         this.groupId = groupId;
@@ -40,9 +46,44 @@ public class Artifact {
         return version;
     }
 
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public URL toURL(String server) {
+        try {
+            StringBuilder url = new StringBuilder(server);
+
+            url.append(groupId.replace('.', '/'));
+            url.append('/');
+
+            url.append(artifactId);
+            url.append('/');
+
+            url.append(version);
+            url.append('/');
+
+            url.append(artifactId);
+            url.append('-');
+
+            url.append(version);
+
+            url.append(".jar");
+
+            return new URL(url.toString());
+        } catch (MalformedURLException mue) {
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
         return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId
-                + ", version=" + version + "]";
+                + ", version=" + version + ", status=" + status + "]";
     }
 }
