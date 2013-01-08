@@ -113,7 +113,7 @@
 	
 	<target name="test" depends="jar" description="test yank">
 		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${lib.dir}/poi-${poi.version}.jar;${classes.dir}"/>
-		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true">
+		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" source="true">
 			<server url="http://repo1.maven.org/maven2"/>
 		</yank>
 	</target>

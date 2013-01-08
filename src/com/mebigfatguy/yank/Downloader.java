@@ -39,21 +39,29 @@ public class Downloader implements Runnable {
     private List<String> servers;
     private File destination;
     private boolean stripVersions;
+    private boolean yankSources;
 
-    public Downloader(Project p, Artifact artifact, List<String> servers, File dest, boolean strip) {
+    public Downloader(Project p, Artifact artifact, List<String> servers, File dest, boolean strip, boolean sources) {
         project = p;
         this.artifact = artifact;
         this.servers = servers;
         destination = dest;
         stripVersions = strip;
+        yankSources = sources;
     }
 
     @Override
     public void run() {
+        download(true, true);
+        if (yankSources) {
+            download(false, false);
+        }
+    }
 
-        File destinationFile = new File(destination, artifact.getArtifactId() + ((stripVersions) ? "" : "-" + artifact.getVersion()) + ".jar");
+    private void download(boolean isJar, boolean report) {
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((stripVersions) ? "" : "-" + artifact.getVersion()) + (isJar ? ".jar" : "-sources.jar"));
         for (String server : servers) {
-            URL u = artifact.toURL(server);
+            URL u = isJar ? artifact.toURL(server) : artifact.srcURL(server);
             HttpURLConnection con = null;
             BufferedInputStream bis = null;
             BufferedOutputStream bos = null;
@@ -86,7 +94,8 @@ public class Downloader implements Runnable {
                     artifact.setStatus(Artifact.Status.UPTODATE);
                 }
 
-                project.log("download successful: " + artifact);
+                if (report)
+                    project.log("download successful: " + artifact);
                 return;
             } catch (Exception e) {
             } finally {
@@ -95,7 +104,8 @@ public class Downloader implements Runnable {
                 Closer.close(con);
             }
 
-            project.log("download failed: " + artifact);
+            if (report)
+                project.log("download failed: " + artifact);
             artifact.setStatus(Artifact.Status.FAILED);
         }
     }

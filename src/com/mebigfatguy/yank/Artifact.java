@@ -109,6 +109,7 @@ public class Artifact {
     @Override
     public String toString() {
         return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId
-                + ", version=" + version + ", status=" + status + "]";
+                + ", version=" + version + ", status="
+                + status + "]";
     }
 }
