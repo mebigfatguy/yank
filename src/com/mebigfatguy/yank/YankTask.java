@@ -44,6 +44,7 @@ public class YankTask extends Task {
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies = false;
+    private boolean stripVersions = false;
     private int threadPoolSize = 64;
     private List<String> servers = new ArrayList<String>();
 
@@ -57,6 +58,10 @@ public class YankTask extends Task {
 
     public void setReportMissingDependencies(boolean report) {
         reportMissingDependencies = report;
+    }
+
+    public void setStripVersions(boolean strip) {
+        stripVersions = strip;
     }
 
     public void setThreadPoolSize(int size) {
@@ -87,7 +92,7 @@ public class YankTask extends Task {
             List<Future<?>> futures = new ArrayList<Future<?>>();
 
             for (Artifact artifact : artifacts) {
-                futures.add(pool.submit(new Downloader(getProject(), artifact, servers, destination)));
+                futures.add(pool.submit(new Downloader(getProject(), artifact, servers, destination, stripVersions)));
             }
 
             for (Future<?> f : futures) {

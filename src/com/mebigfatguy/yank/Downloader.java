@@ -38,18 +38,20 @@ public class Downloader implements Runnable {
     private Artifact artifact;
     private List<String> servers;
     private File destination;
+    private boolean stripVersions;
 
-    public Downloader(Project p, Artifact artifact, List<String> servers, File dest) {
+    public Downloader(Project p, Artifact artifact, List<String> servers, File dest, boolean strip) {
         project = p;
         this.artifact = artifact;
         this.servers = servers;
         destination = dest;
+        stripVersions = strip;
     }
 
     @Override
     public void run() {
 
-        File destinationFile = new File(destination, artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar");
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((stripVersions) ? "" : "-" + artifact.getVersion()) + ".jar");
         for (String server : servers) {
             URL u = artifact.toURL(server);
             HttpURLConnection con = null;
@@ -80,6 +82,8 @@ public class Downloader implements Runnable {
                     if (r.wasSuccessful() && w.wasSuccessful()) {
                         artifact.setStatus(Artifact.Status.DOWNLOADED);
                     }
+                } else {
+                    artifact.setStatus(Artifact.Status.UPTODATE);
                 }
 
                 project.log("download successful: " + artifact);
