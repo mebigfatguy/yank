@@ -206,8 +206,10 @@ public class YankTask extends Task {
 
         yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
+        yt.setThreadPoolSize(1);
         yt.setStripVersions(true);
         yt.setReportMissingDependencies(true);
+
         ServerTask st = new ServerTask();
         st.setUrl("http://repo1.maven.org/maven2");
         yt.addConfiguredServer(st);

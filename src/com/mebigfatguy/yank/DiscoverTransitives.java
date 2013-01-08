@@ -17,13 +17,21 @@
  */
 package com.mebigfatguy.yank;
 
+import java.io.BufferedInputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.tools.ant.Project;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 public class DiscoverTransitives implements Callable<List<Artifact>> {
+
+    private static final int CONNECTION_TIMEOUT = 10000;
 
     private Project project;
     private Artifact artifact;
@@ -38,6 +46,35 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
     @Override
     public List<Artifact> call() throws Exception {
         List<Artifact> transitiveArtifacts = new ArrayList<Artifact>();
+        XMLReader reader = XMLReaderFactory.createXMLReader();
+
+        for (String server : servers) {
+            URL u = artifact.pomURL(server);
+            HttpURLConnection con = null;
+            BufferedInputStream bis = null;
+
+            try {
+                con = (HttpURLConnection) u.openConnection();
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.connect();
+
+                bis = new BufferedInputStream(con.getInputStream());
+
+                reader.setContentHandler(new PomHandler(transitiveArtifacts));
+
+                try {
+                    reader.parse(new InputSource(bis));
+                } catch (PomParseCompletedException ppce) {
+                }
+
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                Closer.close(bis);
+                Closer.close(con);
+            }
+        }
 
         return transitiveArtifacts;
     }

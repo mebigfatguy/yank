@@ -89,7 +89,6 @@ public class Downloader implements Runnable {
                 project.log("download successful: " + artifact);
                 return;
             } catch (Exception e) {
-                e.printStackTrace();
             } finally {
                 Closer.close(bis);
                 Closer.close(bos);

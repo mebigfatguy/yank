@@ -69,6 +69,18 @@ public class Artifact {
     }
 
     public URL toURL(String server) {
+        return toURL(server, ".jar");
+    }
+
+    public URL pomURL(String server) {
+        return toURL(server, ".pom");
+    }
+
+    public URL srcURL(String server) {
+        return toURL(server, "-sources.jar");
+    }
+
+    private URL toURL(String server, String extension) {
         try {
             StringBuilder url = new StringBuilder(server);
 
@@ -86,7 +98,7 @@ public class Artifact {
 
             url.append(version);
 
-            url.append(".jar");
+            url.append(extension);
 
             return new URL(url.toString());
         } catch (MalformedURLException mue) {
