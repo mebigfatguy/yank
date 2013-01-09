@@ -49,7 +49,7 @@ public class YankTask extends Task {
     private boolean reportMissingDependencies = false;
     private boolean stripVersions = false;
     private boolean yankSources = false;
-    private int threadPoolSize = 64;
+    private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
     private List<String> servers = new ArrayList<String>();
 
     public void setYankFile(File xls) {
@@ -156,22 +156,36 @@ public class YankTask extends Task {
             HSSFSheet sheet = workBook.getSheetAt(0);
 
             Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
-
+            String groupId = "";
+            String artifactId = "";
+            String version = "";
 
             for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
                 HSSFRow row = sheet.getRow(i);
-                HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN));
-                String groupId = cell.getStringCellValue().trim();
-                cell = row.getCell(columnHeaders.get(ColumnType.ARTIFACT_COLUMN));
-                String artifactId = cell.getStringCellValue().trim();
-                cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN));
-                String version = cell.getStringCellValue().trim();
+                if (row != null) {
+                    HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN));
+                    if (cell != null) {
+                        groupId = cell.getStringCellValue().trim();
+                    }
 
-                if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                    getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", version: " + version + "]");
-                } else {
-                    artifacts.add(new Artifact(groupId, artifactId, version));
+                    cell = row.getCell(columnHeaders.get(ColumnType.ARTIFACT_COLUMN));
+                    if (cell != null) {
+                        artifactId = cell.getStringCellValue().trim();
+                    }
+
+                    cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN));
+                    if (cell != null) {
+                        version = cell.getStringCellValue().trim();
+                    }
+
+                    if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
+                        getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", version: " + version + "]");
+                    } else {
+                        artifacts.add(new Artifact(groupId, artifactId, version));
+                    }
                 }
+
+                artifactId = "";
             }
         } finally {
             Closer.close(bis);
