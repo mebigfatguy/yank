@@ -17,3 +17,8 @@ You can add this task, as
 		</yank>
 
 and it will pull new artifacts as needed.
+
+the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
+ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
+code area, etc, without issue.
+
