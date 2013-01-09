@@ -36,9 +36,9 @@
     </licenses>
     
     <scm>
-        <connection>scm:svn:https://fb-contrib.svn.sourceforge.net/svnroot/fb-contrib/trunk/</connection>
-        <developerConnection>scm:svn:https://fb-contrib.svn.sourceforge.net/svnroot/fb-contrib/trunk/</developerConnection>
-        <url>http://fb-contrib.svn.sourceforge.net/viewvc/fb-contrib/trunk/</url>    
+        <connection>scm:git://github.com/mebigfatguy/yank.git</connection>
+        <developerConnection>scm:git://github.com/mebigfatguy/yank.git</developerConnection>
+        <url>https://github.com/mebigfatguy/yank/trunk/</url>    
     </scm>
     
     <properties>
