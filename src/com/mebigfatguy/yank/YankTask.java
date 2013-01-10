@@ -75,14 +75,14 @@ public class YankTask extends Task {
     }
 
     public void addConfiguredServer(ServerTask server) {
-        String url = server.getUrl();
+        String url = server.getUrl().trim();
         if (!url.endsWith("/"))
             url += "/";
         options.addServer(url);
     }
 
     public void setProxyServer(String proxy) {
-        options.setProxyServer(proxy);
+        options.setProxyServer(proxy.trim());
     }
 
     public void execute() throws BuildException {

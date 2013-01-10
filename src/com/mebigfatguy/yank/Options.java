@@ -24,7 +24,7 @@ public class Options {
 
     private boolean stripVersions;
     private boolean yankSources;
-    private String proxyServer;
+    private String proxyServer="";
     private List<String> servers = new ArrayList<String>();
 
     public boolean isStripVersions() {

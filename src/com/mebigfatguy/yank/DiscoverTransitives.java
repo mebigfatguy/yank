@@ -54,7 +54,7 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
             BufferedInputStream bis = null;
 
             try {
-                con = (HttpURLConnection) u.openConnection();
+                con = URLSupport.openURL(u, options.getProxyServer());
                 con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.connect();
 

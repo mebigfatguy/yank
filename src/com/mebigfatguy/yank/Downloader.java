@@ -66,7 +66,7 @@ public class Downloader implements Runnable {
 
             try {
                 if (!isUpToDate(u, destinationFile)) {
-                    con = (HttpURLConnection) u.openConnection();
+                    con = URLSupport.openURL(u,  options.getProxyServer());
                     con.setConnectTimeout(CONNECTION_TIMEOUT);
                     con.connect();
 
