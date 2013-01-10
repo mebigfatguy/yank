@@ -47,6 +47,7 @@ public class YankTask extends Task {
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
+    private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
     private Options options = new Options();
 
@@ -56,6 +57,10 @@ public class YankTask extends Task {
 
     public void setDestination(File dest) {
         destination = dest;
+    }
+
+    public void setFailOnError(boolean fail) {
+        failOnError = fail;
     }
 
     public void setReportMissingDependencies(boolean report) {
@@ -139,8 +144,17 @@ public class YankTask extends Task {
                 }
             }
 
+            if (failOnError) {
+                for (Artifact artifact : artifacts) {
+                    if (artifact.getStatus() == Artifact.Status.FAILED) {
+                        throw new BuildException("Failed downloading artifacts (" + artifact + ")");
+                    }
+                }
+            }
+
         } catch (Exception e) {
-            throw new BuildException("Failed yanking files", e);
+            if (failOnError)
+                throw new BuildException("Failed yanking files", e);
         } finally {
             pool.shutdown();
         }
