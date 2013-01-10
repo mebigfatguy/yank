@@ -35,12 +35,12 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
 
     private Project project;
     private Artifact artifact;
-    private List<String> servers;
+    private Options options;
 
-    public DiscoverTransitives(Project p, Artifact artifact, List<String> servers) {
+    public DiscoverTransitives(Project p, Artifact artifact, Options options) {
         project = p;
         this.artifact = artifact;
-        this.servers = servers;
+        this.options = options;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
         List<Artifact> transitiveArtifacts = new ArrayList<Artifact>();
         XMLReader reader = XMLReaderFactory.createXMLReader();
 
-        for (String server : servers) {
+        for (String server : options.getServers()) {
             URL u = artifact.pomURL(server);
             HttpURLConnection con = null;
             BufferedInputStream bis = null;

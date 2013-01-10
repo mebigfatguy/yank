@@ -36,31 +36,29 @@ public class Downloader implements Runnable {
     private static final int BUFFER_SIZE = 1024 * 16;
     private Project project;
     private Artifact artifact;
-    private List<String> servers;
     private File destination;
-    private boolean stripVersions;
-    private boolean yankSources;
+    private Options options;
 
-    public Downloader(Project p, Artifact artifact, List<String> servers, File dest, boolean strip, boolean sources) {
+
+    public Downloader(Project p, Artifact artifact, File dest, Options options) {
         project = p;
         this.artifact = artifact;
-        this.servers = servers;
         destination = dest;
-        stripVersions = strip;
-        yankSources = sources;
+        this.options = options;
+
     }
 
     @Override
     public void run() {
         download(true, true);
-        if (yankSources) {
+        if (options.isYankSources()) {
             download(false, false);
         }
     }
 
     private void download(boolean isJar, boolean report) {
-        File destinationFile = new File(destination, artifact.getArtifactId() + ((stripVersions) ? "" : "-" + artifact.getVersion()) + (isJar ? ".jar" : "-sources.jar"));
-        for (String server : servers) {
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (isJar ? ".jar" : "-sources.jar"));
+        for (String server : options.getServers()) {
             URL u = isJar ? artifact.toURL(server) : artifact.srcURL(server);
             HttpURLConnection con = null;
             BufferedInputStream bis = null;

@@ -46,11 +46,9 @@ public class YankTask extends Task {
     private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, VERSION_COLUMN};
     private File xlsFile;
     private File destination;
-    private boolean reportMissingDependencies = false;
-    private boolean stripVersions = false;
-    private boolean yankSources = false;
+    private boolean reportMissingDependencies;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
-    private List<String> servers = new ArrayList<String>();
+    private Options options = new Options();
 
     public void setYankFile(File xls) {
         xlsFile = xls;
@@ -65,11 +63,11 @@ public class YankTask extends Task {
     }
 
     public void setStripVersions(boolean strip) {
-        stripVersions = strip;
+        options.setStripVersions(strip);
     }
 
     public void setSource(boolean sources) {
-        yankSources = sources;
+        options.setYankSources(sources);
     }
 
     public void setThreadPoolSize(int size) {
@@ -80,7 +78,11 @@ public class YankTask extends Task {
         String url = server.getUrl();
         if (!url.endsWith("/"))
             url += "/";
-        servers.add(url);
+        options.addServer(url);
+    }
+
+    public void setProxyServer(String proxy) {
+        options.setProxyServer(proxy);
     }
 
     public void execute() throws BuildException {
@@ -88,7 +90,7 @@ public class YankTask extends Task {
             throw new BuildException("Yank (xls) file not specified or invalid: " + xlsFile);
         if (destination.isFile())
             throw new BuildException("Yank destination (" + destination + ") is a file, not a directory");
-        if (servers.isEmpty())
+        if (options.getServers().isEmpty())
             throw new BuildException("No specified nested <server> items found");
 
         destination.mkdirs();
@@ -101,13 +103,13 @@ public class YankTask extends Task {
             Project project = getProject();
 
             for (Artifact artifact : artifacts) {
-                downloadFutures.add(pool.submit(new Downloader(project, artifact, servers, destination, stripVersions, yankSources)));
+                downloadFutures.add(pool.submit(new Downloader(project, artifact, destination, options)));
             }
 
             List<Future<List<Artifact>>> transitiveFutures = new ArrayList<Future<List<Artifact>>>();
             if (reportMissingDependencies) {
                 for (Artifact artifact : artifacts) {
-                    transitiveFutures.add(pool.submit(new DiscoverTransitives(project, artifact, servers)));
+                    transitiveFutures.add(pool.submit(new DiscoverTransitives(project, artifact, options)));
                 }
             }
 
