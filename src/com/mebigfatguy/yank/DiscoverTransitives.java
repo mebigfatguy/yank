@@ -33,12 +33,10 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
 
     private static final int CONNECTION_TIMEOUT = 10000;
 
-    private Project project;
     private Artifact artifact;
     private Options options;
 
     public DiscoverTransitives(Project p, Artifact artifact, Options options) {
-        project = p;
         this.artifact = artifact;
         this.options = options;
     }

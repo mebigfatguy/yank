@@ -26,7 +26,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 import org.apache.tools.ant.Project;
 
