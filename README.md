@@ -20,12 +20,12 @@ and it will pull new artifacts as needed.
 
 There are a few optional arguments to the yank task that you can add as follows
 
-failOnError                     fails the build if an artifact fails to download     (true/false)       defaults to true
-proxyServer                     the url of the proxy server to use                   (String)           defaults to none
-reportMissingDependencies       logs transitive dependencies based on the poms       (true/false)       defaults to false
-source                          download source artifacts as well                    (true/false)       defaults to false
-stripVersions                   save the jar files without version numbers           (true/false)       defaults to false
-threadPoolSize                  number of concurrent download threads                (integer)          defaults to 4 * numProcs
+  failOnError                     fails the build if an artifact fails to download     (true/false)       defaults to true
+  proxyServer                     the url of the proxy server to use                   (String)           defaults to none
+  reportMissingDependencies       logs transitive dependencies based on the poms       (true/false)       defaults to false
+  source                          download source artifacts as well                    (true/false)       defaults to false
+  stripVersions                   save the jar files without version numbers           (true/false)       defaults to false
+  threadPoolSize                  number of concurrent download threads                (integer)          defaults to 4 * numProcs
 
 
 the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
