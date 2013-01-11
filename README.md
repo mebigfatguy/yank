@@ -12,9 +12,9 @@ in an excel spread sheet for easy use of corporate approvals, etc.
 
 You can add this task, as
 
-  	<yank yankFile="${lib.dir}/yank.xls" destination="${lib.dir}">
-			<server url="http://repo1.maven.org/maven2"/>
-    </yank>
+    <yank yankFile="${lib.dir}/yank.xls" destination="${lib.dir}">
+            <server url="http://repo1.maven.org/maven2"/>
+        </yank>
 
 and it will pull new artifacts as needed.
 
@@ -22,42 +22,48 @@ There are a few optional arguments to the yank task that you can add as follows
 
 <table>
    <tr>
+      <th>Property</th>
+      <th>Description</th>
+      <th>Value</th>
+      <th>Default</th>
+   </tr>
+   <tr>
       <td>failOnError</td>
       <td>fails the build if an artifact fails to download</td>
       <td>(true/false)</td>
-      <td>defaults to true</td>
+      <td>true</td>
    </tr>
    <tr>
       <td>proxyServer</td>
       <td>the url of the proxy server to use</td>
       <td>(String)</td>
-      <td>defaults to none</td>
+      <td>blank</td>
    </tr>
    <tr>
       <td>reportMissingDependencies</td>
       <td>logs transitive dependencies based on the poms</td>
       <td>(true/false)</td>
-      <td>defaults to false</td>
+      <td>false</td>
    </tr>    
    <tr>
       <td>source</td>
       <td>download source artifacts as well</td>
       <td>(true/false)</td>
-      <td>defaults to false</td>
+      <td>false</td>
    </tr>    
    <tr>
       <td>stripVersions</td>
       <td>save the jar files without version numbers</td>
       <td>(true/false)</td>
-      <td>defaults to false</td>
+      <td>false</td>
    </tr>  
    <tr>
       <td>threadPoolSize</td>
       <td>number of concurrent download threads</td>
       <td>(integer)</td>
-      <td>defaults to 4 * numProcs</td>
+      <td>4 * numProcessors</td>
    </tr>
-</table>       
+</table>
 
 the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
