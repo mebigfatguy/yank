@@ -69,3 +69,5 @@ the excel spreadsheet is just a normal spread sheet of your own design, so long 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
 code area, etc, without issue.
 
+Yank currently needs poi-3.9.jar. Both jar files can be placed in ${ant.home}/lib.
+
