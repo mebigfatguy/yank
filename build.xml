@@ -77,10 +77,14 @@
     </target>
 	
     <target name="jar" depends="compile" description="produces the yank jar file">
+    	<mkdir dir="${basedir}/poi-explode" />
+    	<unzip src="${lib.dir}/poi-${poi.version}.jar" dest="${basedir}/poi-explode" />
         <jar destfile="${basedir}/yank-${yank.version}.jar">
             <fileset dir="${classes.dir}">
                 <include name="**/*.class" />
             </fileset>
+        	<fileset dir="${basedir}/poi-explode">
+        	</fileset>
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
@@ -93,6 +97,7 @@
                 <attribute name="Bundle-ActivationPolicy" value="lazy" />
             </manifest>
         </jar>
+    	<delete dir="${basedir}/poi-explode" />
     </target>
 	
     <target name="srczip" description="builds the source distribution zip file">
@@ -111,7 +116,7 @@
     </target>
 	
 	<target name="test" depends="jar" description="test yank">
-		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${lib.dir}/poi-${poi.version}.jar;${classes.dir}"/>
+		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${basedir}/yank-${yank.version}.jar"/>
 		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" outputPath="true" source="true">
 			<server url="http://repo1.maven.org/maven2"/>
 		</yank>
