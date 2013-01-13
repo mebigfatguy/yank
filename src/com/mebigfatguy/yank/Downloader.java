@@ -95,6 +95,9 @@ public class Downloader implements Runnable {
                     project.log("download successful: " + artifact, (report && (artifact.getStatus() != Artifact.Status.UPTODATE)) ? Project.MSG_ERR : Project.MSG_VERBOSE);
                 return;
             } catch (Exception e) {
+                if (report) {
+                    project.log(e.getMessage(), e, Project.MSG_VERBOSE);
+                }
             } finally {
                 Closer.close(bis);
                 Closer.close(bos);
