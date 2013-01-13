@@ -264,22 +264,4 @@ public class YankTask extends Task {
 
         return sb.toString();
     }
-
-    public static void main(String[] args) {
-        YankTask yt = new YankTask();
-        Project p = new Project();
-        yt.setProject(p);
-
-        yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
-        yt.setDestination(new File("/home/dave/dev/yank/sample"));
-        yt.setThreadPoolSize(1);
-        yt.setStripVersions(true);
-        yt.setReportMissingDependencies(true);
-
-        ServerTask st = new ServerTask();
-        st.setUrl("http://repo1.maven.org/maven2");
-        yt.addConfiguredServer(st);
-
-        yt.execute();
-    }
 }
