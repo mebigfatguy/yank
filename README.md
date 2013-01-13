@@ -34,6 +34,12 @@ There are a few optional arguments to the yank task that you can add as follows
       <td>true</td>
    </tr>
    <tr>
+      <td>outputPath</td>
+      <td>generate an ant classpath element for the artifacts downloaded</td>
+      <td>(true/false)</td>
+      <td>false</td>
+   </tr>
+   <tr>
       <td>proxyServer</td>
       <td>the url of the proxy server to use</td>
       <td>(String)</td>

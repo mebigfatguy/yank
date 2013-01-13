@@ -20,7 +20,7 @@ package com.mebigfatguy.yank;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class Artifact {
+public class Artifact implements Comparable<Artifact> {
     public enum Status {UPTODATE, DOWNLOADED, FAILED, UNKNOWN};
 
     private String groupId;
@@ -66,6 +66,20 @@ public class Artifact {
 
         Artifact that = (Artifact) o;
         return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && version.equals(that.version);
+    }
+
+    public int compareTo(Artifact a) {
+        int cmp = groupId.compareTo(a.groupId);
+        if (cmp != 0) {
+            return cmp;
+        }
+
+        cmp = artifactId.compareTo(a.artifactId);
+        if (cmp != 0) {
+            return cmp;
+        }
+
+        return version.compareTo(a.version);
     }
 
     public URL toURL(String server) {

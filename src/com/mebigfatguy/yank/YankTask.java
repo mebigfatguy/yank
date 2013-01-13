@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ public class YankTask extends Task {
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
+    private boolean outputPath;
     private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
     private Options options = new Options();
@@ -65,6 +67,10 @@ public class YankTask extends Task {
 
     public void setReportMissingDependencies(boolean report) {
         reportMissingDependencies = report;
+    }
+
+    public void setOutputPath(boolean path) {
+        outputPath = path;
     }
 
     public void setStripVersions(boolean strip) {
@@ -152,6 +158,12 @@ public class YankTask extends Task {
                 }
             }
 
+            if (outputPath) {
+                String path = generatePath(artifacts);
+                project.log("");
+                project.log(path);
+            }
+
         } catch (Exception e) {
             if (failOnError)
                 throw new BuildException("Failed yanking files", e);
@@ -232,6 +244,25 @@ public class YankTask extends Task {
         }
 
         throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
+    }
+
+
+    private String generatePath(List<Artifact> artifacts) {
+        Collections.sort(artifacts);
+
+        StringBuilder sb = new StringBuilder();
+        String eol = System.getProperty("line.separator");
+        sb.append("\t<path id=\"yank.classpath\">").append(eol);
+        for (Artifact artifact : artifacts) {
+            sb.append("\t\t<pathelement location=\"${lib.dir}/").append(artifact.getArtifactId());
+            if (!options.isStripVersions()) {
+                sb.append('-').append(artifact.getVersion());
+            }
+            sb.append(".jar\" />").append(eol);
+        }
+        sb.append("\t<path>");
+
+        return sb.toString();
     }
 
     public static void main(String[] args) {
