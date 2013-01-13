@@ -165,8 +165,10 @@ public class YankTask extends Task {
             }
 
         } catch (Exception e) {
-            if (failOnError)
-                throw new BuildException("Failed yanking files", e);
+            if (failOnError) {
+                project.log(e.getMessage());
+                throw new BuildException("Failed yanking files: " + e.getMessage(), e);
+            }
         } finally {
             pool.shutdown();
         }
