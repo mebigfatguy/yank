@@ -54,7 +54,7 @@ class ArtifactReader implements Runnable {
             }
             success = true;
         } catch (Exception e) {
-            project.log(e.getMessage());
+            project.log(e.getMessage(), Project.MSG_ERR);
         } finally {
             TransferBuffer queueBuffer = new TransferBuffer(null, -1);
             synchronized (dq) {

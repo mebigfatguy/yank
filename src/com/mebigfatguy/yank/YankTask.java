@@ -128,6 +128,14 @@ public class YankTask extends Task {
                 f.get();
             }
 
+            if (failOnError) {
+                for (Artifact artifact : artifacts) {
+                    if (artifact.getStatus() == Artifact.Status.FAILED) {
+                        throw new BuildException("Failed downloading artifacts (First Failure: " + artifact + ")");
+                    }
+                }
+            }
+
             if (reportMissingDependencies) {
                 Set<Artifact> requiredArtifacts = new HashSet<Artifact>();
                 for (Future<List<Artifact>> f : transitiveFutures) {
@@ -150,14 +158,6 @@ public class YankTask extends Task {
                 }
             }
 
-            if (failOnError) {
-                for (Artifact artifact : artifacts) {
-                    if (artifact.getStatus() == Artifact.Status.FAILED) {
-                        throw new BuildException("Failed downloading artifacts (" + artifact + ")");
-                    }
-                }
-            }
-
             if (outputPath) {
                 String path = generatePath(artifacts);
                 project.log("");
@@ -166,8 +166,8 @@ public class YankTask extends Task {
 
         } catch (Exception e) {
             if (failOnError) {
-                project.log(e.getMessage());
-                throw new BuildException("Failed yanking files: " + e.getMessage(), e);
+                project.log(e.getMessage(), Project.MSG_ERR);
+                throw new BuildException("Failed yanking files", e);
             }
         } finally {
             pool.shutdown();

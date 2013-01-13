@@ -56,7 +56,7 @@ class ArtifactWriter implements Runnable {
             }
             success = true;
         } catch (Exception e) {
-            project.log(e.getMessage());
+            project.log(e.getMessage(), Project.MSG_ERR);
         }
     }
 

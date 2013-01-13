@@ -92,7 +92,7 @@ public class Downloader implements Runnable {
                 }
 
                 if (report)
-                    project.log("download successful: " + artifact);
+                    project.log("download successful: " + artifact, (report && (artifact.getStatus() != Artifact.Status.UPTODATE)) ? Project.MSG_ERR : Project.MSG_VERBOSE);
                 return;
             } catch (Exception e) {
             } finally {
@@ -102,7 +102,7 @@ public class Downloader implements Runnable {
             }
 
             if (report)
-                project.log("download failed: " + artifact);
+                project.log("download failed: " + artifact, Project.MSG_ERR);
             artifact.setStatus(Artifact.Status.FAILED);
         }
     }
