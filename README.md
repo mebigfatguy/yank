@@ -18,7 +18,7 @@ You can add this task, as
 
 and it will pull new artifacts as needed.
 
-There are a few optional arguments to the yank task that you can add as follows
+There are a few optional attributes to the yank task that you can add as follows
 
 <table>
    <tr>
@@ -32,12 +32,6 @@ There are a few optional arguments to the yank task that you can add as follows
       <td>fails the build if an artifact fails to download</td>
       <td>(true/false)</td>
       <td>true</td>
-   </tr>
-   <tr>
-      <td>outputPath</td>
-      <td>generate an ant classpath element for the artifacts downloaded</td>
-      <td>(true/false)</td>
-      <td>false</td>
    </tr>
    <tr>
       <td>proxyServer</td>
@@ -70,6 +64,16 @@ There are a few optional arguments to the yank task that you can add as follows
       <td>4 * numProcessors</td>
    </tr>
 </table>
+
+In addition, you can add a sub element to generate an ant path element, such as
+    <generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" libraryDirName="$${lib.dir}" />
+    
+This will create an ant xml project file located at pathXmlFile (${sample.dir}/yank_build.xml) like
+    <path name="yank.path">
+        <pathelement location="${lib.dir}/asm.jar" />
+    </path
+    
+With pathlements for each jar specified.
 
 the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
