@@ -106,7 +106,8 @@ public class Downloader implements Runnable {
 
             if (report)
                 project.log("download failed: " + artifact, Project.MSG_ERR);
-            artifact.setStatus(Artifact.Status.FAILED);
+            if (isJar)
+                artifact.setStatus(Artifact.Status.FAILED);
         }
     }
 
