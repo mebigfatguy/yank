@@ -11,10 +11,11 @@ dependency managers allow. yank only pulls down what you ask for, and the the fi
 in an excel spread sheet for easy use of corporate approvals, etc.
 
 You can add this task, as
-
-    <yank yankFile="${lib.dir}/yank.xls" destination="${lib.dir}">
-            <server url="http://repo1.maven.org/maven2"/>
-        </yank>
+<pre>
+    &lt;yank yankFile="${lib.dir}/yank.xls" destination="${lib.dir}"&gt;
+            &lt;server url="http://repo1.maven.org/maven2"/&gt;
+    &lt;/yank&gt;
+</pre>
 
 and it will pull new artifacts as needed.
 
@@ -66,14 +67,17 @@ There are a few optional attributes to the yank task that you can add as follows
 </table>
 
 In addition, you can add a sub element to generate an ant path element, such as
-    <generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" libraryDirName="$${lib.dir}" />
-    
+<pre>
+    &lt;generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" libraryDirName="$${lib.dir}" /&gt;
+</pre>    
 This will create an ant xml project file located at pathXmlFile (${sample.dir}/yank_build.xml) like
-    <path name="yank.path">
-        <pathelement location="${lib.dir}/asm.jar" />
-    </path
+<pre>
+    &lt;path name="yank.path"&gt;
+        &lt;pathelement location="${lib.dir}/asm.jar" /&gt;
+    &lt;/path&gt;
+</pre>
     
-With pathlements for each jar specified.
+With path elements for each jar specified.
 
 the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
