@@ -18,9 +18,12 @@
 package com.mebigfatguy.yank;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -48,7 +51,7 @@ public class YankTask extends Task {
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
-    private boolean outputPath;
+    private GeneratePathTask generatePathTask;
     private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
     private Options options = new Options();
@@ -69,10 +72,6 @@ public class YankTask extends Task {
         reportMissingDependencies = report;
     }
 
-    public void setOutputPath(boolean path) {
-        outputPath = path;
-    }
-
     public void setStripVersions(boolean strip) {
         options.setStripVersions(strip);
     }
@@ -83,6 +82,10 @@ public class YankTask extends Task {
 
     public void setThreadPoolSize(int size) {
         threadPoolSize = size;
+    }
+
+    public void addConfiguredGeneratePath(GeneratePathTask gpTask) {
+        generatePathTask = gpTask;
     }
 
     public void addConfiguredServer(ServerTask server) {
@@ -111,21 +114,24 @@ public class YankTask extends Task {
 
             List<Artifact> artifacts = readArtifactList();
             List<Future<?>> downloadFutures = new ArrayList<Future<?>>();
-            Project project = getProject();
 
             for (Artifact artifact : artifacts) {
-                downloadFutures.add(pool.submit(new Downloader(project, artifact, destination, options)));
+                downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
             }
 
             List<Future<List<Artifact>>> transitiveFutures = new ArrayList<Future<List<Artifact>>>();
             if (reportMissingDependencies) {
                 for (Artifact artifact : artifacts) {
-                    transitiveFutures.add(pool.submit(new DiscoverTransitives(project, artifact, options)));
+                    transitiveFutures.add(pool.submit(new DiscoverTransitives(getProject(), artifact, options)));
                 }
             }
 
             for (Future<?> f : downloadFutures) {
                 f.get();
+            }
+
+            if (generatePathTask != null) {
+                generatePath(artifacts);
             }
 
             if (failOnError) {
@@ -149,24 +155,17 @@ public class YankTask extends Task {
                 }
 
                 if (!requiredArtifacts.isEmpty()) {
-                    project.log("");
-                    project.log("Required (but missing) transitive dependencies");
-                    project.log("");
+                    getProject().log("");
+                    getProject().log("Required (but missing) transitive dependencies");
+                    getProject().log("");
                     for (Artifact a : requiredArtifacts) {
-                        project.log(a.toString());
+                        getProject().log(a.toString());
                     }
                 }
             }
-
-            if (outputPath) {
-                String path = generatePath(artifacts);
-                project.log("");
-                project.log(path);
-            }
-
         } catch (Exception e) {
             if (failOnError) {
-                project.log(e.getMessage(), Project.MSG_ERR);
+                getProject().log(e.getMessage(), Project.MSG_ERR);
                 throw new BuildException("Failed yanking files", e);
             }
         } finally {
@@ -249,21 +248,61 @@ public class YankTask extends Task {
     }
 
 
-    private String generatePath(List<Artifact> artifacts) {
-        Collections.sort(artifacts);
+    private void generatePath(List<Artifact> artifacts) {
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(generatePathTask.getPathXmlFile())));
+            Collections.sort(artifacts);
 
-        StringBuilder sb = new StringBuilder();
-        String eol = System.getProperty("line.separator");
-        sb.append("\t<path id=\"yank.classpath\">").append(eol);
-        for (Artifact artifact : artifacts) {
-            sb.append("\t\t<pathelement location=\"${lib.dir}/").append(artifact.getArtifactId());
-            if (!options.isStripVersions()) {
-                sb.append('-').append(artifact.getVersion());
+            pw.println("<project name=\"yank\">");
+            pw.print("\t<path id=\"");
+            pw.print(generatePathTask.getClasspathName());
+            pw.println("\">");
+
+            String dirName = generatePathTask.getLibraryDirName();
+            boolean needPathSlash = !"/\\".contains(dirName.substring(dirName.length() - 1));
+
+            for (Artifact artifact : artifacts) {
+                pw.print("\t\t<pathelement location=\"");
+                pw.print(generatePathTask.getLibraryDirName());
+                if (needPathSlash)
+                    pw.print("/");
+                pw.print(artifact.getArtifactId());
+                if (!options.isStripVersions()) {
+                    pw.print('-');
+                    pw.print(artifact.getVersion());
+                }
+                pw.println(".jar\" />");
             }
-            sb.append(".jar\" />").append(eol);
+            pw.println("\t</path>");
+            pw.println("</project>");
+        } catch (Exception e) {
+            getProject().log("Failed generating classpath " + generatePathTask.getClasspathName() + " in file " + generatePathTask.getPathXmlFile(), e, Project.MSG_ERR);
+        } finally {
+            Closer.close(pw);
         }
-        sb.append("\t<path>");
+    }
 
-        return sb.toString();
+    public static void main(String[] args) {
+        YankTask yt = new YankTask();
+        Project p = new Project();
+        yt.setProject(p);
+
+        yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
+        yt.setDestination(new File("/home/dave/dev/yank/sample"));
+        yt.setThreadPoolSize(8);
+        yt.setStripVersions(true);
+
+        ServerTask st = new ServerTask();
+        st.setUrl("http://repo1.maven.org/maven2");
+        yt.addConfiguredServer(st);
+
+        GeneratePathTask pt = new GeneratePathTask();
+        pt.setClasspathName("yank.path");
+        pt.setPathXmlFile(new File("/home/dave/dev/yank/sample/yank_build.xml"));
+        pt.setLibraryDirName("${lib.dir}");
+        yt.addConfiguredGeneratePath(pt);
+
+        yt.execute();
     }
 }

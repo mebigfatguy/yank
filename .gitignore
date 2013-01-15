@@ -3,3 +3,4 @@ classes
 javadoc
 lib
 *.jar
+sample/yank_build.xml

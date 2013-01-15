@@ -17,22 +17,42 @@
  */
 package com.mebigfatguy.yank;
 
+import java.io.File;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
-public class ServerTask extends Task {
+public class GeneratePathTask extends Task {
 
-    private String url;
+    private File pathXmlFile;
+    private String classpathName;
+    private String libraryDirName;
 
-    public void setUrl(String url) {
-        this.url = url;
+    public File getPathXmlFile() {
+        return pathXmlFile;
     }
 
-    public String getUrl() {
-        return url;
+    public void setPathXmlFile(File pathXmlFile) {
+        this.pathXmlFile = pathXmlFile;
+    }
+
+    public String getClasspathName() {
+        return classpathName;
+    }
+
+    public void setClasspathName(String classpathName) {
+        this.classpathName = classpathName;
+    }
+
+    public String getLibraryDirName() {
+        return libraryDirName;
+    }
+
+    public void setLibraryDirName(String libraryDirName) {
+        this.libraryDirName = libraryDirName;
     }
 
     public void execute() {
-        throw new BuildException("ServerTask not meant to be executed");
+        throw new BuildException("GeneratePathTask not meant to be executed");
     }
 }
