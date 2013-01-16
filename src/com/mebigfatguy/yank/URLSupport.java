@@ -36,7 +36,7 @@ public class URLSupport {
         String[] proxyParts = proxyUrl.split(":");
         String host = proxyParts[0];
         int port = 80;
-        if (proxyParts.length > 0) {
+        if (proxyParts.length > 1) {
             try {
                 port = Integer.parseInt(proxyParts[1]);
             } catch (NumberFormatException nfe) {
