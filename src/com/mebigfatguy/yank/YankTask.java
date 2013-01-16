@@ -292,6 +292,7 @@ public class YankTask extends Task {
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
         yt.setThreadPoolSize(8);
         yt.setStripVersions(true);
+        yt.setProxyServer("localhost:8181");
 
         ServerTask st = new ServerTask();
         st.setUrl("http://repo1.maven.org/maven2");

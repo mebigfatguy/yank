@@ -13,7 +13,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="0.1.0" />
+	<property name="yank.version" value="0.2.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
@@ -108,6 +108,13 @@
         <zip destfile="${basedir}/yank-${yank.version}-sources.jar" basedir="${src.dir}">
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
+            </fileset>
+            <fileset dir="${basedir}">
+                <include name="pom.xml" />
+                <include name="build.xml" />
+                <include name=".classpath" />
+                <include name=".project" />
+                <include name="sample/yank.xls" />
             </fileset>
         </zip>
     </target>
