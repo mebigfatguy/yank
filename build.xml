@@ -74,11 +74,19 @@
         <pathelement location="${lib.dir}/poi-${poi.version}.jar" />
     </path>
 
-    <target name="compile" depends="-init, pullall" description="compiles java files">
+    <target name="compile" depends="-init, pullall, resources" description="compiles java files">
         <javac srcdir="${src.dir}" destdir="${classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
             <classpath refid="yank.classpath" />
         </javac>
     </target>
+	
+	<target name="resources" description="copies files to classes">
+		<copy todir="${classes.dir}">
+		    <fileset dir="${src.dir}">
+			    <include name="**/*.xml"/>
+		    </fileset>
+		</copy>
+	</target>
 	
     <target name="jar" depends="compile" description="produces the yank jar file">
     	<mkdir dir="${basedir}/poi-explode" />
@@ -86,6 +94,7 @@
         <jar destfile="${basedir}/yank-${yank.version}.jar">
             <fileset dir="${classes.dir}">
                 <include name="**/*.class" />
+                <include name="**/*.xml" />
             </fileset>
         	<fileset dir="${basedir}/poi-explode">
         	</fileset>
@@ -108,6 +117,7 @@
         <zip destfile="${basedir}/yank-${yank.version}-sources.jar" basedir="${src.dir}">
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
+                <include name="**/*.xml" />
             </fileset>
             <fileset dir="${basedir}">
                 <include name="pom.xml" />
