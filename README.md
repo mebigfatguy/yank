@@ -81,5 +81,5 @@ With path elements for each jar specified.
 
 the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
-code area, etc, without issue.
+code area, etc, without issue. If values for a column are not filled in, the previous value is pulled down from above.
 
