@@ -82,6 +82,12 @@ public class PomHandler extends DefaultHandler {
                 value.setLength(0);
             }
             break;
+            
+        case ARTIFACT:
+        case GROUP:
+        case OPTIONAL:
+        case VERSION:
+            break;
         }
     }
 
@@ -126,6 +132,9 @@ public class PomHandler extends DefaultHandler {
             optional = value.toString().trim();
             state = State.DEPENDENCY;
             break;
+            
+        case NONE:
+            break;
         }
     }
 
@@ -137,6 +146,13 @@ public class PomHandler extends DefaultHandler {
         case VERSION:
         case OPTIONAL:
             value.append(ch, start, length);
+            break;
+            
+        case DEPENDENCIES:
+        case DEPENDENCY:
+        case NONE:
+        case PARENT:
+            break;
         }
     }
 }
