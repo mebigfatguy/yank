@@ -118,7 +118,7 @@ public class YankTask extends Task {
         ExecutorService pool = Executors.newFixedThreadPool(threadPoolSize);
         try {
 
-            List<Artifact> artifacts = readArtifactList();
+            final List<Artifact> artifacts = readArtifactList();
             List<Future<?>> downloadFutures = new ArrayList<Future<?>>();
 
             for (Artifact artifact : artifacts) {
@@ -132,16 +132,24 @@ public class YankTask extends Task {
                 }
             }
 
-            for (Future<?> f : downloadFutures) {
-                f.get();
-            }
-
             if (generatePathTask != null) {
-                generatePath(artifacts);
+                pool.submit(new Runnable() {
+                    public void run() {
+                        generatePath(artifacts);
+                    }
+                });
             }
             
             if (generateVersionsTask != null) {
-                generateVersions(artifacts);
+                pool.submit(new Runnable() {
+                    public void run() {
+                        generateVersions(artifacts);
+                    }
+                });
+            }  
+
+            for (Future<?> f : downloadFutures) {
+                f.get();
             }
 
             if (failOnError) {
