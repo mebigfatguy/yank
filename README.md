@@ -17,7 +17,7 @@ You can add this task, as
     &lt;/yank&gt;
 </pre>
 
-and it will pull new artifacts as needed. You can list as many servers as desired each in it's own element.
+and it will pull new artifacts as needed. You can list as many servers as desired each in its own element.
 
 There are a few optional attributes to the yank task that you can add as follows
 
