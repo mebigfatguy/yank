@@ -53,6 +53,7 @@ public class YankTask extends Task {
     private File destination;
     private boolean reportMissingDependencies;
     private GeneratePathTask generatePathTask;
+    private GenerateVersionsTask generateVersionsTask;
     private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
     private Options options = new Options();
@@ -95,6 +96,10 @@ public class YankTask extends Task {
             url += "/";
         options.addServer(url);
     }
+    
+    public void addConfiguredGenerateVersions(GenerateVersionsTask gvTask) {
+        generateVersionsTask = gvTask;
+    }
 
     public void setProxyServer(String proxy) {
         options.setProxyServer(proxy.trim());
@@ -134,6 +139,10 @@ public class YankTask extends Task {
             if (generatePathTask != null) {
                 generatePath(artifacts);
             }
+            
+            if (generateVersionsTask != null) {
+                generateVersions(artifacts);
+            }
 
             if (failOnError) {
                 for (Artifact artifact : artifacts) {
@@ -164,6 +173,7 @@ public class YankTask extends Task {
                     }
                 }
             }
+            
         } catch (Exception e) {
             if (failOnError) {
                 getProject().log(e.getMessage(), Project.MSG_ERR);
@@ -283,6 +293,22 @@ public class YankTask extends Task {
             pw.println("</project>");
         } catch (Exception e) {
             getProject().log("Failed generating classpath " + generatePathTask.getClasspathName() + " in file " + generatePathTask.getPathXmlFile(), e, Project.MSG_ERR);
+        } finally {
+            Closer.close(pw);
+        }
+    }
+    
+    private void generateVersions(List<Artifact> artifacts) {
+        PrintWriter pw = null;
+        Project proj = getProject();
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(generateVersionsTask.getPropertyFileName())));
+            for (Artifact artifact : artifacts) {
+                pw.println(artifact.getArtifactId() + ".version = " + artifact.getVersion());
+                proj.setProperty(artifact.getArtifactId() + ".version", artifact.getVersion());
+            }
+        } catch (Exception e) {
+            proj.log("Failed generating versions property file " + generateVersionsTask.getPropertyFileName(), e, Project.MSG_ERR);
         } finally {
             Closer.close(pw);
         }
