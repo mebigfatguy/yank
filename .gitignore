@@ -4,3 +4,4 @@ javadoc
 lib
 *.jar
 sample/yank_build.xml
+sample/yank.properties
