@@ -79,6 +79,11 @@ This will create an ant xml project file located at pathXmlFile (${sample.dir}/y
     
 With path elements for each jar specified.
 
+You can also add a sub element to generate a properties file containing constants for all the jar version numbers, such as
+<pre>
+    &lt;generateVersions propertyFileName="${basedir}/version.properties" /&gt;
+</pre>
+
 the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
 code area, etc, without issue. If values for a column are not filled in, the previous value is pulled down from above.
