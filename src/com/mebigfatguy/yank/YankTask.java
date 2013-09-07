@@ -41,6 +41,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -204,7 +205,11 @@ public class YankTask extends Task {
 
                     cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN));
                     if (cell != null) {
-                        version = cell.getStringCellValue().trim();
+                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            version = String.valueOf(cell.getNumericCellValue());
+                        } else {
+                            version = cell.getStringCellValue().trim();
+                        }
                     }
 
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
