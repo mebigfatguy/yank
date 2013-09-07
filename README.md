@@ -84,7 +84,7 @@ You can also add a sub element to generate a properties file containing constant
     &lt;generateVersions propertyFileName="${basedir}/version.properties" /&gt;
 </pre>
 
-the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
+As for the yank.xls file, the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. More columns may be added for your governance purposes, such as license, reason,
 code area, etc, without issue. If values for a column are not filled in, the previous value is pulled down from above.
 
