@@ -26,11 +26,13 @@ public class Artifact implements Comparable<Artifact> {
     private String groupId;
     private String artifactId;
     private String version;
+    private String alternate;
     private Status status = Status.UNKNOWN;
 
-    public Artifact(String groupId, String artifactId, String version) {
+    public Artifact(String groupId, String artifactId, String alternate, String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
+        this.alternate = alternate;
         this.version = version;
     }
 
@@ -45,6 +47,10 @@ public class Artifact implements Comparable<Artifact> {
     public String getVersion() {
         return version;
     }
+    
+    public String getAlternate() {
+        return alternate;
+    }
 
     public Status getStatus() {
         return status;
@@ -56,7 +62,7 @@ public class Artifact implements Comparable<Artifact> {
 
     @Override
     public int hashCode() {
-        return groupId.hashCode() ^ artifactId.hashCode() ^ version.hashCode();
+        return groupId.hashCode() ^ artifactId.hashCode() ^ alternate.hashCode() ^ version.hashCode();
     }
 
     @Override
@@ -65,7 +71,7 @@ public class Artifact implements Comparable<Artifact> {
             return false;
 
         Artifact that = (Artifact) o;
-        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && version.equals(that.version);
+        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && alternate.equals(that.alternate) && version.equals(that.version);
     }
 
     public int compareTo(Artifact a) {
@@ -78,6 +84,11 @@ public class Artifact implements Comparable<Artifact> {
         if (cmp != 0) {
             return cmp;
         }
+        
+        cmp = alternate.compareTo(a.alternate);
+        if (cmp != 0) {
+            return cmp;
+        };
 
         return version.compareTo(a.version);
     }
@@ -111,7 +122,11 @@ public class Artifact implements Comparable<Artifact> {
             url.append('-');
 
             url.append(version);
-
+            
+            if (!alternate.isEmpty()) {
+                url.append('-').append(alternate);
+            }
+                
             url.append(extension);
 
             return new URL(url.toString());
@@ -123,7 +138,7 @@ public class Artifact implements Comparable<Artifact> {
     @Override
     public String toString() {
         return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId
-                + ", version=" + version + ", status="
+                + ", alternate=" + alternate + ", version=" + version + ", status="
                 + status + "]";
     }
 }

@@ -48,7 +48,7 @@ import org.apache.tools.ant.Task;
 
 public class YankTask extends Task {
 
-    private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, VERSION_COLUMN};
+    private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, ALTERNATE, VERSION_COLUMN};
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
@@ -204,9 +204,11 @@ public class YankTask extends Task {
             HSSFSheet sheet = workBook.getSheetAt(0);
 
             Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
+            Integer alternateColumn = columnHeaders.get(ColumnType.ALTERNATE);
             String groupId = "";
             String artifactId = "";
             String version = "";
+            String alternate = "";
 
             for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
                 HSSFRow row = sheet.getRow(i);
@@ -229,15 +231,21 @@ public class YankTask extends Task {
                             version = cell.getStringCellValue().trim();
                         }
                     }
+                    
+                    cell = (alternateColumn != null) ? row.getCell(alternateColumn.intValue()) : null;
+                    if (cell != null) {
+                        alternate = cell.getStringCellValue().trim();
+                    }
 
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                        getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", version: " + version + "]");
+                        getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", alternate: " + alternate + ", version: " + version + "]");
                     } else {
-                        artifacts.add(new Artifact(groupId, artifactId, version));
+                        artifacts.add(new Artifact(groupId, artifactId, alternate, version));
                     }
                 }
 
                 artifactId = "";
+                alternate = "";
             }
         } finally {
             Closer.close(bis);
@@ -261,11 +269,16 @@ public class YankTask extends Task {
                 columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
             } else if (value.startsWith("version")) {
                 columnHeaders.put(ColumnType.VERSION_COLUMN, i);
+            } else if (value.startsWith("alternate")) {
+                columnHeaders.put(ColumnType.ALTERNATE,  i);
             }
-            if (columnHeaders.size() == 3) {
+            if (columnHeaders.size() == 4) {
                 return columnHeaders;
             }
         }
+        
+        if (columnHeaders.size() >= 3)
+            return columnHeaders;
 
         throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
     }

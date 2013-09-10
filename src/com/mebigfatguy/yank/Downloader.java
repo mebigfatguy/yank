@@ -56,7 +56,7 @@ public class Downloader implements Runnable {
     }
 
     private void download(boolean isJar, boolean report) {
-        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (isJar ? ".jar" : "-sources.jar"));
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (artifact.getAlternate().isEmpty() ? "" : ("-" + artifact.getAlternate())) + (isJar ? ".jar" : "-sources.jar"));
         for (String server : options.getServers()) {
             URL u = isJar ? artifact.toURL(server) : artifact.srcURL(server);
             HttpURLConnection con = null;
