@@ -325,8 +325,10 @@ public class YankTask extends Task {
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(generateVersionsTask.getPropertyFileName())));
             for (Artifact artifact : artifacts) {
-                pw.println(artifact.getArtifactId() + ".version = " + artifact.getVersion());
-                proj.setProperty(artifact.getArtifactId() + ".version", artifact.getVersion());
+                if (artifact.getAlternate().isEmpty()) {
+                    pw.println(artifact.getArtifactId() + ".version = " + artifact.getVersion());
+                    proj.setProperty(artifact.getArtifactId() + ".version", artifact.getVersion());
+                }
             }
         } catch (Exception e) {
             proj.log("Failed generating versions property file " + generateVersionsTask.getPropertyFileName(), e, Project.MSG_ERR);
