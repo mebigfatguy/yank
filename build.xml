@@ -13,7 +13,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="0.3.0" />
+	<property name="yank.version" value="0.4.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
@@ -132,7 +132,7 @@
     <target name="javadoc" depends="-init" description="build the javadoc for the project">
         <javadoc packagenames="com.mebigfatguy.*" sourcepath="${src.dir}" classpathref="yank.classpath" destdir="${javadoc.dir}" windowtitle="yank api">
             <doctitle><![CDATA[<h1>yank javadoc</h1>]]></doctitle>
-            <bottom><![CDATA[<i>Copyright &#169; 2005-2013 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+            <bottom><![CDATA[<i>Copyright &#169; 2013-2013 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
         </javadoc>
     </target>
 	
