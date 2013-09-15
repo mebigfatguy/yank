@@ -262,18 +262,22 @@ public class YankTask extends Task {
 
         for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
             HSSFCell cell = row.getCell(i);
-            String value = cell.getStringCellValue().trim().toLowerCase();
-            if (value.startsWith("group")) {
-                columnHeaders.put(ColumnType.GROUP_COLUMN, i);
-            } else if (value.startsWith("artifact")) {
-                columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
-            } else if (value.startsWith("version")) {
-                columnHeaders.put(ColumnType.VERSION_COLUMN, i);
-            } else if (value.startsWith("alternate")) {
-                columnHeaders.put(ColumnType.ALTERNATE,  i);
-            }
-            if (columnHeaders.size() == 4) {
-                return columnHeaders;
+            
+            String value = cell.getStringCellValue();
+            if (value != null) {
+                value = value.trim().toLowerCase();
+                if (value.startsWith("group")) {
+                    columnHeaders.put(ColumnType.GROUP_COLUMN, i);
+                } else if (value.startsWith("artifact")) {
+                    columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
+                } else if (value.startsWith("version")) {
+                    columnHeaders.put(ColumnType.VERSION_COLUMN, i);
+                } else if (value.startsWith("alternate")) {
+                    columnHeaders.put(ColumnType.ALTERNATE,  i);
+                }
+                if (columnHeaders.size() == 4) {
+                    return columnHeaders;
+                }
             }
         }
         
