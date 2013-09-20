@@ -134,6 +134,22 @@ public class Artifact implements Comparable<Artifact> {
             return null;
         }
     }
+    
+    public URL toMetaDataURL(String server) {
+        try {
+            StringBuilder url = new StringBuilder(server);
+
+            url.append(groupId.replace('.', '/'));
+            url.append('/');
+
+            url.append(artifactId);
+            url.append("/maven-metadata.xml");
+
+            return new URL(url.toString());
+        } catch (MalformedURLException mue) {
+            return null;
+        }
+    }
 
     @Override
     public String toString() {

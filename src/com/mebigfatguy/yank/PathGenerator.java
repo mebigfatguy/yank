@@ -1,0 +1,76 @@
+/*
+ * yank - a maven artifact fetcher ant task
+ * Copyright 2013 MeBigFatGuy.com
+ * Copyright 2013 Dave Brosius
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations
+ * under the License.
+ */
+package com.mebigfatguy.yank;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.tools.ant.Project;
+
+public class PathGenerator implements Runnable {
+
+    private Project project;
+    private List<Artifact> artifacts;
+    private GeneratePathTask generatePathTask;
+    private boolean stripVersions;
+    
+    public PathGenerator(Project proj, List<Artifact> afs, GeneratePathTask gpTask, boolean stripVers) {
+        project = proj;
+        artifacts = afs;
+        generatePathTask = gpTask;
+        stripVersions = stripVers;
+    }
+    
+    public void run() {
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(generatePathTask.getPathXmlFile())));
+            Collections.sort(artifacts);
+
+            pw.println("<project name=\"yank\">");
+            pw.print("\t<path id=\"");
+            pw.print(generatePathTask.getClasspathName());
+            pw.println("\">");
+
+            String dirName = generatePathTask.getLibraryDirName();
+            boolean needPathSlash = !"/\\".contains(dirName.substring(dirName.length() - 1));
+
+            for (Artifact artifact : artifacts) {
+                pw.print("\t\t<pathelement location=\"");
+                pw.print(generatePathTask.getLibraryDirName());
+                if (needPathSlash)
+                    pw.print("/");
+                pw.print(artifact.getArtifactId());
+                if (!stripVersions) {
+                    pw.print('-');
+                    pw.print(artifact.getVersion());
+                }
+                pw.println(".jar\" />");
+            }
+            pw.println("\t</path>");
+            pw.println("</project>");
+        } catch (Exception e) {
+            project.log("Failed generating classpath " + generatePathTask.getClasspathName() + " in file " + generatePathTask.getPathXmlFile(), e, Project.MSG_ERR);
+        } finally {
+            Closer.close(pw);
+        }
+    }
+}

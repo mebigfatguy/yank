@@ -18,14 +18,10 @@
 package com.mebigfatguy.yank;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,6 +48,7 @@ public class YankTask extends Task {
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
+    private File findUpdatesFile;
     private GeneratePathTask generatePathTask;
     private GenerateVersionsTask generateVersionsTask;
     private boolean failOnError = true;
@@ -72,6 +69,10 @@ public class YankTask extends Task {
 
     public void setReportMissingDependencies(boolean report) {
         reportMissingDependencies = report;
+    }
+    
+    public void setFindUpdatesFile(File updatesFile) {
+        findUpdatesFile = updatesFile;
     }
 
     public void setStripVersions(boolean strip) {
@@ -133,20 +134,16 @@ public class YankTask extends Task {
             }
 
             if (generatePathTask != null) {
-                pool.submit(new Runnable() {
-                    public void run() {
-                        generatePath(artifacts);
-                    }
-                });
+                pool.submit(new PathGenerator(getProject(), artifacts, generatePathTask, options.isStripVersions()));
             }
             
             if (generateVersionsTask != null) {
-                pool.submit(new Runnable() {
-                    public void run() {
-                        generateVersions(artifacts);
-                    }
-                });
+                pool.submit(new VersionsGenerator(getProject(), artifacts, generateVersionsTask));
             }  
+            
+            if (findUpdatesFile != null) {
+                pool.submit(new FindUpdates(getProject(), artifacts, findUpdatesFile, options.getServers()));
+            }
 
             for (Future<?> f : downloadFutures) {
                 f.get();
@@ -287,60 +284,6 @@ public class YankTask extends Task {
         throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
     }
 
-
-    private void generatePath(List<Artifact> artifacts) {
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(generatePathTask.getPathXmlFile())));
-            Collections.sort(artifacts);
-
-            pw.println("<project name=\"yank\">");
-            pw.print("\t<path id=\"");
-            pw.print(generatePathTask.getClasspathName());
-            pw.println("\">");
-
-            String dirName = generatePathTask.getLibraryDirName();
-            boolean needPathSlash = !"/\\".contains(dirName.substring(dirName.length() - 1));
-
-            for (Artifact artifact : artifacts) {
-                pw.print("\t\t<pathelement location=\"");
-                pw.print(generatePathTask.getLibraryDirName());
-                if (needPathSlash)
-                    pw.print("/");
-                pw.print(artifact.getArtifactId());
-                if (!options.isStripVersions()) {
-                    pw.print('-');
-                    pw.print(artifact.getVersion());
-                }
-                pw.println(".jar\" />");
-            }
-            pw.println("\t</path>");
-            pw.println("</project>");
-        } catch (Exception e) {
-            getProject().log("Failed generating classpath " + generatePathTask.getClasspathName() + " in file " + generatePathTask.getPathXmlFile(), e, Project.MSG_ERR);
-        } finally {
-            Closer.close(pw);
-        }
-    }
-    
-    private void generateVersions(List<Artifact> artifacts) {
-        PrintWriter pw = null;
-        Project proj = getProject();
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(generateVersionsTask.getPropertyFileName())));
-            for (Artifact artifact : artifacts) {
-                if (artifact.getAlternate().isEmpty()) {
-                    pw.println(artifact.getArtifactId() + ".version = " + artifact.getVersion());
-                    proj.setProperty(artifact.getArtifactId() + ".version", artifact.getVersion());
-                }
-            }
-        } catch (Exception e) {
-            proj.log("Failed generating versions property file " + generateVersionsTask.getPropertyFileName(), e, Project.MSG_ERR);
-        } finally {
-            Closer.close(pw);
-        }
-    }
-
     public static void main(String[] args) {
         YankTask yt = new YankTask();
         Project p = new Project();
@@ -361,6 +304,7 @@ public class YankTask extends Task {
         pt.setPathXmlFile(new File("/home/dave/dev/yank/sample/yank_build.xml"));
         pt.setLibraryDirName("${lib.dir}");
         yt.addConfiguredGeneratePath(pt);
+        yt.setFindUpdatesFile(new File("/home/dave/dev/yank/sample/updates.txt"));
 
         yt.execute();
     }
