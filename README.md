@@ -48,7 +48,7 @@ There are a few optional attributes to the yank task that you can add as follows
    </tr>  
    <tr>
       <td>findUpdatesFile</td>
-      <td>generate a file with jars that have updated versions ot being used</td>
+      <td>generate a file with jars that have updated versions not being used</td>
       <td>(file)</td>
       <td>null</td>  
    <tr>
