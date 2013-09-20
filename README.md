@@ -45,7 +45,12 @@ There are a few optional attributes to the yank task that you can add as follows
       <td>logs transitive dependencies based on the poms</td>
       <td>(true/false)</td>
       <td>false</td>
-   </tr>    
+   </tr>  
+   <tr>
+      <td>findUpdatesFile</td>
+      <td>generate a file with jars that have updated versions ot being used</td>
+      <td>(file)</td>
+      <td>null</td>  
    <tr>
       <td>source</td>
       <td>download source artifacts as well</td>
