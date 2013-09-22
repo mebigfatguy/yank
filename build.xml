@@ -19,9 +19,11 @@
 	
     <property name="ant_.version" value="1.8.4" />
     <property name="poi.version" value="3.9" />
+	<property name="jarjar.version" value="1.3" />
 	
     <property name="ant-url" value="http://repo1.maven.org/maven2/org/apache/ant/ant/${ant_.version}/ant-${ant_.version}.jar" />
     <property name="poi-url" value="http://repo1.maven.org/maven2/org/apache/poi/poi/${poi.version}/poi-${poi.version}.jar" />
+    <property name="jarjar-url" value="http://repo1.maven.org/maven2/com/googlecode/jarjar/jarjar/${jarjar.version}/jarjar-${jarjar.version}.jar" />
 
     <target name="check">
         <available file="${dest}/${name}-${version}.jar" property="jar-exists" />
@@ -50,6 +52,7 @@
     <target name="pullall">
         <pull url="${ant-url}" dest="${lib.dir}" name="ant" version="${ant_.version}" />
         <pull url="${poi-url}" dest="${lib.dir}" name="poi" version="${poi.version}" />
+        <pull url="${jarjar-url}" dest="${lib.dir}" name="jarjar" version="${jarjar.version}" />
     </target>
 	
     <target name="clean" description="removes all generated collateral">
@@ -72,6 +75,7 @@
     <path id="yank.classpath">
         <pathelement location="${lib.dir}/ant-${ant_.version}.jar" />
         <pathelement location="${lib.dir}/poi-${poi.version}.jar" />
+        <pathelement location="${lib.dir}/jarjar-${jarjar.version}.jar" />
     </path>
 
     <target name="compile" depends="-init, pullall, resources" description="compiles java files">
@@ -89,15 +93,14 @@
 	</target>
 	
     <target name="jar" depends="compile" description="produces the yank jar file">
-    	<mkdir dir="${basedir}/poi-explode" />
-    	<unzip src="${lib.dir}/poi-${poi.version}.jar" dest="${basedir}/poi-explode" />
-        <jar destfile="${basedir}/yank-${yank.version}.jar">
+    	<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpathref="yank.classpath"/>
+        <jarjar destfile="${basedir}/yank-${yank.version}.jar">
             <fileset dir="${classes.dir}">
                 <include name="**/*.class" />
                 <include name="**/*.xml" />
             </fileset>
-        	<fileset dir="${basedir}/poi-explode">
-        	</fileset>
+        	<zipfileset src="${lib.dir}/poi-${poi.version}.jar"/>
+        	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
@@ -109,7 +112,7 @@
                 <attribute name="Bundle-Vendor" value="Yank Project" />
                 <attribute name="Bundle-ActivationPolicy" value="lazy" />
             </manifest>
-        </jar>
+        </jarjar>
     	<delete dir="${basedir}/poi-explode" />
     </target>
 	
