@@ -59,7 +59,7 @@ public class FindUpdates implements Runnable {
                         
                         String latest = (String) xpe.evaluate(d, XPathConstants.STRING);
                         if (newer(artifact, latest)) {
-                            pw.println(artifact.toString() + " has newer version: " + latest);
+                            pw.println(artifact + " has newer version: " + latest);
                         }
                         break;
                         
