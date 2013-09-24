@@ -120,14 +120,15 @@ public class YankTask extends Task {
         try {
 
             final List<Artifact> artifacts = readArtifactList();
-            List<Future<?>> downloadFutures = new ArrayList<Future<?>>();
+            List<Future<?>> downloadFutures = new ArrayList<Future<?>>(artifacts.size());
 
             for (Artifact artifact : artifacts) {
                 downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
             }
 
-            List<Future<List<Artifact>>> transitiveFutures = new ArrayList<Future<List<Artifact>>>();
+            List<Future<List<Artifact>>> transitiveFutures = null;
             if (reportMissingDependencies) {
+                transitiveFutures = new ArrayList<Future<List<Artifact>>>(artifacts.size());
                 for (Artifact artifact : artifacts) {
                     transitiveFutures.add(pool.submit(new DiscoverTransitives(getProject(), artifact, options)));
                 }
