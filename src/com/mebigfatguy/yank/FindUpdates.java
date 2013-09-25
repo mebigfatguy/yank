@@ -3,8 +3,9 @@ package com.mebigfatguy.yank;
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
@@ -43,7 +44,7 @@ public class FindUpdates implements Runnable {
             XPath xp = xpf.newXPath();
             XPathExpression xpe = xp.compile("/metadata/versioning/versions/version[last()]/text()");
             
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(findUpdatesFile)));
+            pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(findUpdatesFile), "UTF-8")));
             for (Artifact artifact : artifacts) {
                 for (String server : repositories) {
                     URL u = artifact.toMetaDataURL(server);

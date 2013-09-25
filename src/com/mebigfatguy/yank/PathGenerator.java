@@ -18,7 +18,8 @@
 package com.mebigfatguy.yank;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +43,7 @@ public class PathGenerator implements Runnable {
     public void run() {
         PrintWriter pw = null;
         try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(generatePathTask.getPathXmlFile())));
+            pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(generatePathTask.getPathXmlFile()), "UTF-8")));
             Collections.sort(artifacts);
 
             pw.println("<project name=\"yank\">");

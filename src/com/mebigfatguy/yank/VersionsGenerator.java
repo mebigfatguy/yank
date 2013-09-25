@@ -18,7 +18,8 @@
 package com.mebigfatguy.yank;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class VersionsGenerator implements Runnable {
     public void run() {
         PrintWriter pw = null;
         try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(generateVersionsTask.getPropertyFileName())));
+            pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(generateVersionsTask.getPropertyFileName()), "UTF-8")));
             for (Artifact artifact : artifacts) {
                 if (artifact.getAlternate().isEmpty()) {
                     pw.println(artifact.getArtifactId() + ".version = " + artifact.getVersion());
