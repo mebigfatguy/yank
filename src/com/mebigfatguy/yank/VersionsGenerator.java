@@ -37,14 +37,21 @@ public class VersionsGenerator implements Runnable {
         generateVersionsTask = gvTask;
     }
     
+    /**
+     * ant.version is already defined by ant, if the user uses ant, define it as ant_.version
+     */
     public void run() {
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(generateVersionsTask.getPropertyFileName()), "UTF-8")));
             for (Artifact artifact : artifacts) {
                 if (artifact.getAlternate().isEmpty()) {
-                    pw.println(artifact.getArtifactId() + ".version = " + artifact.getVersion());
-                    project.setProperty(artifact.getArtifactId() + ".version", artifact.getVersion());
+                    String artifactName = artifact.getArtifactId();
+                    if ("ant".equals(artifactName)) {
+                        artifactName="ant_";
+                    }
+                    pw.println(artifactName + ".version = " + artifact.getVersion());
+                    project.setProperty(artifactName + ".version", artifact.getVersion());
                 }
             }
         } catch (Exception e) {
