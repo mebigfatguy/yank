@@ -103,7 +103,12 @@ public class YankTask extends Task {
     }
 
     public void setProxyServer(String proxy) {
-        options.setProxyServer(proxy.trim());
+        proxy = proxy.trim();
+        if (proxy.isEmpty()) {
+            getProject().log("Empty proxy server specified, ignored");
+        } else {
+            options.setProxyServer(proxy);
+        }
     }
 
     public void execute() throws BuildException {
