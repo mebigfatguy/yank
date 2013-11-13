@@ -118,7 +118,6 @@
                 <attribute name="Bundle-ActivationPolicy" value="lazy" />
             </manifest>
         </jarjar>
-    	<delete dir="${basedir}/poi-explode" />
     </target>
 	
     <target name="srczip" description="builds the source distribution zip file">
