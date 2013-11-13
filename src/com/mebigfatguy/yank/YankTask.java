@@ -218,20 +218,30 @@ public class YankTask extends Task {
                 if (row != null) {
                     HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN));
                     if (cell != null) {
-                        groupId = cell.getStringCellValue().trim();
+                        String gId = cell.getStringCellValue().trim();
+                        if (!gId.isEmpty()) {
+                            groupId = gId;
+                        }
                     }
 
                     cell = row.getCell(columnHeaders.get(ColumnType.ARTIFACT_COLUMN));
                     if (cell != null) {
-                        artifactId = cell.getStringCellValue().trim();
+                        String aId = cell.getStringCellValue().trim();
+                        if (!aId.isEmpty()) {
+                            artifactId = aId;
+                        }
                     }
 
                     cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN));
                     if (cell != null) {
+                        String v;
                         if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                            version = String.valueOf(cell.getNumericCellValue());
+                            v = String.valueOf(cell.getNumericCellValue());
                         } else {
-                            version = cell.getStringCellValue().trim();
+                            v = cell.getStringCellValue().trim();
+                        }
+                        if (!v.isEmpty()) {
+                            version = v;
                         }
                     }
                     
