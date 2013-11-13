@@ -6,3 +6,4 @@ lib
 sample/yank_build.xml
 sample/yank.properties
 sample/updates.txt
+sample/.~lock.yank.*
