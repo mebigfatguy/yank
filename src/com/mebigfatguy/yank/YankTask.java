@@ -291,29 +291,4 @@ public class YankTask extends Task {
 
         throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
     }
-
-    public static void main(String[] args) {
-        YankTask yt = new YankTask();
-        Project p = new Project();
-        yt.setProject(p);
-
-        yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
-        yt.setDestination(new File("/home/dave/dev/yank/sample"));
-        yt.setThreadPoolSize(8);
-        yt.setStripVersions(true);
-        yt.setProxyServer("localhost:8181");
-
-        ServerTask st = new ServerTask();
-        st.setUrl("http://repo1.maven.org/maven2");
-        yt.addConfiguredServer(st);
-
-        GeneratePathTask pt = new GeneratePathTask();
-        pt.setClasspathName("yank.path");
-        pt.setPathXmlFile(new File("/home/dave/dev/yank/sample/yank_build.xml"));
-        pt.setLibraryDirName("${lib.dir}");
-        yt.addConfiguredGeneratePath(pt);
-        yt.setFindUpdatesFile(new File("/home/dave/dev/yank/sample/updates.txt"));
-
-        yt.execute();
-    }
 }
