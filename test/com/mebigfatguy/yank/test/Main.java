@@ -20,6 +20,8 @@ package com.mebigfatguy.yank.test;
 import java.io.File;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.types.Path;
 
 import com.mebigfatguy.yank.GeneratePathTask;
 import com.mebigfatguy.yank.ServerTask;
@@ -31,6 +33,8 @@ public class Main {
         YankTask yt = new YankTask();
         Project p = new Project();
         yt.setProject(p);
+        
+        p.setProperty("lib.dir", p.getBaseDir() + "/test/lib");
 
         yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
@@ -49,5 +53,8 @@ public class Main {
         yt.setFindUpdatesFile(new File("/home/dave/dev/yank/sample/updates.txt"));
 
         yt.execute();
+        
+        Java jt = new Java();
+        jt.setClasspath((Path) p.getReference("yank.path"));
     }
 }
