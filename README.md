@@ -101,7 +101,6 @@ If values for a column are not filled in, the previous value is pulled down from
 Below is a simplistic example of a build.xml file that uses yank to manage dependencies
 <pre>
     &lt;project name="ty" default="jar" xmlns:yank="antlib:com.mebigfatguy.yank"&gt;
-    
         &lt;property file="build.properties"/&gt;
             
         &lt;property name="src.dir" value="${basedir}/src" /&gt;
