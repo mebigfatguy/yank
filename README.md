@@ -108,7 +108,7 @@ Below is a simplistic example of a build.xml file that uses yank to manage depen
         &lt;target name="clean" description="removes all generated collateral"&gt;
             &lt;delete dir="${classes.dir}" /&gt;
         &lt;/target&gt;
-        &lt;target name="yank"&gt;
+        &lt;target name="yank" description="fetch 3rdparty jars from maven central"&gt;
             &lt;mkdir dir="${lib.dir}" /&gt;
             &lt;yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true"&gt;
                 &lt;server url="http://repo1.maven.org/maven2"/&gt;
