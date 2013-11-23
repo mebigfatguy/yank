@@ -98,3 +98,45 @@ Note that sources jars are automatically handled and you need not use the altern
 More columns may be added for your governance purposes, such as license, reason, code area, etc, without issue. 
 If values for a column are not filled in, the previous value is pulled down from above.
 
+Below is a simplistic example of a build.xml file that uses yank to manage dependencies
+<pre>
+&lt;project name="ty" default="jar" xmlns:yank="antlib:com.mebigfatguy.yank"&gt;
+
+    &lt;property file="build.properties"/&gt;
+        
+    &lt;property name="src.dir" value="${basedir}/src" /&gt;
+    &lt;property name="classes.dir" value="${basedir}/classes" /&gt;
+    &lt;property name="lib.dir" value="${basedir}/lib" /&gt;
+
+    &lt;target name="clean" description="removes all generated collateral"&gt;
+        &lt;delete dir="${classes.dir}" /&gt;
+    &lt;/target&gt;
+
+    &lt;target name="yank"&gt;
+        &lt;mkdir dir="${lib.dir}" /&gt;
+        &lt;yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true"&gt;
+            &lt;server url="http://jcenter.bintray.com" /&gt;
+            &lt;generatePath classpathName="ty.classpath" libraryDirName="$${lib.dir}" /&gt;
+        &lt;/yank:yank&gt;
+    &lt;/target&gt;
+
+    &lt;target name="-init" depends="yank" description="prepares repository for a build"&gt;
+        &lt;mkdir dir="${classes.dir}" /&gt;
+    &lt;/target&gt;
+
+    &lt;target name="compile" depends="-init" description="compiles java files"&gt;
+        &lt;javac srcdir="${src.dir}" destdir="${classes.dir}"&gt;
+             &lt;classpath refid="ty.classpath" /&gt;
+        &lt;/javac&gt;
+    &lt;/target&gt;
+        
+    &lt;target name="jar" depends="compile" description="produces the ty jar file"&gt;
+        &lt;jar destfile="${basedir}/try.jar"&gt;
+            &lt;fileset dir="${classes.dir}"&gt;
+                &lt;include name="**/*.class" /&gt;
+            &lt;/fileset&gt;
+        &lt;/jar&gt;  
+    &lt;/target&gt;
+&lt;/project&gt;
+<pre>
+
