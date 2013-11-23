@@ -98,6 +98,23 @@ Note that sources jars are automatically handled and you need not use the altern
 More columns may be added for your governance purposes, such as license, reason, code area, etc, without issue. 
 If values for a column are not filled in, the previous value is pulled down from above.
 
+Here's an example yank.xls file
+
+<table>
+    <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Alternate</th></tr>
+    <tr><td>org.ow2.asm</td>asm<td>4.1</td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td></tr>    
+    <tr><td></td>org.slf4j<td>slf4j-api</td>1.7.5<td></td><td></td></tr>    
+    <tr><td></td><td></td><td></td><td></td></tr>    
+    <tr><td>ch.qos.logback</td>logback-core<td>1.0.13</td><td></td><td></td></tr>    
+    <tr><td>ch.qos.logback</td>logback-classic<td>1.0.13</td><td></td><td></td></tr>    
+    <tr><td></td><td></td><td></td><td></td></tr>    
+    <tr><td></td>org.jogamp.jogl<td>jogl-all</td>2.0.2<td></td><td></td></tr>
+    <tr><td></td><td>jogl-all</td><td></td><td>natives-linux-amd64</td></tr>
+    <tr><td></td><td>jogl-all</td><td></td><td>natives-macosx-universal</td></tr>
+    <tr><td></td><td>jogl-all</td><td></td><td>natives-windows-amd64</td></tr>                     
+</table>
+
 Below is a simplistic example of a build.xml file that uses yank to manage dependencies
 <pre>
 &lt;project name="ty" default="jar" xmlns:yank="antlib:com.mebigfatguy.yank"&gt;
