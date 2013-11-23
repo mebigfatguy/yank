@@ -102,7 +102,7 @@ Here's an example yank.xls file
 
 <table>
     <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Alternate</th></tr>
-    <tr><td>org.ow2.asm</td>asm<td>4.1</td><td></td></tr>
+    <tr><td>org.ow2.asm</td><td>asm</td><td>4.1</td><td></td></tr>
     <tr><td></td><td></td><td></td><td></td></tr>    
     <tr><td></td>org.slf4j<td>slf4j-api</td>1.7.5<td></td><td></td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
