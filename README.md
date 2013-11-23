@@ -109,7 +109,7 @@ Here's an example yank.xls file
     <tr><td>ch.qos.logback</td>logback-core<td>1.0.13</td><td></td><td></td></tr>    
     <tr><td>ch.qos.logback</td>logback-classic<td>1.0.13</td><td></td><td></td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
-    <tr><td></td>org.jogamp.jogl<td>jogl-all</td>2.0.2<td></td><td></td></tr>
+    <tr><td>org.jogamp.jogl</td><td>jogl-all</td>2.0.2<td></td><td></td></tr>
     <tr><td></td><td>jogl-all</td><td></td><td>natives-linux-amd64</td></tr>
     <tr><td></td><td>jogl-all</td><td></td><td>natives-macosx-universal</td></tr>
     <tr><td></td><td>jogl-all</td><td></td><td>natives-windows-amd64</td></tr>                     
