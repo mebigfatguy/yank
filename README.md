@@ -111,7 +111,7 @@ Below is a simplistic example of a build.xml file that uses yank to manage depen
         &lt;target name="yank"&gt;
             &lt;mkdir dir="${lib.dir}" /&gt;
             &lt;yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true"&gt;
-                &lt;server url="http://jcenter.bintray.com" /&gt;
+                &lt;server url="http://repo1.maven.org/maven2"/&gt;
                 &lt;generatePath classpathName="ty.classpath" libraryDirName="$${lib.dir}" /&gt;
             &lt;/yank:yank&gt;
         &lt;/target&gt;
