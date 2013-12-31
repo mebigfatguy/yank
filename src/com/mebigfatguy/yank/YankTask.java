@@ -299,7 +299,7 @@ public class YankTask extends Task {
                         columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
                     } else if (value.startsWith("version")) {
                         columnHeaders.put(ColumnType.VERSION_COLUMN, i);
-                    } else if (value.startsWith("classifier")) {
+                    } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
                         columnHeaders.put(ColumnType.CLASSIFIER,  i);
                     }
                     if (columnHeaders.size() == 4) {
