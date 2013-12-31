@@ -93,15 +93,15 @@ You can also add a sub element to generate a properties file containing constant
 </pre>
 
 As for the yank.xls file, the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
-ArtifactId and Version columns. You may also specify an Alternate column, which can download jars with names after the version such as natives.
-Note that sources jars are automatically handled and you need not use the alternate column for this purpose (See the source attribute above).
+ArtifactId and Version columns. You may also specify an classifier column, which can download jars with names after the version such as natives.
+Note that sources jars are automatically handled and you need not use the classifier column for this purpose (See the source attribute above).
 More columns may be added for your governance purposes, such as license, reason, code area, etc, without issue. 
 If values for a column are not filled in, the previous value is pulled down from above.
 
 Here's an example yank.xls file
 
 <table>
-    <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Alternate</th></tr>
+    <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>classifier</th></tr>
     <tr><td>org.ow2.asm</td><td>asm</td><td>4.1</td><td></td></tr>
     <tr><td></td><td></td><td></td><td></td></tr>    
     <tr><td>org.slf4j</td><td>slf4j-api</td><td>1.7.5</td><td></td></tr>    

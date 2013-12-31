@@ -50,14 +50,14 @@ public class Downloader implements Runnable {
     @Override
     public void run() {
         download(true, true);
-        if (options.isYankSources() && artifact.getAlternate().isEmpty()) {
+        if (options.isYankSources() && artifact.getClassifier().isEmpty()) {
             download(false, false);
         }
     }
 
     private void download(boolean isJar, boolean report) {
         
-        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (artifact.getAlternate().isEmpty() ? "" : ("-" + artifact.getAlternate())) + (isJar ? ".jar" : "-sources.jar"));
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (artifact.getClassifier().isEmpty() ? "" : ("-" + artifact.getClassifier())) + (isJar ? ".jar" : "-sources.jar"));
         for (String server : options.getServers()) {
             URL u = isJar ? artifact.toURL(server) : artifact.srcURL(server);
             HttpURLConnection con = null;

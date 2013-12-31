@@ -44,7 +44,7 @@ import org.apache.tools.ant.Task;
 
 public class YankTask extends Task {
 
-    private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, ALTERNATE, VERSION_COLUMN};
+    private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, CLASSIFIER, VERSION_COLUMN};
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
@@ -218,11 +218,11 @@ public class YankTask extends Task {
             HSSFSheet sheet = workBook.getSheetAt(0);
 
             Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
-            Integer alternateColumn = columnHeaders.get(ColumnType.ALTERNATE);
+            Integer classifierColumn = columnHeaders.get(ColumnType.CLASSIFIER);
             String groupId = "";
             String artifactId = "";
             String version = "";
-            String alternate = "";
+            String classifier = "";
 
             for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
                 HSSFRow row = sheet.getRow(i);
@@ -256,20 +256,20 @@ public class YankTask extends Task {
                         }
                     }
                     
-                    cell = (alternateColumn != null) ? row.getCell(alternateColumn.intValue()) : null;
+                    cell = (classifierColumn != null) ? row.getCell(classifierColumn.intValue()) : null;
                     if (cell != null) {
-                        alternate = cell.getStringCellValue().trim();
+                        classifier = cell.getStringCellValue().trim();
                     }
 
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                        getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", alternate: " + alternate + ", version: " + version + "]");
+                        getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
                     } else {
-                        artifacts.add(new Artifact(groupId, artifactId, alternate, version));
+                        artifacts.add(new Artifact(groupId, artifactId, classifier, version));
                     }
                 }
 
                 artifactId = "";
-                alternate = "";
+                classifier = "";
             }
             
             getProject().log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_VERBOSE);
@@ -299,8 +299,8 @@ public class YankTask extends Task {
                         columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
                     } else if (value.startsWith("version")) {
                         columnHeaders.put(ColumnType.VERSION_COLUMN, i);
-                    } else if (value.startsWith("alternate")) {
-                        columnHeaders.put(ColumnType.ALTERNATE,  i);
+                    } else if (value.startsWith("classifier")) {
+                        columnHeaders.put(ColumnType.CLASSIFIER,  i);
                     }
                     if (columnHeaders.size() == 4) {
                         return columnHeaders;

@@ -45,7 +45,7 @@ public class VersionsGenerator implements Runnable {
         try {
             pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(generateVersionsTask.getPropertyFileName()), "UTF-8")));
             for (Artifact artifact : artifacts) {
-                if (artifact.getAlternate().isEmpty()) {
+                if (artifact.getClassifier().isEmpty()) {
                     String artifactName = artifact.getArtifactId();
                     if ("ant".equals(artifactName)) {
                         artifactName="ant_";

@@ -26,13 +26,13 @@ public class Artifact implements Comparable<Artifact> {
     private String groupId;
     private String artifactId;
     private String version;
-    private String alternate;
+    private String classifier;
     private Status status = Status.UNKNOWN;
 
-    public Artifact(String groupId, String artifactId, String alternate, String version) {
+    public Artifact(String groupId, String artifactId, String classifier, String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
-        this.alternate = alternate;
+        this.classifier = classifier;
         this.version = version;
     }
 
@@ -48,8 +48,8 @@ public class Artifact implements Comparable<Artifact> {
         return version;
     }
     
-    public String getAlternate() {
-        return alternate;
+    public String getClassifier() {
+        return classifier;
     }
 
     public Status getStatus() {
@@ -62,7 +62,7 @@ public class Artifact implements Comparable<Artifact> {
 
     @Override
     public int hashCode() {
-        return groupId.hashCode() ^ artifactId.hashCode() ^ alternate.hashCode() ^ version.hashCode();
+        return groupId.hashCode() ^ artifactId.hashCode() ^ classifier.hashCode() ^ version.hashCode();
     }
 
     @Override
@@ -71,7 +71,7 @@ public class Artifact implements Comparable<Artifact> {
             return false;
 
         Artifact that = (Artifact) o;
-        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && alternate.equals(that.alternate) && version.equals(that.version);
+        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && classifier.equals(that.classifier) && version.equals(that.version);
     }
 
     public int compareTo(Artifact a) {
@@ -85,7 +85,7 @@ public class Artifact implements Comparable<Artifact> {
             return cmp;
         }
         
-        cmp = alternate.compareTo(a.alternate);
+        cmp = classifier.compareTo(a.classifier);
         if (cmp != 0) {
             return cmp;
         };
@@ -123,8 +123,8 @@ public class Artifact implements Comparable<Artifact> {
 
             url.append(version);
             
-            if (!alternate.isEmpty()) {
-                url.append('-').append(alternate);
+            if (!classifier.isEmpty()) {
+                url.append('-').append(classifier);
             }
                 
             url.append(extension);
@@ -154,7 +154,7 @@ public class Artifact implements Comparable<Artifact> {
     @Override
     public String toString() {
         return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId
-                + (!alternate.isEmpty() ? ", alternate=" + alternate : "") + ", version=" + version + ", status="
+                + (!classifier.isEmpty() ? ", classifier=" + classifier : "") + ", version=" + version + ", status="
                 + status + "]";
     }
 }
