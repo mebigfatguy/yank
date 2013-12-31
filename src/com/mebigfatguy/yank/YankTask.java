@@ -271,6 +271,8 @@ public class YankTask extends Task {
                 artifactId = "";
                 alternate = "";
             }
+            
+            getProject().log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_INFO);
         } finally {
             Closer.close(bis);
         }
