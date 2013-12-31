@@ -272,7 +272,7 @@ public class YankTask extends Task {
                 alternate = "";
             }
             
-            getProject().log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_INFO);
+            getProject().log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_VERBOSE);
         } finally {
             Closer.close(bis);
         }
