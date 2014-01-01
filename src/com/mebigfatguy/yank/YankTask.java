@@ -112,7 +112,7 @@ public class YankTask extends Task {
     }
 
     public void execute() throws BuildException {
-        getProject().log("Checking attributes...", Project.MSG_DEBUG);
+        getProject().log("Checking attributes...", Project.MSG_VERBOSE);
         if (!xlsFile.isFile())
             throw new BuildException("Yank (xls) file not specified or invalid: " + xlsFile);
         if (destination.isFile())
@@ -125,18 +125,18 @@ public class YankTask extends Task {
         ExecutorService pool = Executors.newFixedThreadPool(threadPoolSize);
         try {
 
-            getProject().log("Reading artifact list...", Project.MSG_DEBUG);
+            getProject().log("Reading artifact list...", Project.MSG_VERBOSE);
             final List<Artifact> artifacts = readArtifactList();
             List<Future<?>> downloadFutures = new ArrayList<Future<?>>(artifacts.size());
 
-            getProject().log("Scheduling downloaders...", Project.MSG_DEBUG);
+            getProject().log("Scheduling downloaders...", Project.MSG_VERBOSE);
             for (Artifact artifact : artifacts) {
                 downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
             }
 
             List<Future<List<Artifact>>> transitiveFutures = null;
             if (reportMissingDependencies) {
-                getProject().log("Scheduling missing dependencies check...", Project.MSG_DEBUG);
+                getProject().log("Scheduling missing dependencies check...", Project.MSG_VERBOSE);
                 transitiveFutures = new ArrayList<Future<List<Artifact>>>(artifacts.size());
                 for (Artifact artifact : artifacts) {
                     transitiveFutures.add(pool.submit(new DiscoverTransitives(getProject(), artifact, options)));
@@ -144,24 +144,24 @@ public class YankTask extends Task {
             }
 
             if (generatePathTask != null) {
-                getProject().log("Scheduling path generation task...", Project.MSG_DEBUG);
+                getProject().log("Scheduling path generation task...", Project.MSG_VERBOSE);
                 pool.submit(new PathGenerator(getProject(), artifacts, generatePathTask, options.isStripVersions()));
             }
             
             if (generateVersionsTask != null) {
-                getProject().log("Scheduling version properties generation...", Project.MSG_DEBUG);
+                getProject().log("Scheduling version properties generation...", Project.MSG_VERBOSE);
                 pool.submit(new VersionsGenerator(getProject(), artifacts, generateVersionsTask));
             }  
             
             if (findUpdatesFile != null) {
-                getProject().log("Scheduling new versions check...", Project.MSG_DEBUG);
+                getProject().log("Scheduling new versions check...", Project.MSG_VERBOSE);
                 pool.submit(new FindUpdates(getProject(), artifacts, findUpdatesFile, options.getServers()));
             }
 
             for (Future<?> f : downloadFutures) {
                 f.get();
             }
-            getProject().log("Downloads finished...", Project.MSG_DEBUG);
+            getProject().log("Downloads finished...", Project.MSG_VERBOSE);
 
             if (failOnError) {
                 for (Artifact artifact : artifacts) {
@@ -172,7 +172,7 @@ public class YankTask extends Task {
             }
 
             if (reportMissingDependencies) {
-                getProject().log("Reporting missing dependencies...", Project.MSG_DEBUG);
+                getProject().log("Reporting missing dependencies...", Project.MSG_VERBOSE);
                 Set<Artifact> requiredArtifacts = new HashSet<Artifact>();
                 for (Future<List<Artifact>> f : transitiveFutures) {
                     requiredArtifacts.addAll(f.get());
@@ -203,7 +203,7 @@ public class YankTask extends Task {
             pool.shutdown();
         }
         
-        getProject().log("Finished.", Project.MSG_DEBUG);
+        getProject().log("Finished.", Project.MSG_VERBOSE);
     }
 
     private List<Artifact> readArtifactList() throws IOException {
