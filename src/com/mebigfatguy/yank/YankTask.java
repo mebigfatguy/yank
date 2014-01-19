@@ -200,6 +200,7 @@ public class YankTask extends Task {
                 throw new BuildException("Failed yanking files", e);
             }
         } finally { 
+            getProject().log("Shutting down pool", Project.MSG_VERBOSE);
             pool.shutdown();
         }
         
