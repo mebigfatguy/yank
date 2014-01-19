@@ -134,7 +134,7 @@ public class YankTask extends Task {
             getProject().log("Scheduling downloaders...", Project.MSG_VERBOSE);
             for (Artifact artifact : artifacts) {
                 downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
-                if (options.isYankSources()) {
+                if (options.isYankSources() && (artifact.getClassifier().isEmpty())) {
                     Artifact sourceArtifact = new Artifact(artifact.getGroupId(), artifact.getArtifactId(), SOURCE_CLASSIFIER, artifact.getVersion());
                     downloadFutures.add(pool.submit(new Downloader(getProject(), sourceArtifact, destination, options)));
                 }
