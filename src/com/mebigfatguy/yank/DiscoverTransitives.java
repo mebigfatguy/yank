@@ -46,6 +46,7 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
 
     @Override
     public List<Artifact> call() throws Exception {
+        project.log("discovering missing transitive dependencies for: " + artifact, Project.MSG_VERBOSE);
         List<Artifact> transitiveArtifacts = new ArrayList<Artifact>();
         XMLReader reader = XMLReaderFactory.createXMLReader();
 
