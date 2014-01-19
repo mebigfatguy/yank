@@ -49,18 +49,9 @@ public class Downloader implements Runnable {
 
     @Override
     public void run() {
-        project.log("start downloading: " + artifact, Project.MSG_VERBOSE);
-        download(true, true);
-        if (options.isYankSources() && artifact.getClassifier().isEmpty()) {
-            download(false, false);
-        }
-    }
-
-    private void download(boolean isJar, boolean report) {
-        
-        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (artifact.getClassifier().isEmpty() ? "" : ("-" + artifact.getClassifier())) + (isJar ? ".jar" : "-sources.jar"));
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (artifact.getClassifier().isEmpty() ? "" : ("-" + artifact.getClassifier())) + ".jar");
         for (String server : options.getServers()) {
-            URL u = isJar ? artifact.toURL(server) : artifact.srcURL(server);
+            URL u = artifact.toURL(server);
             HttpURLConnection con = null;
             BufferedInputStream bis = null;
             BufferedOutputStream bos = null;
@@ -93,23 +84,19 @@ public class Downloader implements Runnable {
                     artifact.setStatus(Artifact.Status.UPTODATE);
                 }
 
-                if (report)
-                    project.log("download successful: " + artifact, (report && (artifact.getStatus() != Artifact.Status.UPTODATE)) ? Project.MSG_ERR : Project.MSG_VERBOSE);
+                project.log("download successful: " + artifact, (artifact.getStatus() != Artifact.Status.UPTODATE) ? Project.MSG_ERR : Project.MSG_VERBOSE);
                 return;
             } catch (Exception e) {
-                if (report) {
+                if (!YankTask.SOURCE_CLASSIFIER.equals(artifact.getClassifier())) {
                     project.log(e.getMessage(), e, Project.MSG_VERBOSE);
+                    project.log("download failed: " + artifact, Project.MSG_ERR);
                 }
+                artifact.setStatus(Artifact.Status.FAILED);
             } finally {
                 Closer.close(bis);
                 Closer.close(bos);
                 Closer.close(con);
             }
-
-            if (report)
-                project.log("download failed: " + artifact, Project.MSG_ERR);
-            if (isJar)
-                artifact.setStatus(Artifact.Status.FAILED);
         }
     }
 

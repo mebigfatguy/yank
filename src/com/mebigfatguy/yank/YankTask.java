@@ -44,6 +44,8 @@ import org.apache.tools.ant.Task;
 
 public class YankTask extends Task {
 
+    static final String SOURCE_CLASSIFIER = "sources";
+
     private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, CLASSIFIER, VERSION_COLUMN};
     private File xlsFile;
     private File destination;
@@ -132,6 +134,10 @@ public class YankTask extends Task {
             getProject().log("Scheduling downloaders...", Project.MSG_VERBOSE);
             for (Artifact artifact : artifacts) {
                 downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
+                if (options.isYankSources()) {
+                    Artifact sourceArtifact = new Artifact(artifact.getGroupId(), artifact.getArtifactId(), SOURCE_CLASSIFIER, artifact.getVersion());
+                    downloadFutures.add(pool.submit(new Downloader(getProject(), sourceArtifact, destination, options)));
+                }
             }
 
             List<Future<List<Artifact>>> transitiveFutures = null;
@@ -199,8 +205,7 @@ public class YankTask extends Task {
                 getProject().log(e.getMessage(), Project.MSG_ERR);
                 throw new BuildException("Failed yanking files", e);
             }
-        } finally { 
-            getProject().log("Shutting down pool", Project.MSG_VERBOSE);
+        } finally {
             pool.shutdown();
         }
         
