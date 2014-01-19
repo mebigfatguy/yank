@@ -49,6 +49,7 @@ public class Downloader implements Runnable {
 
     @Override
     public void run() {
+        project.log("start downloading: " + artifact, Project.MSG_VERBOSE);
         download(true, true);
         if (options.isYankSources() && artifact.getClassifier().isEmpty()) {
             download(false, false);
