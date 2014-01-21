@@ -100,8 +100,8 @@ public class Downloader implements Runnable {
         }
     }
 
-    private boolean isUpToDate(URL u, File destination) throws IOException {
-        if (!destination.isFile()) {
+    private boolean isUpToDate(URL u, File dest) throws IOException {
+        if (!dest.isFile()) {
             return false;
         }
 
@@ -116,7 +116,7 @@ public class Downloader implements Runnable {
             String serverLen = con.getHeaderField("Content-Length");
             if (serverLen != null) {
                 long contentLength = Long.parseLong(serverLen);
-                if (destination.length() != contentLength) {
+                if (dest.length() != contentLength) {
                     return false;
                 }
             }
