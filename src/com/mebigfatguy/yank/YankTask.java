@@ -268,7 +268,7 @@ public class YankTask extends Task {
                     }
 
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                        getProject().log("Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
+                        getProject().log("Row " + i + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
                     } else {
                         artifacts.add(new Artifact(groupId, artifactId, classifier, version));
                     }
