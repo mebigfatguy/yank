@@ -122,7 +122,8 @@ public class YankTask extends Task {
         if (options.getServers().isEmpty())
             throw new BuildException("No specified nested <server> items found");
 
-        destination.mkdirs();
+        if (!destination.mkdirs() && !destination.exists())
+            throw new BuildException("Failed creating destination directory: " + destination);
 
         ExecutorService pool = Executors.newFixedThreadPool(threadPoolSize);
         try {
