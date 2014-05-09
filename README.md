@@ -62,6 +62,12 @@ There are a few optional attributes to the yank task that you can add as follows
       <td>save the jar files without version numbers</td>
       <td>(true/false)</td>
       <td>false</td>
+   </tr>
+   <tr>
+      <td>separateClassifierTypes</td>
+      <td>saves sources, javadocs, and other 'classifier' type artifacts in sub directories</td>
+      <td>{true/false}</tr>
+      <td>false</td>
    </tr>  
    <tr>
       <td>threadPoolSize</td>
