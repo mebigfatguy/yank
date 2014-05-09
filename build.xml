@@ -145,7 +145,7 @@
 	
 	<target name="test" depends="jar" description="test yank">
 		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${basedir}/yank-${yank.version}.jar"/>
-		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" source="true">
+		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" source="true" separateClassifierTypes="true">
 			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" libraryDirName="$${lib.dir}" />
 			<generateVersions propertyFileName="${sample.dir}/yank.properties"/>
             <server url="http://repo1.maven.org/maven2"/>

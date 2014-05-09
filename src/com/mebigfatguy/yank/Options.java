@@ -26,6 +26,7 @@ public class Options {
     private boolean yankSources;
     private String proxyServer="";
     private List<String> servers = new ArrayList<String>();
+    private boolean separateClassifierTypes = false;
 
     public boolean isStripVersions() {
         return stripVersions;
@@ -58,4 +59,12 @@ public class Options {
     public void addServer(String server) {
         servers.add(server);
     }
+
+	public boolean isSeparateClassifierTypes() {
+		return separateClassifierTypes;
+	}
+
+	public void setSeparateClassifierTypes(boolean separateClassifierTypes) {
+		this.separateClassifierTypes = separateClassifierTypes;
+	}
 }

@@ -43,6 +43,10 @@ public class Downloader implements Runnable {
         project = p;
         this.artifact = artifact;
         destination = dest;
+        if (options.isSeparateClassifierTypes() && !artifact.getClassifier().isEmpty()) {
+        	destination = new File(destination, artifact.getClassifier());
+        	destination.mkdirs();
+        }
         this.options = options;
 
     }

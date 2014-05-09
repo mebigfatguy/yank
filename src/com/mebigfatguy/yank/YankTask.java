@@ -84,6 +84,10 @@ public class YankTask extends Task {
     public void setSource(boolean sources) {
         options.setYankSources(sources);
     }
+    
+    public void setSeparateClassifierTypes(boolean separate) {
+    	options.setSeparateClassifierTypes(separate);
+    }
 
     public void setThreadPoolSize(int size) {
         threadPoolSize = size;
@@ -112,7 +116,7 @@ public class YankTask extends Task {
             options.setProxyServer(proxy);
         }
     }
-
+    
     public void execute() throws BuildException {
         getProject().log("Checking attributes...", Project.MSG_VERBOSE);
         if (!xlsFile.isFile())
@@ -269,7 +273,7 @@ public class YankTask extends Task {
                     }
 
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                        getProject().log("Row " + i + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
+                        getProject().log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
                     } else {
                         artifacts.add(new Artifact(groupId, artifactId, classifier, version));
                     }
