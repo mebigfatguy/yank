@@ -4,9 +4,10 @@
 	
     <property name="src.dir" value="${basedir}/src" />
     <property name="test.dir" value="${basedir}/test" />
-    <property name="classes.dir" value="${basedir}/classes" />
+	<property name="target.dir" value="${basedir}/target" />
+    <property name="classes.dir" value="${target.dir}/classes" />
     <property name="lib.dir" value="${basedir}/lib" />
-    <property name="javadoc.dir" value="${basedir}/javadoc" />
+    <property name="javadoc.dir" value="${target.dir}/javadoc" />
     <property name="sample.dir" value="${basedir}/sample" />
 	
 	<property name="javac.source" value="1.5" />
@@ -14,7 +15,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="0.8.0" />
+	<property name="yank.version" value="1.0.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
@@ -57,20 +58,16 @@
     </target>
 	
     <target name="clean" description="removes all generated collateral">
-        <delete dir="${classes.dir}" />
-        <delete dir="${javadoc.dir}" />
+        <delete dir="${target.dir}" />
     	<delete includeEmptyDirs="true">
     		<fileset dir="${sample.dir}" includes="*.jar"/>
     	</delete>
     	<delete file="${sample.dir}/yank_build.xml"/>
-        <delete file="${basedir}/yank-${yank.version}.jar" />
-        <delete file="${basedir}/yank-src-${yank.version}.zip" />
     </target>
 
 	<target name="-init" description="prepares repository for a build">
         <mkdir dir="${lib.dir}" />
-        <mkdir dir="${classes.dir}" />
-        <mkdir dir="${javadoc.dir}" />
+        <mkdir dir="${target.dir}" />
 	</target>
 	
     <path id="yank.classpath">
@@ -98,7 +95,7 @@
 	
     <target name="jar" depends="compile" description="produces the yank jar file">
     	<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpathref="yank.classpath"/>
-        <jarjar destfile="${basedir}/yank-${yank.version}.jar">
+        <jarjar destfile="${target.dir}/yank-${yank.version}.jar">
             <fileset dir="${classes.dir}">
                 <include name="**/*.class" />
                 <include name="**/*.xml" />
@@ -121,7 +118,7 @@
     </target>
 	
     <target name="srczip" description="builds the source distribution zip file">
-        <zip destfile="${basedir}/yank-${yank.version}-sources.jar" basedir="${src.dir}">
+        <zip destfile="${target.dir}/yank-${yank.version}-sources.jar" basedir="${src.dir}">
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
                 <include name="**/*.xml" />
@@ -139,7 +136,7 @@
     <target name="javadoc" depends="-init" description="build the javadoc for the project">
         <javadoc packagenames="com.mebigfatguy.*" sourcepath="${src.dir}" classpathref="yank.classpath" destdir="${javadoc.dir}" windowtitle="yank api">
             <doctitle><![CDATA[<h1>yank javadoc</h1>]]></doctitle>
-            <bottom><![CDATA[<i>Copyright &#169; 2013-2013 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+            <bottom><![CDATA[<i>Copyright &#169; 2013-2014 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
         </javadoc>
     </target>
 	
@@ -157,9 +154,9 @@
 
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
         <mkdir dir="${sonatype.dir}"/>
-        <copy todir="${sonatype.dir}" file="${basedir}/yank-${yank.version}.jar"/>
-        <copy tofile="${sonatype.dir}/yank-${yank.version}-sources.jar" file="${basedir}/yank-${yank.version}-sources.jar"/>
-        <jar destfile="${sonatype.dir}/yank-${yank.version}-javadoc.jar" basedir="${basedir}" includes="javadoc/**"/>
+        <copy todir="${sonatype.dir}" file="${target.dir}/yank-${yank.version}.jar"/>
+        <copy tofile="${sonatype.dir}/yank-${yank.version}-sources.jar" file="${target.dir}/yank-${yank.version}-sources.jar"/>
+        <jar destfile="${sonatype.dir}/yank-${yank.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
         <copy tofile="${sonatype.dir}/yank-${yank.version}.pom" file="${basedir}/pom.xml"/>
         
         <exec executable="gpg">
