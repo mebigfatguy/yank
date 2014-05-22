@@ -66,7 +66,7 @@ There are a few optional attributes to the yank task that you can add as follows
    <tr>
       <td>separateClassifierTypes</td>
       <td>saves sources, javadocs, and other 'classifier' type artifacts in sub directories</td>
-      <td>{true/false}</tr>
+      <td>{true/false}</td>
       <td>false</td>
    </tr>  
    <tr>
