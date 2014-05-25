@@ -1,7 +1,7 @@
 /*
  * yank - a maven artifact fetcher ant task
- * Copyright 2013 MeBigFatGuy.com
- * Copyright 2013 Dave Brosius
+ * Copyright 2013-2014MeBigFatGuy.com
+ * Copyright 2013-2014Dave Brosius
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
