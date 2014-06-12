@@ -21,7 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -193,11 +193,11 @@ public class YankTask extends Task {
             }
 
             if (generateLicenses) {
-            	Set<URL> licenses = new HashSet<URL>();
+            	Set<URI> licenses = new HashSet<URI>();
             	Set<PomDetails> poms = new HashSet<PomDetails>();
             	
             	for (Future<PomDetails> f : pomFutures) {
-            		URL lic = f.get().getLicense();
+            		URI lic = f.get().getLicense();
             		if (lic != null) {
             			licenses.add(lic);
             			poms.add(f.get());

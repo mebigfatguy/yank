@@ -26,6 +26,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -45,14 +47,14 @@ public class LicenseGenerator implements Callable<Void> {
 	private Options options;
 	private File destination;
 	private Set<PomDetails> pomDetails;
-	private Map<URL, byte[]> pomLicenses;
+	private Map<URI, byte[]> pomLicenses;
 	
-	public LicenseGenerator(Project proj, Options opts, File dest, Set<PomDetails> poms, Set<URL> licenses) {
+	public LicenseGenerator(Project proj, Options opts, File dest, Set<PomDetails> poms, Set<URI> licenses) throws URISyntaxException {
 		project = proj;
 		options = opts;
 		pomDetails = poms;
-		pomLicenses = new HashMap<URL, byte[]>();
-		for (URL u : licenses) {
+		pomLicenses = new HashMap<URI, byte[]>();
+		for (URI u : licenses) {
 			pomLicenses.put(u,  null);
 		}
 		destination = new File(dest, "licenses");
@@ -69,13 +71,13 @@ public class LicenseGenerator implements Callable<Void> {
 	}
 	
 	private void pullLicenses() {
-		for (URL u : pomLicenses.keySet()) {
+		for (URI u : pomLicenses.keySet()) {
 			HttpURLConnection con = null;
             BufferedInputStream bis = null;
             ByteArrayOutputStream baos = null;
 
             try {
-                con = URLSupport.openURL(u, options.getProxyServer());
+                con = URLSupport.openURL(u.toURL(), options.getProxyServer());
                 con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.connect();
 
@@ -98,7 +100,7 @@ public class LicenseGenerator implements Callable<Void> {
 	
 	private void writeLicenses() {
 		for (PomDetails pom : pomDetails) {
-			URL u = pom.getLicense();
+			URI u = pom.getLicense();
 			if (u != null) {
 				byte[] data = pomLicenses.get(u);
 				if (data != null) {

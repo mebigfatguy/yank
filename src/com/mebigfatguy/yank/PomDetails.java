@@ -17,18 +17,19 @@
  */
 package com.mebigfatguy.yank;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
 public class PomDetails {
 	private Artifact jarArtifact;
 	private List<Artifact> dependentArtifacts;
-	private URL license;
+	private URI license;
 	
-	public PomDetails(Artifact artifact, List<Artifact> dependencies, URL licenseURL) {
+	public PomDetails(Artifact artifact, List<Artifact> dependencies, URI licenseURI) {
 		jarArtifact = artifact;
 		dependentArtifacts = dependencies;
-		license = licenseURL;
+		license = licenseURI;
 	}
 
 	public Artifact getJarArtifact() {
@@ -39,7 +40,7 @@ public class PomDetails {
 		return dependentArtifacts;
 	}
 
-	public URL getLicense() {
+	public URI getLicense() {
 		return license;
 	}
 	
@@ -59,6 +60,6 @@ public class PomDetails {
 	
 	@Override
 	public String toString() {
-		return "PomDetails[" + jarArtifact.toString() + ", Dependencies: " + dependentArtifacts.toString() + ", licenseUrl: " + license + "]";
+		return "PomDetails[" + jarArtifact.toString() + ", Dependencies: " + dependentArtifacts.toString() + ", licenseUri: " + license + "]";
 	}
 }

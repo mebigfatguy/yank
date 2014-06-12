@@ -17,8 +17,8 @@
  */
 package com.mebigfatguy.yank;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.xml.sax.Attributes;
@@ -53,7 +53,7 @@ public class PomHandler extends DefaultHandler {
     private String artifact = null;
     private String version = null;
     private String optional = null;
-    private URL licenseURL = null;
+    private URI licenseURI = null;
     private boolean sawDependencies = false;
     private boolean sawLicense = false;
 
@@ -61,8 +61,8 @@ public class PomHandler extends DefaultHandler {
         transitiveArtifacts = transitives;
     }
     
-    public URL getLicenseURL() {
-    	return licenseURL;
+    public URI getLicenseURI() {
+    	return licenseURI;
     }
 
     @Override
@@ -154,11 +154,11 @@ public class PomHandler extends DefaultHandler {
         	break;
         	
         case URL:
-        	if (licenseURL == null) {
+        	if (licenseURI == null) {
         		try {
-        			licenseURL = new URL(value.toString());
-        		} catch (MalformedURLException e) {
-        			licenseURL = null;
+        			licenseURI = new URI(value.toString());
+        		} catch (URISyntaxException e) {
+        			licenseURI = null;
         			// just swallow
         		}
         	}
