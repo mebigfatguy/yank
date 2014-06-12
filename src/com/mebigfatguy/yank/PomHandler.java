@@ -28,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class PomHandler extends DefaultHandler {
 
     private enum State {
-        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), URL("url"), GROUP("groupId"), ARTIFACT("artifactId"), VERSION("version"), OPTIONAL("optional");
+        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), NAME("name"), URL("url"), GROUP("groupId"), ARTIFACT("artifactId"), VERSION("version"), OPTIONAL("optional");
 
         public String elementName;
         State(String name) {
@@ -53,12 +53,17 @@ public class PomHandler extends DefaultHandler {
     private String artifact = null;
     private String version = null;
     private String optional = null;
+    private String licenseName = null;
     private URI licenseURI = null;
     private boolean sawDependencies = false;
     private boolean sawLicense = false;
 
     public PomHandler(List<Artifact> transitives) {
         transitiveArtifacts = transitives;
+    }
+    
+    public String getLicenseName() {
+    	return licenseName;
     }
     
     public URI getLicenseURI() {
@@ -101,10 +106,13 @@ public class PomHandler extends DefaultHandler {
         	break;
         	
         case LICENSE:
-        	if (localName.equals(State.URL.elementName))
+        	if (localName.equals(State.NAME.elementName))
+        		state = State.NAME;
+        	else if (localName.equals(State.URL.elementName))
         		state = State.URL;
             break;
             
+        case NAME:
         case URL:
         	value.setLength(0);
         	break;
@@ -153,6 +161,14 @@ public class PomHandler extends DefaultHandler {
         		state = State.LICENSES;
         	break;
         	
+        case NAME:
+        	if (licenseName == null) {
+        		licenseName = value.toString();
+        	}
+        	
+        	state = State.LICENSE;
+        	break;
+        	
         case URL:
         	if (licenseURI == null) {
         		try {
@@ -197,6 +213,7 @@ public class PomHandler extends DefaultHandler {
         case ARTIFACT:
         case VERSION:
         case OPTIONAL:
+        case NAME:
         case URL:
             value.append(ch, start, length);
             break;
