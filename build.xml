@@ -3,6 +3,7 @@
 	<property file="build.properties" />
 	
     <property name="src.dir" value="${basedir}/src" />
+	<property name="resources.dir" value="${basedir}/resources" />
     <property name="test.dir" value="${basedir}/test" />
 	<property name="target.dir" value="${basedir}/target" />
     <property name="classes.dir" value="${target.dir}/classes" />
@@ -90,6 +91,9 @@
 		    <fileset dir="${src.dir}">
 			    <include name="**/*.xml"/>
 		    </fileset>
+			<fileset dir="${resources.dir}">
+				<include name="knownlicenses/*"/>
+			</fileset>
 		</copy>
 	</target>
 	
@@ -99,6 +103,7 @@
             <fileset dir="${classes.dir}">
                 <include name="**/*.class" />
                 <include name="**/*.xml" />
+            	<include name="knownlicenses/*" />
             	<exclude name="**/test/*.*" />
             </fileset>
         	<zipfileset src="${lib.dir}/poi-${poi.version}.jar"/>
