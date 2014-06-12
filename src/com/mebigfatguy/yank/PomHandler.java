@@ -205,6 +205,8 @@ public class PomHandler extends DefaultHandler {
         case DEPENDENCY:
         case NONE:
         case PARENT:
+        case LICENSES:
+        case LICENSE:
             break;
         }
     }
