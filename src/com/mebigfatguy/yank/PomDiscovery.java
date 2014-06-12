@@ -29,7 +29,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class DiscoverTransitives implements Callable<List<Artifact>> {
+public class PomDiscovery implements Callable<PomDetails> {
 
     private static final int CONNECTION_TIMEOUT = 10000;
 
@@ -38,17 +38,18 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
     private Options options;
 
 
-    public DiscoverTransitives(Project p, Artifact artifact, Options options) {
+    public PomDiscovery(Project p, Artifact artifact, Options options) {
         project = p;
         this.artifact = artifact;
         this.options = options;
     }
 
     @Override
-    public List<Artifact> call() throws Exception {
-        project.log("discovering missing transitive dependencies for: " + artifact, Project.MSG_VERBOSE);
+    public PomDetails call() throws Exception {
+        project.log("building pom details for: " + artifact, Project.MSG_VERBOSE);
         List<Artifact> transitiveArtifacts = new ArrayList<Artifact>();
         XMLReader reader = XMLReaderFactory.createXMLReader();
+        PomHandler handler = new PomHandler(transitiveArtifacts);
 
         for (String server : options.getServers()) {
             URL u = artifact.pomURL(server);
@@ -62,7 +63,7 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
 
                 bis = new BufferedInputStream(con.getInputStream());
 
-                reader.setContentHandler(new PomHandler(transitiveArtifacts));
+                reader.setContentHandler(handler);
 
                 try {
                     reader.parse(new InputSource(bis));
@@ -78,6 +79,6 @@ public class DiscoverTransitives implements Callable<List<Artifact>> {
             }
         }
 
-        return transitiveArtifacts;
+        return new PomDetails(artifact, transitiveArtifacts, handler.getLicenseURL());
     }
 }

@@ -38,8 +38,11 @@ public class Main {
 
         yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
-        yt.setThreadPoolSize(8);
+        yt.setThreadPoolSize(30);
         yt.setStripVersions(true);
+        yt.setSeparateClassifierTypes(true);
+        yt.setReportMissingDependencies(true);
+        yt.setGenerateLicenses(true);
 
         ServerTask st = new ServerTask();
         st.setUrl("http://repo1.maven.org/maven2");

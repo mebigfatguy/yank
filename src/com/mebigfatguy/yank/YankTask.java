@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ public class YankTask extends Task {
     private File findUpdatesFile;
     private GeneratePathTask generatePathTask;
     private GenerateVersionsTask generateVersionsTask;
+    private boolean generateLicenses;
     private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
     private Options options = new Options();
@@ -87,6 +89,10 @@ public class YankTask extends Task {
     
     public void setSeparateClassifierTypes(boolean separate) {
     	options.setSeparateClassifierTypes(separate);
+    }
+    
+    public void setGenerateLicenses(boolean generate) {
+    	generateLicenses = generate;
     }
 
     public void setThreadPoolSize(int size) {
@@ -145,12 +151,16 @@ public class YankTask extends Task {
                 }
             }
 
-            List<Future<List<Artifact>>> transitiveFutures = null;
-            if (reportMissingDependencies) {
-                getProject().log("Scheduling missing dependencies check...", Project.MSG_VERBOSE);
-                transitiveFutures = new ArrayList<Future<List<Artifact>>>(artifacts.size());
+            List<Future<PomDetails>> pomFutures = null;
+            if (reportMissingDependencies || generateLicenses) {
+            	if (reportMissingDependencies)
+            		getProject().log("Scheduling missing dependencies check...", Project.MSG_VERBOSE);
+            	if (generateLicenses)
+            		getProject().log("Scheduling license generation...", Project.MSG_VERBOSE);
+                pomFutures = new ArrayList<Future<PomDetails>>(artifacts.size());
                 for (Artifact artifact : artifacts) {
-                    transitiveFutures.add(pool.submit(new DiscoverTransitives(getProject(), artifact, options)));
+                	if (artifact.getClassifier().length() == 0)
+                		pomFutures.add(pool.submit(new PomDiscovery(getProject(), artifact, options)));
                 }
             }
 
@@ -182,11 +192,26 @@ public class YankTask extends Task {
                 }
             }
 
+            if (generateLicenses) {
+            	Set<URL> licenses = new HashSet<URL>();
+            	Set<PomDetails> poms = new HashSet<PomDetails>();
+            	
+            	for (Future<PomDetails> f : pomFutures) {
+            		URL lic = f.get().getLicense();
+            		if (lic != null) {
+            			licenses.add(lic);
+            			poms.add(f.get());
+            		}
+            	}
+            	getProject().log("Scheduling license creation...", Project.MSG_VERBOSE);
+                pool.submit(new LicenseGenerator(getProject(), options, destination, poms, licenses));	
+            }
+            
             if (reportMissingDependencies) {
                 getProject().log("Reporting missing dependencies...", Project.MSG_VERBOSE);
                 Set<Artifact> requiredArtifacts = new HashSet<Artifact>();
-                for (Future<List<Artifact>> f : transitiveFutures) {
-                    requiredArtifacts.addAll(f.get());
+                for (Future<PomDetails> f : pomFutures) {
+                    requiredArtifacts.addAll(f.get().getDependentArtifacts());
                 }
 
                 Iterator<Artifact> it = requiredArtifacts.iterator();

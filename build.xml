@@ -15,7 +15,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="1.0.0" />
+	<property name="yank.version" value="1.1.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
@@ -142,7 +142,8 @@
 	
 	<target name="test" depends="jar" description="test yank">
 		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${basedir}/yank-${yank.version}.jar"/>
-		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" source="true" separateClassifierTypes="true">
+		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
+			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
 			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" libraryDirName="$${lib.dir}" />
 			<generateVersions propertyFileName="${sample.dir}/yank.properties"/>
             <server url="http://repo1.maven.org/maven2"/>

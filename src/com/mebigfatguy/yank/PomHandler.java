@@ -17,6 +17,8 @@
  */
 package com.mebigfatguy.yank;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.xml.sax.Attributes;
@@ -26,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class PomHandler extends DefaultHandler {
 
     private enum State {
-        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), GROUP("groupId"), ARTIFACT("artifactId"), VERSION("version"), OPTIONAL("optional");
+        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), URL("url"), GROUP("groupId"), ARTIFACT("artifactId"), VERSION("version"), OPTIONAL("optional");
 
         public String elementName;
         State(String name) {
@@ -51,9 +53,16 @@ public class PomHandler extends DefaultHandler {
     private String artifact = null;
     private String version = null;
     private String optional = null;
+    private URL licenseURL = null;
+    private boolean sawDependencies = false;
+    private boolean sawLicense = false;
 
     public PomHandler(List<Artifact> transitives) {
         transitiveArtifacts = transitives;
+    }
+    
+    public URL getLicenseURL() {
+    	return licenseURL;
     }
 
     @Override
@@ -64,6 +73,8 @@ public class PomHandler extends DefaultHandler {
                 state = State.DEPENDENCIES;
             } else if (localName.equals(State.PARENT.elementName)) {
                 state = State.PARENT;
+            } else if (localName.equals(State.LICENSES.elementName)) {
+            	state = State.LICENSES;
             }
             break;
 
@@ -83,6 +94,21 @@ public class PomHandler extends DefaultHandler {
             }
             break;
             
+        case LICENSES:
+        	if (localName.equals(State.LICENSE.elementName)) {
+                state = State.LICENSE;
+            }
+        	break;
+        	
+        case LICENSE:
+        	if (localName.equals(State.URL.elementName))
+        		state = State.URL;
+            break;
+            
+        case URL:
+        	value.setLength(0);
+        	break;
+        	
         case ARTIFACT:
         case GROUP:
         case OPTIONAL:
@@ -96,9 +122,10 @@ public class PomHandler extends DefaultHandler {
         switch (state) {
 
         case DEPENDENCIES:
-            if (localName.equals(State.DEPENDENCIES.elementName)) {
+            if (localName.equals(State.DEPENDENCIES.elementName) && sawLicense) {
                 throw new PomParseCompletedException();
             }
+            sawDependencies = true;
             break;
 
         case DEPENDENCY:
@@ -112,6 +139,31 @@ public class PomHandler extends DefaultHandler {
                 }
             }
             break;
+            
+        case LICENSES:
+        	if (localName.equals(State.LICENSES.elementName) && sawDependencies) {
+        		throw new PomParseCompletedException();
+        	}
+        	state = State.NONE;
+        	sawLicense = true;
+        	break;
+        	
+        case LICENSE:
+        	if (localName.equals(State.LICENSE.elementName))
+        		state = State.LICENSES;
+        	break;
+        	
+        case URL:
+        	if (licenseURL == null) {
+        		try {
+        			licenseURL = new URL(value.toString());
+        		} catch (MalformedURLException e) {
+        			licenseURL = null;
+        			// just swallow
+        		}
+        	}
+        	state = State.LICENSE;
+        	break;
 
         case GROUP:
             group = value.toString().trim();
@@ -145,6 +197,7 @@ public class PomHandler extends DefaultHandler {
         case ARTIFACT:
         case VERSION:
         case OPTIONAL:
+        case URL:
             value.append(ch, start, length);
             break;
             
