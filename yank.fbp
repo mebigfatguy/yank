@@ -1,5 +1,5 @@
 <Project projectName="yank">
-  <Jar>./classes</Jar>
+  <Jar>./target/classes</Jar>
   <AuxClasspathEntry>./lib/ant-1.9.4.jar</AuxClasspathEntry>
   <AuxClasspathEntry>./lib/jarjar-1.3.jar</AuxClasspathEntry>
   <AuxClasspathEntry>./lib/poi-3.9.jar</AuxClasspathEntry>
