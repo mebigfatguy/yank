@@ -60,6 +60,6 @@ public class PomDetails {
 	
 	@Override
 	public String toString() {
-		return "PomDetails[" + jarArtifact.toString() + ", Dependencies: " + dependentArtifacts.toString() + ", licenseUri: " + license + "]";
+		return "PomDetails[" + jarArtifact + ", Dependencies: " + dependentArtifacts + ", licenseUri: " + license + "]";
 	}
 }
