@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -193,15 +194,13 @@ public class YankTask extends Task {
             }
 
             if (generateLicenses) {
-            	Set<URI> licenses = new HashSet<URI>();
+            	Map<String, URI> licenses = new HashMap<String, URI>();
             	Set<PomDetails> poms = new HashSet<PomDetails>();
             	
             	for (Future<PomDetails> f : pomFutures) {
-            		URI lic = f.get().getLicense();
-            		if (lic != null) {
-            			licenses.add(lic);
-            			poms.add(f.get());
-            		}
+            		Pair<String, URI> license = f.get().getLicense();
+            		licenses.put(license.getKey(), license.getValue());
+            		poms.add(f.get());
             	}
             	getProject().log("Scheduling license creation...", Project.MSG_VERBOSE);
                 pool.submit(new LicenseGenerator(getProject(), options, destination, poms, licenses));	

@@ -17,48 +17,54 @@
  */
 package com.mebigfatguy.yank;
 
-import java.net.URI;
-import java.util.List;
-
-public class PomDetails {
-	private Artifact jarArtifact;
-	private List<Artifact> dependentArtifacts;
-	private Pair<String, URI> license;
+public class Pair<K, V> {
 	
-	public PomDetails(Artifact artifact, List<Artifact> dependencies, Pair<String, URI> licenseInfo) {
-		jarArtifact = artifact;
-		dependentArtifacts = dependencies;
-		license = licenseInfo;
+	private K key;
+	private V value;
+	
+	public Pair(K k, V v) {
+		key = k;
+		value = v;
 	}
 
-	public Artifact getJarArtifact() {
-		return jarArtifact;
+	public K getKey() {
+		return key;
 	}
 
-	public List<Artifact> getDependentArtifacts() {
-		return dependentArtifacts;
-	}
-
-	public Pair<String, URI> getLicense() {
-		return license;
+	public V getValue() {
+		return value;
 	}
 	
 	@Override
 	public int hashCode() {
-		return jarArtifact.hashCode();
+		return ((key != null) ? key.hashCode() : 0) ^ ((value != null) ? value.hashCode() : 0);
 	}
 	
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof PomDetails)) {
+		if (!(o instanceof Pair)) {
 			return false;
 		}
 		
-		return jarArtifact.equals(((PomDetails) o).jarArtifact);
+		Pair<K, V> that = (Pair<K, V>) o;
+		
+		if (key == null) {
+			if (that.key != null) {
+				return false;
+			}
+		}
+		if (value == null) {
+			if (that.value != null) {
+				return false;
+			}
+		}
+		
+		return key.equals(that.key) && value.equals(that.value);
 	}
 	
 	@Override
 	public String toString() {
-		return "PomDetails[" + jarArtifact + ", Dependencies: " + dependentArtifacts + ", license: " + license + "]";
+		return "Pair[" + key + ", " + value + "]";
 	}
+
 }

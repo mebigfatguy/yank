@@ -48,12 +48,12 @@ public class LicenseGenerator implements Callable<Void> {
 	private Set<PomDetails> pomDetails;
 	private Map<URI, byte[]> pomLicenses;
 	
-	public LicenseGenerator(Project proj, Options opts, File dest, Set<PomDetails> poms, Set<URI> licenses) throws URISyntaxException {
+	public LicenseGenerator(Project proj, Options opts, File dest, Set<PomDetails> poms, Map<String, URI> licenses) throws URISyntaxException {
 		project = proj;
 		options = opts;
 		pomDetails = poms;
 		pomLicenses = new HashMap<URI, byte[]>();
-		for (URI u : licenses) {
+		for (URI u : licenses.values()) {
 			pomLicenses.put(u,  null);
 		}
 		destination = new File(dest, "licenses");
@@ -99,7 +99,8 @@ public class LicenseGenerator implements Callable<Void> {
 	
 	private void writeLicenses() {
 		for (PomDetails pom : pomDetails) {
-			URI u = pom.getLicense();
+			Pair<String, URI> license = pom.getLicense();
+			URI u = license.getValue();
 			if (u != null) {
 				byte[] data = pomLicenses.get(u);
 				if (data != null) {

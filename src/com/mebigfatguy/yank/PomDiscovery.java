@@ -79,6 +79,6 @@ public class PomDiscovery implements Callable<PomDetails> {
             }
         }
 
-        return new PomDetails(artifact, transitiveArtifacts, handler.getLicenseURI());
+        return new PomDetails(artifact, transitiveArtifacts, handler.getLicenseInfo());
     }
 }

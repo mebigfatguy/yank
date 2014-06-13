@@ -62,12 +62,8 @@ public class PomHandler extends DefaultHandler {
         transitiveArtifacts = transitives;
     }
     
-    public String getLicenseName() {
-    	return licenseName;
-    }
-    
-    public URI getLicenseURI() {
-    	return licenseURI;
+    public Pair<String, URI> getLicenseInfo() {
+    	return new Pair<String, URI>(licenseName, licenseURI);
     }
 
     @Override
