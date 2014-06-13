@@ -46,6 +46,7 @@ public class Pair<K, V> {
 			return false;
 		}
 		
+		@SuppressWarnings("unchecked")
 		Pair<K, V> that = (Pair<K, V>) o;
 		
 		if (key == null) {
