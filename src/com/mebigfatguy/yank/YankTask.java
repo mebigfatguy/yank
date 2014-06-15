@@ -203,7 +203,7 @@ public class YankTask extends Task {
             		poms.add(f.get());
             	}
             	getProject().log("Scheduling license creation...", Project.MSG_VERBOSE);
-                pool.submit(new LicenseGenerator(getProject(), options, destination, poms, licenses));	
+                pool.submit(new LicenseGenerator(getProject(), destination, poms, licenses));	
             }
             
             if (reportMissingDependencies) {

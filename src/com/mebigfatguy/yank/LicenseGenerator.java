@@ -25,12 +25,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -39,22 +41,20 @@ import org.apache.tools.ant.Project;
 
 public class LicenseGenerator implements Callable<Void> {
 
-    private static final int CONNECTION_TIMEOUT = 5000;
     private static final int BUFFER_SIZE = 2048;
     
 	private Project project;
-	private Options options;
 	private File destination;
 	private Set<PomDetails> pomDetails;
-	private Map<URI, byte[]> pomLicenses;
+	private Map<Pair<String, URI>, byte[]> pomLicenses;
 	
-	public LicenseGenerator(Project proj, Options opts, File dest, Set<PomDetails> poms, Map<String, URI> licenses) throws URISyntaxException {
+	public LicenseGenerator(Project proj, File dest, Set<PomDetails> poms, Map<String, URI> licenses) throws URISyntaxException {
 		project = proj;
-		options = opts;
 		pomDetails = poms;
-		pomLicenses = new HashMap<URI, byte[]>();
-		for (URI u : licenses.values()) {
-			pomLicenses.put(u,  null);
+		pomLicenses = new HashMap<Pair<String, URI>, byte[]>();
+		for (Map.Entry<String, URI> entry : licenses.entrySet()) {
+			if ((entry.getKey() != null) || (entry.getValue() != null))
+				pomLicenses.put(new Pair<String, URI>(entry.getKey(), entry.getValue()),  null);
 		}
 		destination = new File(dest, "licenses");
 		destination.mkdirs();
@@ -70,29 +70,27 @@ public class LicenseGenerator implements Callable<Void> {
 	}
 	
 	private void pullLicenses() {
-		for (URI u : pomLicenses.keySet()) {
-			HttpURLConnection con = null;
+		for (Pair<String, URI> entry : pomLicenses.keySet()) {
             BufferedInputStream bis = null;
             ByteArrayOutputStream baos = null;
 
             try {
-                con = URLSupport.openURL(u.toURL(), options.getProxyServer());
-                con.setConnectTimeout(CONNECTION_TIMEOUT);
-                con.connect();
-
-                bis = new BufferedInputStream(con.getInputStream());
-                baos = new ByteArrayOutputStream();
-                
-                if (copy(bis, baos)) {
-                    pomLicenses.put(u,  baos.toByteArray());
-                }
+            	URL url = getLicenseURL(entry.getKey(), entry.getValue());
+            	if (url != null) {
+	
+	                bis = new BufferedInputStream(url.openStream());
+	                baos = new ByteArrayOutputStream();
+	                
+	                if (copy(bis, baos)) {
+	                    pomLicenses.put(entry, baos.toByteArray());
+	                }
+            	}
             } catch (Exception e) {
             	project.log(e.getMessage(), e, Project.MSG_VERBOSE);
-            	project.log("failed retrieving license file from " + u, Project.MSG_ERR);
+            	project.log("failed retrieving license file from " + entry, Project.MSG_ERR);
             } finally {
                 Closer.close(bis);
                 Closer.close(baos);
-                Closer.close(con);
             }
 		}
 	}
@@ -128,6 +126,19 @@ public class LicenseGenerator implements Callable<Void> {
 			}
 					
 		}
+	}
+	
+	private URL getLicenseURL(String name, URI uri) throws MalformedURLException {
+		URL url = null;
+		if (name != null) {
+			url = LicenseGenerator.class.getResource("/knownlicenses/" + name.toLowerCase(Locale.ENGLISH));
+		}
+		
+		if ((url == null) && (uri != null)) {
+			url = uri.toURL();
+		}
+		
+		return url;
 	}
 	
 	private boolean copy(InputStream is, OutputStream os) throws InterruptedException {
