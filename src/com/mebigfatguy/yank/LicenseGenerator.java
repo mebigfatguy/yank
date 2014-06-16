@@ -98,9 +98,8 @@ public class LicenseGenerator implements Callable<Void> {
 	private void writeLicenses() {
 		for (PomDetails pom : pomDetails) {
 			Pair<String, URI> license = pom.getLicense();
-			URI u = license.getValue();
-			if (u != null) {
-				byte[] data = pomLicenses.get(u);
+			if (license != null) {
+				byte[] data = pomLicenses.get(license);
 				if (data != null) {
 					Artifact a = pom.getJarArtifact();
 					File licenseFile = new File(destination, a.getArtifactId() + ".license");
@@ -117,7 +116,7 @@ public class LicenseGenerator implements Callable<Void> {
 		            	if (licenseFile.exists()) {
 		            		licenseFile.deleteOnExit();
 		            	}
-		            	project.log("Failed to write license file for " + u, Project.MSG_DEBUG);
+		            	project.log("Failed to write license file for " + license, Project.MSG_DEBUG);
 		            } finally {
 		            	Closer.close(bais);
 		            	Closer.close(bos);
