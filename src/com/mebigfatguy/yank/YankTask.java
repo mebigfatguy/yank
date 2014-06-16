@@ -180,19 +180,6 @@ public class YankTask extends Task {
                 pool.submit(new FindUpdates(getProject(), artifacts, findUpdatesFile, options.getServers()));
             }
 
-            for (Future<?> f : downloadFutures) {
-                f.get();
-            }
-            getProject().log("Downloads finished...", Project.MSG_VERBOSE);
-
-            if (failOnError) {
-                for (Artifact artifact : artifacts) {
-                    if (artifact.getStatus() == Artifact.Status.FAILED) {
-                        throw new BuildException("Failed downloading artifacts (First Failure: " + artifact + ")");
-                    }
-                }
-            }
-
             if (generateLicenses) {
             	Map<String, URI> licenses = new HashMap<String, URI>();
             	Set<PomDetails> poms = new HashSet<PomDetails>();
@@ -204,6 +191,19 @@ public class YankTask extends Task {
             	}
             	getProject().log("Scheduling license creation...", Project.MSG_VERBOSE);
                 pool.submit(new LicenseGenerator(getProject(), destination, poms, licenses));	
+            }
+            
+            for (Future<?> f : downloadFutures) {
+                f.get();
+            }
+            getProject().log("Downloads finished...", Project.MSG_VERBOSE);
+
+            if (failOnError) {
+                for (Artifact artifact : artifacts) {
+                    if (artifact.getStatus() == Artifact.Status.FAILED) {
+                        throw new BuildException("Failed downloading artifacts (First Failure: " + artifact + ")");
+                    }
+                }
             }
             
             if (reportMissingDependencies) {
