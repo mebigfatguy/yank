@@ -106,13 +106,11 @@ public class PomHandler extends DefaultHandler {
         		state = State.NAME;
         	else if (localName.equals(State.URL.elementName))
         		state = State.URL;
+        	value.setLength(0);
             break;
             
         case NAME:
         case URL:
-        	value.setLength(0);
-        	break;
-        	
         case ARTIFACT:
         case GROUP:
         case OPTIONAL:
