@@ -70,6 +70,12 @@ There are a few optional attributes to the yank task that you can add as follows
       <td>false</td>
    </tr>  
    <tr>
+      <td>generateLicenses</td>
+      <td>pulls all licenses files it can find from pom files</td>
+      <td>{true/false}</td>
+      <td>false</td>
+   </tr>  
+   <tr>
       <td>threadPoolSize</td>
       <td>number of concurrent download threads</td>
       <td>(integer)</td>
