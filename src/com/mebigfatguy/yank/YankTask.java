@@ -124,6 +124,7 @@ public class YankTask extends Task {
         }
     }
     
+    @Override
     public void execute() throws BuildException {
         getProject().log("Checking attributes...", Project.MSG_VERBOSE);
         if (!xlsFile.isFile())

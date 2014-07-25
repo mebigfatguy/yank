@@ -32,6 +32,7 @@ public class ServerTask extends Task {
         return url;
     }
 
+    @Override
     public void execute() {
         throw new BuildException("ServerTask not meant to be executed");
     }

@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -48,7 +47,7 @@ public class LicenseGenerator implements Callable<Void> {
 	private Set<PomDetails> pomDetails;
 	private Map<Pair<String, URI>, byte[]> pomLicenses;
 	
-	public LicenseGenerator(Project proj, File dest, Set<PomDetails> poms, Map<String, URI> licenses) throws URISyntaxException {
+	public LicenseGenerator(Project proj, File dest, Set<PomDetails> poms, Map<String, URI> licenses) {
 		project = proj;
 		pomDetails = poms;
 		pomLicenses = new HashMap<Pair<String, URI>, byte[]>();
@@ -127,7 +126,7 @@ public class LicenseGenerator implements Callable<Void> {
 		}
 	}
 	
-	private URL getLicenseURL(String name, URI uri) throws MalformedURLException {
+	private static URL getLicenseURL(String name, URI uri) throws MalformedURLException {
 		URL url = null;
 		if (name != null) {
 			url = LicenseGenerator.class.getResource("/knownlicenses/" + name.toLowerCase(Locale.ENGLISH));

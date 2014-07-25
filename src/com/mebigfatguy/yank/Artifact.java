@@ -74,6 +74,7 @@ public class Artifact implements Comparable<Artifact> {
         return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && classifier.equals(that.classifier) && version.equals(that.version);
     }
 
+    @Override
     public int compareTo(Artifact a) {
         int cmp = groupId.compareTo(a.groupId);
         if (cmp != 0) {

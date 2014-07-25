@@ -76,7 +76,7 @@ public class FindUpdates implements Runnable {
         }
     }
     
-    private boolean newer(Artifact artifact, String latest) {
+    private static boolean newer(Artifact artifact, String latest) {
         if ((latest == null) || latest.isEmpty()) {
             return false;
         }

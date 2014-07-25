@@ -52,6 +52,7 @@ public class GeneratePathTask extends Task {
         this.libraryDirName = libraryDirName;
     }
 
+    @Override
     public void execute() {
         throw new BuildException("GeneratePathTask not meant to be executed");
     }

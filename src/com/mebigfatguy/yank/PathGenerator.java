@@ -42,6 +42,7 @@ public class PathGenerator implements Runnable {
         stripVersions = stripVers;
     }
     
+    @Override
     public void run() {
         if (generatePathTask.getPathXmlFile() != null)
             generateProjectFile();
