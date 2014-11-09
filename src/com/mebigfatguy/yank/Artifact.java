@@ -25,13 +25,15 @@ public class Artifact implements Comparable<Artifact> {
 
     private String groupId;
     private String artifactId;
+    private String type;
     private String version;
     private String classifier;
     private Status status = Status.UNKNOWN;
 
-    public Artifact(String groupId, String artifactId, String classifier, String version) {
+    public Artifact(String groupId, String artifactId, String type, String classifier, String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
+        this.type = type;
         this.classifier = classifier;
         this.version = version;
     }
@@ -42,6 +44,10 @@ public class Artifact implements Comparable<Artifact> {
 
     public String getArtifactId() {
         return artifactId;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getVersion() {
@@ -62,7 +68,7 @@ public class Artifact implements Comparable<Artifact> {
 
     @Override
     public int hashCode() {
-        return groupId.hashCode() ^ artifactId.hashCode() ^ classifier.hashCode() ^ version.hashCode();
+        return groupId.hashCode() ^ artifactId.hashCode() ^ type.hashCode() ^ classifier.hashCode() ^ version.hashCode();
     }
 
     @Override
@@ -71,7 +77,7 @@ public class Artifact implements Comparable<Artifact> {
             return false;
 
         Artifact that = (Artifact) o;
-        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && classifier.equals(that.classifier) && version.equals(that.version);
+        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && type.equals(that.type) && classifier.equals(that.classifier) && version.equals(that.version);
     }
 
     @Override
@@ -86,6 +92,11 @@ public class Artifact implements Comparable<Artifact> {
             return cmp;
         }
         
+        cmp = type.compareTo(a.type);
+        if (cmp != 0) {
+            return cmp;
+        }
+        
         cmp = classifier.compareTo(a.classifier);
         if (cmp != 0) {
             return cmp;
@@ -95,7 +106,7 @@ public class Artifact implements Comparable<Artifact> {
     }
 
     public URL toURL(String server) {
-        return toURL(server, ".jar");
+        return toURL(server, '.' + type);
     }
 
     public URL pomURL(String server) {
@@ -154,7 +165,7 @@ public class Artifact implements Comparable<Artifact> {
 
     @Override
     public String toString() {
-        return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId
+        return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId + ", type=" + type
                 + (!classifier.isEmpty() ? ", classifier=" + classifier : "") + ", version=" + version + ", status="
                 + status + "]";
     }

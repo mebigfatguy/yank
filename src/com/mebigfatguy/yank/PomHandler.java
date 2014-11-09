@@ -137,7 +137,7 @@ public class PomHandler extends DefaultHandler {
             } else {
                 state = State.DEPENDENCIES;
                 if ((!"true".equals(optional)) && (group != null) && (artifact != null) && (version != null)) {
-                    transitiveArtifacts.add(new Artifact(group, artifact, "", version));
+                    transitiveArtifacts.add(new Artifact(group, artifact, "jar", "", version));
                 }
             }
             break;

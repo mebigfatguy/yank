@@ -47,8 +47,9 @@ import org.apache.tools.ant.Task;
 public class YankTask extends Task {
 
     static final String SOURCE_CLASSIFIER = "sources";
+    static final String JAR = "jar";
 
-    private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, CLASSIFIER, VERSION_COLUMN};
+    private enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, TYPE_COLUMN, CLASSIFIER_COLUMN, VERSION_COLUMN};
     private File xlsFile;
     private File destination;
     private boolean reportMissingDependencies;
@@ -148,7 +149,7 @@ public class YankTask extends Task {
             for (Artifact artifact : artifacts) {
                 downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
                 if (options.isYankSources() && (artifact.getClassifier().isEmpty())) {
-                    Artifact sourceArtifact = new Artifact(artifact.getGroupId(), artifact.getArtifactId(), SOURCE_CLASSIFIER, artifact.getVersion());
+                    Artifact sourceArtifact = new Artifact(artifact.getGroupId(), artifact.getArtifactId(), JAR, SOURCE_CLASSIFIER, artifact.getVersion());
                     downloadFutures.add(pool.submit(new Downloader(getProject(), sourceArtifact, destination, options)));
                 }
             }
@@ -254,9 +255,11 @@ public class YankTask extends Task {
             HSSFSheet sheet = workBook.getSheetAt(0);
 
             Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
-            Integer classifierColumn = columnHeaders.get(ColumnType.CLASSIFIER);
+            Integer typeColumn = columnHeaders.get(ColumnType.TYPE_COLUMN);
+            Integer classifierColumn = columnHeaders.get(ColumnType.CLASSIFIER_COLUMN);
             String groupId = "";
             String artifactId = "";
+            String type = JAR;
             String version = "";
             String classifier = "";
 
@@ -291,6 +294,11 @@ public class YankTask extends Task {
                             version = v;
                         }
                     }
+
+                    cell = (typeColumn != null) ? row.getCell(typeColumn.intValue()) : null;
+                    if (cell != null) {
+                        type = cell.getStringCellValue().trim();
+                    }
                     
                     cell = (classifierColumn != null) ? row.getCell(classifierColumn.intValue()) : null;
                     if (cell != null) {
@@ -302,12 +310,13 @@ public class YankTask extends Task {
                     		getProject().log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
                     	}
                     } else {
-                        artifacts.add(new Artifact(groupId, artifactId, classifier, version));
+                        artifacts.add(new Artifact(groupId, artifactId, type, classifier, version));
                     }
                 }
 
                 artifactId = "";
                 classifier = "";
+                type = JAR;
             }
             
             getProject().log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_VERBOSE);
@@ -335,10 +344,12 @@ public class YankTask extends Task {
                         columnHeaders.put(ColumnType.GROUP_COLUMN, i);
                     } else if (value.startsWith("artifact")) {
                         columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
+                    } else if (value.startsWith("type")) {
+                        columnHeaders.put(ColumnType.TYPE_COLUMN,  i);
                     } else if (value.startsWith("version")) {
                         columnHeaders.put(ColumnType.VERSION_COLUMN, i);
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
-                        columnHeaders.put(ColumnType.CLASSIFIER,  i);
+                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  i);
                     }
                     if (columnHeaders.size() == 4) {
                         return columnHeaders;
