@@ -28,7 +28,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class PomHandler extends DefaultHandler {
 
     private enum State {
-        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), NAME("name"), URL("url"), GROUP("groupId"), ARTIFACT("artifactId"), VERSION("version"), OPTIONAL("optional");
+        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), NAME("name"), URL("url"), GROUP("groupId"), ARTIFACT("artifactId"), TYPE("type"), CLASSIFIER("classifier"), VERSION("version"), OPTIONAL("optional");
 
         public String elementName;
         State(String name) {
@@ -51,7 +51,9 @@ public class PomHandler extends DefaultHandler {
     private StringBuilder value = new StringBuilder();
     private String group = null;
     private String artifact = null;
+    private String type = null;
     private String version = null;
+    private String classifier = null;
     private String optional = null;
     private String licenseName = null;
     private URI licenseURI = null;
@@ -115,6 +117,8 @@ public class PomHandler extends DefaultHandler {
         case GROUP:
         case OPTIONAL:
         case VERSION:
+        case TYPE:
+        case CLASSIFIER:
             break;
         }
     }
@@ -137,8 +141,10 @@ public class PomHandler extends DefaultHandler {
             } else {
                 state = State.DEPENDENCIES;
                 if ((!"true".equals(optional)) && (group != null) && (artifact != null) && (version != null)) {
-                    transitiveArtifacts.add(new Artifact(group, artifact, "jar", "", version));
+                    transitiveArtifacts.add(new Artifact(group, artifact, type, classifier, version));
                 }
+                type = YankTask.JAR;
+                classifier = "";
             }
             break;
             
@@ -184,9 +190,19 @@ public class PomHandler extends DefaultHandler {
             artifact = value.toString().trim();
             state = State.DEPENDENCY;
             break;
+            
+        case TYPE:
+            type = value.toString().trim();
+            state = State.DEPENDENCY;
+            break;
 
         case VERSION:
             version = value.toString().trim();
+            state = State.DEPENDENCY;
+            break;
+            
+        case CLASSIFIER:
+            classifier = value.toString().trim();
             state = State.DEPENDENCY;
             break;
 
@@ -205,7 +221,9 @@ public class PomHandler extends DefaultHandler {
         switch (state) {
         case GROUP:
         case ARTIFACT:
+        case TYPE:
         case VERSION:
+        case CLASSIFIER:
         case OPTIONAL:
         case NAME:
         case URL:
