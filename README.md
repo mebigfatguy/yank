@@ -85,7 +85,7 @@ There are a few optional attributes to the yank task that you can add as follows
 
 In addition, you can add a sub element to generate an ant path element, such as
 <pre>
-&lt;generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" libraryDirName="$${lib.dir}" /&gt;
+&lt;generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" /&gt;
 </pre>
 
 This will dynamically populate a classpath element in your project with reference 'yank.path' that can be used in <java> tasks etc.
