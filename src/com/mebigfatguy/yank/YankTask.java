@@ -169,7 +169,7 @@ public class YankTask extends Task {
 
             if (generatePathTask != null) {
                 getProject().log("Scheduling path generation task...", Project.MSG_VERBOSE);
-                pool.submit(new PathGenerator(getProject(), artifacts, generatePathTask, options.isStripVersions()));
+                pool.submit(new PathGenerator(getProject(), artifacts, generatePathTask, destination, options.isStripVersions()));
             }
             
             if (generateVersionsTask != null) {

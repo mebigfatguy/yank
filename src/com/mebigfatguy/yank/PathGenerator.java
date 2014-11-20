@@ -18,6 +18,7 @@
 package com.mebigfatguy.yank;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -33,12 +34,14 @@ public class PathGenerator implements Runnable {
     private Project project;
     private List<Artifact> artifacts;
     private GeneratePathTask generatePathTask;
+    private File destination;
     private boolean stripVersions;
     
-    public PathGenerator(Project proj, List<Artifact> afs, GeneratePathTask gpTask, boolean stripVers) {
+    public PathGenerator(Project proj, List<Artifact> afs, GeneratePathTask gpTask, File destDir, boolean stripVers) {
         project = proj;
         artifacts = afs;
         generatePathTask = gpTask;
+        destination = destDir;
         stripVersions = stripVers;
     }
     
@@ -47,13 +50,11 @@ public class PathGenerator implements Runnable {
         if (generatePathTask.getPathXmlFile() != null)
             generateProjectFile();
         
-        String libDir = project.replaceProperties(generatePathTask.getLibraryDirName());
-        
         Path path = new Path(project);
         for (Artifact artifact : artifacts) {
             PathElement element = path.createPathElement();
 
-            StringBuilder jarPath = new StringBuilder(libDir).append("/").append(artifact.getArtifactId());
+            StringBuilder jarPath = new StringBuilder(destination.toString()).append("/").append(artifact.getArtifactId());
             if (!stripVersions) {
                 jarPath.append('-');
                 jarPath.append(artifact.getVersion());
@@ -77,12 +78,12 @@ public class PathGenerator implements Runnable {
             pw.print(generatePathTask.getClasspathName());
             pw.println("\">");
     
-            String dirName = generatePathTask.getLibraryDirName();
+            String dirName = destination.toString();
             boolean needPathSlash = !"/\\".contains(dirName.substring(dirName.length() - 1));
     
             for (Artifact artifact : artifacts) {
                 pw.print("\t\t<pathelement location=\"");
-                pw.print(generatePathTask.getLibraryDirName());
+                pw.print(dirName);
                 if (needPathSlash)
                     pw.print("/");
                 pw.print(artifact.getArtifactId());

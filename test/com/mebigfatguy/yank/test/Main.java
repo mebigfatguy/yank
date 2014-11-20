@@ -51,7 +51,6 @@ public class Main {
         GeneratePathTask pt = new GeneratePathTask();
         pt.setClasspathName("yank.path");
         pt.setPathXmlFile(new File("/home/dave/dev/yank/sample/yank_build.xml"));
-        pt.setLibraryDirName("${lib.dir}");
         yt.addConfiguredGeneratePath(pt);
         yt.setFindUpdatesFile(new File("/home/dave/dev/yank/sample/updates.txt"));
 

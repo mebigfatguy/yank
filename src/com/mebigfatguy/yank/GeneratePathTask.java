@@ -26,7 +26,6 @@ public class GeneratePathTask extends Task {
 
     private File pathXmlFile;
     private String classpathName;
-    private String libraryDirName;
 
     public File getPathXmlFile() {
         return pathXmlFile;
@@ -42,14 +41,6 @@ public class GeneratePathTask extends Task {
 
     public void setClasspathName(String classpathName) {
         this.classpathName = classpathName;
-    }
-
-    public String getLibraryDirName() {
-        return libraryDirName;
-    }
-
-    public void setLibraryDirName(String libraryDirName) {
-        this.libraryDirName = libraryDirName;
     }
 
     @Override
