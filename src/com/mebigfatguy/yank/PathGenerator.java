@@ -62,6 +62,7 @@ public class PathGenerator implements Runnable {
             element.setPath(jarPath.toString());
         }
         
+        project.log("Setting property " + generatePathTask.getClasspathName() + " to " + path, Project.MSG_VERBOSE);
         project.addReference(project.replaceProperties(generatePathTask.getClasspathName()), path);
     }
     
