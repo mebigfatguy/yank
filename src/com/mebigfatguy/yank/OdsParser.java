@@ -17,17 +17,39 @@
  */
 package com.mebigfatguy.yank;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.tools.ant.Project;
 
 public class OdsParser implements SpreadsheetParser {
 
+	private static final String CONTENT_STREAM = "/content.xml";
 	@Override
 	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
-		throw new IOException("Can't parse ods file yet: " + spreadsheet);
+		
+		try (ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(new FileInputStream(spreadsheet)));
+			 InputStream contentStream = findContentStream(zipIs)) {
+		}
+		
+		throw new IOException("Not implemented yet");
+	}
+
+	private InputStream findContentStream(ZipInputStream zipIs) throws IOException {
+		ZipEntry entry;
+		while ((entry = zipIs.getNextEntry()) != null) {
+			if (CONTENT_STREAM.equals(entry.getName())) {
+				return new LengthLimitingInputStream(zipIs, entry.getSize());
+			}
+		}
+		
+		throw new IOException("ods file has no content stream");
 	}
 
 }
