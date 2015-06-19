@@ -352,7 +352,7 @@ public class YankTask extends Task {
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
                         columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  colNum);
                     }
-                    if (columnHeaders.size() == 4) {
+                    if (columnHeaders.size() == 5) {
                         return columnHeaders;
                     }
                 }
