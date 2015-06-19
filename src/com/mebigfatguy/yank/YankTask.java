@@ -266,7 +266,7 @@ public class YankTask extends Task {
             for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
                 HSSFRow row = sheet.getRow(i);
                 if (row != null) {
-                    HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN));
+                    HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN).intValue());
                     if (cell != null) {
                         String gId = cell.getStringCellValue().trim();
                         if (!gId.isEmpty()) {
@@ -274,7 +274,7 @@ public class YankTask extends Task {
                         }
                     }
 
-                    cell = row.getCell(columnHeaders.get(ColumnType.ARTIFACT_COLUMN));
+                    cell = row.getCell(columnHeaders.get(ColumnType.ARTIFACT_COLUMN).intValue());
                     if (cell != null) {
                         String aId = cell.getStringCellValue().trim();
                         if (!aId.isEmpty()) {
@@ -282,7 +282,7 @@ public class YankTask extends Task {
                         }
                     }
 
-                    cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN));
+                    cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN).intValue());
                     if (cell != null) {
                         String v;
                         if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
@@ -339,17 +339,18 @@ public class YankTask extends Task {
             if (cell != null) {
                 String value = cell.getStringCellValue();
                 if (value != null) {
+                	Integer colNum = Integer.valueOf(i);
                     value = value.trim().toLowerCase();
                     if (value.startsWith("group")) {
-                        columnHeaders.put(ColumnType.GROUP_COLUMN, i);
+                        columnHeaders.put(ColumnType.GROUP_COLUMN, colNum);
                     } else if (value.startsWith("artifact")) {
-                        columnHeaders.put(ColumnType.ARTIFACT_COLUMN, i);
+                        columnHeaders.put(ColumnType.ARTIFACT_COLUMN, colNum);
                     } else if (value.startsWith("type")) {
-                        columnHeaders.put(ColumnType.TYPE_COLUMN,  i);
+                        columnHeaders.put(ColumnType.TYPE_COLUMN,  colNum);
                     } else if (value.startsWith("version")) {
-                        columnHeaders.put(ColumnType.VERSION_COLUMN, i);
+                        columnHeaders.put(ColumnType.VERSION_COLUMN, colNum);
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
-                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  i);
+                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  colNum);
                     }
                     if (columnHeaders.size() == 4) {
                         return columnHeaders;
