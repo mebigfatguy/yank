@@ -27,15 +27,26 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.tools.ant.Project;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 public class OdsParser implements SpreadsheetParser {
 
-	private static final String CONTENT_STREAM = "/content.xml";
+	private static final String CONTENT_STREAM = "content.xml";
 	@Override
 	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
 		
 		try (ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(new FileInputStream(spreadsheet)));
 			 InputStream contentStream = findContentStream(zipIs)) {
+			XMLReader r = XMLReaderFactory.createXMLReader();
+			r.setContentHandler(new OdsHandler());
+			r.parse(new InputSource(contentStream));
+		} catch (SAXException e) {
+			throw new IOException("Failed creating xml reader for ods file", e);
 		}
 		
 		throw new IOException("Not implemented yet");
@@ -50,6 +61,13 @@ public class OdsParser implements SpreadsheetParser {
 		}
 		
 		throw new IOException("ods file has no content stream");
+	}
+	
+	class OdsHandler extends DefaultHandler {
+
+		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+		}
 	}
 
 }

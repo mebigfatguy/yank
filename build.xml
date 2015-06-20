@@ -154,6 +154,13 @@
             <server url="http://repo1.maven.org/maven2"/>
             <server url="http://repository.codehaus.org"/>
 		</yank>
+		<yank yankFile="${sample.dir}/yank.ods" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
+			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
+			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.ods.path" />
+			<generateVersions propertyFileName="${sample.dir}/yank.ods.properties"/>
+            <server url="http://repo1.maven.org/maven2"/>
+            <server url="http://repository.codehaus.org"/>
+		</yank>
 	</target>
 	
     <target name="release" depends="jar, srczip, javadoc" description="prepares everything for a release" />

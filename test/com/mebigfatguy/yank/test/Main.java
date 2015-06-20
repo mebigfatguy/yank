@@ -36,7 +36,7 @@ public class Main {
         
         p.setProperty("lib.dir", p.getBaseDir() + "/test/lib");
 
-        yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xls"));
+        yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.ods"));
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
         yt.setThreadPoolSize(30);
         yt.setStripVersions(true);
