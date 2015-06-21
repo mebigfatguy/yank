@@ -117,9 +117,9 @@ public class YankTask extends Task {
     @Override
     public void execute() throws BuildException {
         getProject().log("Checking attributes...", Project.MSG_VERBOSE);
-        if (!xlsFile.isFile())
+        if ((xlsFile == null) || !xlsFile.isFile())
             throw new BuildException("Yank (xls) file not specified or invalid: " + xlsFile);
-        if (destination.isFile())
+        if ((destination == null) || destination.isFile())
             throw new BuildException("Yank destination (" + destination + ") is a file, not a directory");
         if (options.getServers().isEmpty())
             throw new BuildException("No specified nested <server> items found");
