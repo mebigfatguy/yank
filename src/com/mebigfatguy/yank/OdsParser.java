@@ -130,9 +130,11 @@ public class OdsParser implements SpreadsheetParser {
 					}
 				} else {
 					if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                    	if (groupId.isEmpty() || version.isEmpty()) {
-                    		project.log("Row " + curRow + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
-                    	}
+						if (!(groupId.isEmpty() && artifactId.isEmpty() && version.isEmpty())) {
+	                    	if (groupId.isEmpty() || version.isEmpty()) {
+	                    		project.log("Row " + curRow + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
+	                    	}
+						}
                     } else {
                         artifacts.add(new Artifact(groupId, artifactId, type, classifier, version));
                     }
