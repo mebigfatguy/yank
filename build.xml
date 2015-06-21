@@ -106,7 +106,7 @@
             	<include name="knownlicenses/*" />
             	<exclude name="**/test/*.*" />
             </fileset>
-        	<zipfileset src="${lib.dir}/poi-${poi.version}.jar"/>
+        	<zipfileset src="${lib.dir}/poi-${poi.version}.jar" />    	
         	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
@@ -152,8 +152,8 @@
 		<echo message=""/>
 		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
 			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
-			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" />
-			<generateVersions propertyFileName="${sample.dir}/yank.properties"/>
+			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.xls.path" />
+			<generateVersions propertyFileName="${sample.dir}/yank.xls.properties"/>
             <server url="http://repo1.maven.org/maven2"/>
             <server url="http://repository.codehaus.org"/>
 		</yank>

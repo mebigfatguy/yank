@@ -2,8 +2,9 @@
 *.jar
 lib
 sample/yank_build.xml
-sample/yank.properties
+sample/yank.xls.properties
 sample/yank.ods.properties
+sample/yank.xlsx.properties
 sample/updates.txt
 sample/.~lock.yank.*
 sample/licenses
