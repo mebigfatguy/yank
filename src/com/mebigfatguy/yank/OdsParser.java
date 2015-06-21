@@ -37,6 +37,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class OdsParser implements SpreadsheetParser {
 
 	private static final String CONTENT_STREAM = "content.xml";
+	private static final String TABLE_ROW = "table-row";
+	private static final String TABLE_CELL = "table-cell";
+	
 	@Override
 	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
 		
@@ -62,7 +65,8 @@ public class OdsParser implements SpreadsheetParser {
 		ZipEntry entry;
 		while ((entry = zipIs.getNextEntry()) != null) {
 			if (CONTENT_STREAM.equals(entry.getName())) {
-				return new LengthLimitingInputStream(zipIs, entry.getSize());
+				long size = entry.getSize();
+				return new LengthLimitingInputStream(zipIs, (size < 0) ? Long.MAX_VALUE : size);
 			}
 		}
 		
@@ -73,6 +77,11 @@ public class OdsParser implements SpreadsheetParser {
 
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+			if (TABLE_ROW.equals(localName)) {
+				
+			} else if (TABLE_CELL.equals(localName)) {
+				
+			}
 		}
 	}
 
