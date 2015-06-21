@@ -40,9 +40,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class OdsParser implements SpreadsheetParser {
 
+	private static final String ODS_URI = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
 	private static final String CONTENT_STREAM = "content.xml";
 	private static final String TABLE_ROW = "table-row";
 	private static final String TABLE_CELL = "table-cell";
+	private static final String NUMBER_COLUMNS_REPEATED = "number-columns-repeated";
 	
 	private Project project;
 	private File odsFile;
@@ -69,6 +71,7 @@ public class OdsParser implements SpreadsheetParser {
 			Closer.close(zipIs);
 		}
 		
+		System.out.println(artifacts);
 		return artifacts;
 	}
 
@@ -96,6 +99,7 @@ public class OdsParser implements SpreadsheetParser {
         private String type = JAR;
         private String version = "";
         private String classifier = "";
+        private int repeatCount = 1;
 		
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -104,8 +108,15 @@ public class OdsParser implements SpreadsheetParser {
 			if (TABLE_ROW.equals(localName)) {
 				curRow++;
 				curCol = 0;
+
 			} else if (TABLE_CELL.equals(localName)) {
 				contents.setLength(0);
+				String repeats = attributes.getValue(ODS_URI, NUMBER_COLUMNS_REPEATED);
+				if (repeats != null) {
+					repeatCount = Integer.parseInt(repeats);
+				} else {
+					repeatCount = 1;
+				}
 			}
 		}
 
@@ -150,36 +161,41 @@ public class OdsParser implements SpreadsheetParser {
                         columnHeaders.put(curCol, ColumnType.CLASSIFIER_COLUMN);
                     }
 				} else {
-					ColumnType colType = columnHeaders.get(curCol);
-					if (colType != null) {
-						switch (colType) {
-							case GROUP_COLUMN:
-								if (!value.isEmpty()) {
-									groupId = value;
-								}
-								break;
-							case ARTIFACT_COLUMN:
-								if (!value.isEmpty()) {
-									artifactId = value;
-								}
-								break;
-							case TYPE_COLUMN:
-								if (!value.isEmpty()) {
-									type = value;
-								}
-								break;
-							case VERSION_COLUMN:
-								if (!value.isEmpty()) {
-									version = value;
-								}
-								break;
-							case CLASSIFIER_COLUMN:
-								if (!value.isEmpty()) {
-									classifier = value;
-								}
-								break;
+					while (repeatCount > 0) {
+						ColumnType colType = columnHeaders.get(curCol);
+						if (colType != null) {
+							switch (colType) {
+								case GROUP_COLUMN:
+									if (!value.isEmpty()) {
+										groupId = value;
+									}
+									break;
+								case ARTIFACT_COLUMN:
+									if (!value.isEmpty()) {
+										artifactId = value;
+									}
+									break;
+								case TYPE_COLUMN:
+									if (!value.isEmpty()) {
+										type = value;
+									}
+									break;
+								case VERSION_COLUMN:
+									if (!value.isEmpty()) {
+										version = value;
+									}
+									break;
+								case CLASSIFIER_COLUMN:
+									if (!value.isEmpty()) {
+										classifier = value;
+									}
+									break;
+							}
 						}
+						curCol++;
+						repeatCount--;
 					}
+					curCol--;
 				}
 			}
 		}
