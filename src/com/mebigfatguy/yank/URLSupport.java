@@ -40,6 +40,7 @@ public class URLSupport {
             try {
                 port = Integer.parseInt(proxyParts[1]);
             } catch (NumberFormatException nfe) {
+            	// just try to use port 80, perhaps we should error out?
             }
         }
         InetSocketAddress sockAddr = new InetSocketAddress(host, port);

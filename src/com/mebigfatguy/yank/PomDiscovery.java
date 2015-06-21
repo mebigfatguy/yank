@@ -68,6 +68,7 @@ public class PomDiscovery implements Callable<PomDetails> {
                 try {
                     reader.parse(new InputSource(bis));
                 } catch (PomParseCompletedException ppce) {
+                	// normal exit from sax parsing
                 }
 
                 break;
