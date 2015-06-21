@@ -42,11 +42,12 @@ public class XlsParser implements SpreadsheetParser {
 		xlsFile = spreadsheet;
 		
         BufferedInputStream bis = null;
+        HSSFWorkbook workBook = null;
         List<Artifact> artifacts = new ArrayList<Artifact>();
 
         try {
             bis = new BufferedInputStream(new FileInputStream(xlsFile));
-            HSSFWorkbook workBook = new HSSFWorkbook(bis);
+            workBook = new HSSFWorkbook(bis);
 
             HSSFSheet sheet = workBook.getSheetAt(0);
 
@@ -117,6 +118,9 @@ public class XlsParser implements SpreadsheetParser {
             
             project.log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_VERBOSE);
         } finally {
+        	if (workBook != null) {
+        		workBook.close();
+        	}
             Closer.close(bis);
         }
 
