@@ -125,42 +125,41 @@ public class XlsParser implements SpreadsheetParser {
         return artifacts;
 	}
 	
-	   private Map<ColumnType, Integer> getColumnInfo(HSSFSheet sheet) {
-	        int firstRow = sheet.getFirstRowNum();
-	        HSSFRow row = sheet.getRow(firstRow);
+   private Map<ColumnType, Integer> getColumnInfo(HSSFSheet sheet) {
+        int firstRow = sheet.getFirstRowNum();
+        HSSFRow row = sheet.getRow(firstRow);
 
-	        Map<ColumnType, Integer> columnHeaders = new EnumMap<ColumnType, Integer>(ColumnType.class);
+        Map<ColumnType, Integer> columnHeaders = new EnumMap<ColumnType, Integer>(ColumnType.class);
 
-	        for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
-	            HSSFCell cell = row.getCell(i);
-	            
-	            if (cell != null) {
-	                String value = cell.getStringCellValue();
-	                if (value != null) {
-	                	Integer colNum = Integer.valueOf(i);
-	                    value = value.trim().toLowerCase();
-	                    if (value.startsWith("group")) {
-	                        columnHeaders.put(ColumnType.GROUP_COLUMN, colNum);
-	                    } else if (value.startsWith("artifact")) {
-	                        columnHeaders.put(ColumnType.ARTIFACT_COLUMN, colNum);
-	                    } else if (value.startsWith("type")) {
-	                        columnHeaders.put(ColumnType.TYPE_COLUMN,  colNum);
-	                    } else if (value.startsWith("version")) {
-	                        columnHeaders.put(ColumnType.VERSION_COLUMN, colNum);
-	                    } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
-	                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  colNum);
-	                    }
-	                    if (columnHeaders.size() == 5) {
-	                        return columnHeaders;
-	                    }
-	                }
-	            }
-	        }
-	        
-	        if (columnHeaders.size() >= 3)
-	            return columnHeaders;
+        for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
+            HSSFCell cell = row.getCell(i);
+            
+            if (cell != null) {
+                String value = cell.getStringCellValue();
+                if (value != null) {
+                	Integer colNum = Integer.valueOf(i);
+                    value = value.trim().toLowerCase();
+                    if (value.startsWith("group")) {
+                        columnHeaders.put(ColumnType.GROUP_COLUMN, colNum);
+                    } else if (value.startsWith("artifact")) {
+                        columnHeaders.put(ColumnType.ARTIFACT_COLUMN, colNum);
+                    } else if (value.startsWith("type")) {
+                        columnHeaders.put(ColumnType.TYPE_COLUMN,  colNum);
+                    } else if (value.startsWith("version")) {
+                        columnHeaders.put(ColumnType.VERSION_COLUMN, colNum);
+                    } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
+                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  colNum);
+                    }
+                    if (columnHeaders.size() == 5) {
+                        return columnHeaders;
+                    }
+                }
+            }
+        }
+        
+        if (columnHeaders.size() >= 3)
+            return columnHeaders;
 
-	        throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
-	    }
-
+        throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
+	}
 }
