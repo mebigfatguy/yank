@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -149,7 +150,7 @@ public class OdsParser implements SpreadsheetParser {
 				contents.setLength(0);
 				
 				if (parsingColumnHeaders) {
-					value = value.toLowerCase();
+					value = value.toLowerCase(Locale.ENGLISH);
 					if (value.startsWith("group")) {
                         columnHeaders.put(curCol, ColumnType.GROUP_COLUMN);
                     } else if (value.startsWith("artifact")) {

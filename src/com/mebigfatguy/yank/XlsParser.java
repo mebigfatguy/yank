@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -140,7 +141,7 @@ public class XlsParser implements SpreadsheetParser {
                 String value = cell.getStringCellValue();
                 if (value != null) {
                 	Integer colNum = Integer.valueOf(i);
-                    value = value.trim().toLowerCase();
+                    value = value.trim().toLowerCase(Locale.ENGLISH);
                     if (value.startsWith("group")) {
                         columnHeaders.put(ColumnType.GROUP_COLUMN, colNum);
                     } else if (value.startsWith("artifact")) {
