@@ -40,13 +40,19 @@ public class OdsParser implements SpreadsheetParser {
 	@Override
 	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
 		
-		try (ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(new FileInputStream(spreadsheet)));
-			 InputStream contentStream = findContentStream(zipIs)) {
+		ZipInputStream zipIs = null;
+		InputStream contentStream = null;
+		try {
+			zipIs = new ZipInputStream(new BufferedInputStream(new FileInputStream(spreadsheet)));
+			contentStream = findContentStream(zipIs);
 			XMLReader r = XMLReaderFactory.createXMLReader();
 			r.setContentHandler(new OdsHandler());
 			r.parse(new InputSource(contentStream));
 		} catch (SAXException e) {
 			throw new IOException("Failed creating xml reader for ods file", e);
+		} finally {
+			Closer.close(contentStream);
+			Closer.close(zipIs);
 		}
 		
 		throw new IOException("Not implemented yet");
