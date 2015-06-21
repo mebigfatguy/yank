@@ -51,9 +51,9 @@ public class PomHandler extends DefaultHandler {
     private StringBuilder value = new StringBuilder();
     private String group = null;
     private String artifact = null;
-    private String type = null;
+    private String type = YankTask.JAR;
     private String version = null;
-    private String classifier = null;
+    private String classifier = "";
     private String optional = null;
     private String licenseName = null;
     private URI licenseURI = null;

@@ -147,6 +147,9 @@
 	
 	<target name="test" depends="jar" description="test yank">
 		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${basedir}/target/yank-${yank.version}.jar"/>
+		<echo message=""/>
+		<echo message="===== Testing yank.xls =========="/>
+		<echo message=""/>
 		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
 			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
 			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" />
@@ -154,6 +157,9 @@
             <server url="http://repo1.maven.org/maven2"/>
             <server url="http://repository.codehaus.org"/>
 		</yank>
+		<echo message=""/>
+		<echo message="===== Testing yank.ods =========="/>
+		<echo message=""/>
 		<yank yankFile="${sample.dir}/yank.ods" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
 			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
 			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.ods.path" />
