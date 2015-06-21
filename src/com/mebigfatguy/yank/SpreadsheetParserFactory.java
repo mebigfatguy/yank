@@ -26,6 +26,7 @@ import org.apache.tools.ant.Project;
 public class SpreadsheetParserFactory {
 
 	private static final String ODS_EXTENSION = "ods";
+	private static final String XLS_EXTENSION = "xlsx";
 	
 	private SpreadsheetParserFactory() {
 		
@@ -40,6 +41,8 @@ public class SpreadsheetParserFactory {
 		
 		if (ODS_EXTENSION.equals(extension)) {
 			parser = new OdsParser();
+		} else if (XLS_EXTENSION.equals(extension)) {
+			parser = new XlsxParser();
 		} else {
 			parser = new XlsParser();
 		}

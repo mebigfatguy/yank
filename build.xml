@@ -22,10 +22,14 @@
 	
     <property name="ant_.version" value="1.9.4" />
     <property name="poi.version" value="3.12" />
+	<property name="xmlbeans.version" value="2.6.0" />
 	<property name="jarjar.version" value="1.3" />
 	
     <property name="ant-url" value="http://repo1.maven.org/maven2/org/apache/ant/ant/${ant_.version}/ant-${ant_.version}.jar" />
     <property name="poi-url" value="http://repo1.maven.org/maven2/org/apache/poi/poi/${poi.version}/poi-${poi.version}.jar" />
+    <property name="poi-ooxml-url" value="http://repo1.maven.org/maven2/org/apache/poi/poi-ooxml/${poi.version}/poi-ooxml-${poi.version}.jar" />
+    <property name="poi-ooxml-schemas-url" value="http://repo1.maven.org/maven2/org/apache/poi/poi-ooxml-schemas/${poi.version}/poi-ooxml-schemas-${poi.version}.jar" />
+    <property name="xmlbeans-url" value="http://repo1.maven.org/maven2/org/apache/xmlbeans/xmlbeans/${xmlbeans.version}/xmlbeans-${xmlbeans.version}.jar" />
     <property name="jarjar-url" value="http://repo1.maven.org/maven2/com/googlecode/jarjar/jarjar/${jarjar.version}/jarjar-${jarjar.version}.jar" />
 
     <target name="check">
@@ -55,6 +59,9 @@
     <target name="pullall">
         <pull url="${ant-url}" dest="${lib.dir}" name="ant" version="${ant_.version}" />
         <pull url="${poi-url}" dest="${lib.dir}" name="poi" version="${poi.version}" />
+        <pull url="${poi-ooxml-url}" dest="${lib.dir}" name="poi-ooxml" version="${poi.version}" />
+        <pull url="${poi-ooxml-schemas-url}" dest="${lib.dir}" name="poi-ooxml-schemas" version="${poi.version}" />
+        <pull url="${xmlbeans-url}" dest="${lib.dir}" name="xmlbeans" version="${xmlbeans.version}" />
         <pull url="${jarjar-url}" dest="${lib.dir}" name="jarjar" version="${jarjar.version}" />
     </target>
 	
@@ -74,6 +81,9 @@
     <path id="yank.classpath">
         <pathelement location="${lib.dir}/ant-${ant_.version}.jar" />
         <pathelement location="${lib.dir}/poi-${poi.version}.jar" />
+        <pathelement location="${lib.dir}/poi-ooxml-${poi.version}.jar" />
+        <pathelement location="${lib.dir}/poi-ooxml-schemas-${poi.version}.jar" />
+        <pathelement location="${lib.dir}/xmlbeans-${xmlbeans.version}.jar" />
         <pathelement location="${lib.dir}/jarjar-${jarjar.version}.jar" />
     </path>
 
@@ -107,7 +117,12 @@
             	<exclude name="**/test/*.*" />
             </fileset>
         	<zipfileset src="${lib.dir}/poi-${poi.version}.jar"/>
+           	<zipfileset src="${lib.dir}/poi-ooxml-${poi.version}.jar"/>
+           	<zipfileset src="${lib.dir}/poi-ooxml-schemas-${poi.version}.jar"/>
+        	<zipfileset src="${lib.dir}/xmlbeans-${xmlbeans.version}.jar"/>
         	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
+        	<rule pattern="org.openxmlformats.schemas.**" result="com.mebigfatguy.org.openxmlformats.schemas.@1" />
+        	<rule pattern="org.apache.xmlbeans.**" result="com.mebigfatguy.org.apache.xmlbeans.@1" />
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
@@ -164,6 +179,16 @@
 			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
 			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.ods.path" />
 			<generateVersions propertyFileName="${sample.dir}/yank.ods.properties"/>
+            <server url="http://repo1.maven.org/maven2"/>
+            <server url="http://repository.codehaus.org"/>
+		</yank>
+		<echo message=""/>
+		<echo message="===== Testing yank.xlsx =========="/>
+		<echo message=""/>
+		<yank yankFile="${sample.dir}/yank.xlsx" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
+			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
+			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.xlsx.path" />
+			<generateVersions propertyFileName="${sample.dir}/yank.xlsx.properties"/>
             <server url="http://repo1.maven.org/maven2"/>
             <server url="http://repository.codehaus.org"/>
 		</yank>

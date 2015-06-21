@@ -1,20 +1,3 @@
-/*
- * yank - a maven artifact fetcher ant task
- * Copyright 2013-2015 MeBigFatGuy.com
- * Copyright 2013-2015 Dave Brosius
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and limitations
- * under the License.
- */
 package com.mebigfatguy.yank;
 
 import java.io.BufferedInputStream;
@@ -26,30 +9,29 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
-public class XlsParser implements SpreadsheetParser {
+public class XlsxParser implements SpreadsheetParser {
 
-	private File xlsFile;
+	private File xlsxFile;
 	@Override
 	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
-		xlsFile = spreadsheet;
+		xlsxFile = spreadsheet;
 		
         BufferedInputStream bis = null;
         List<Artifact> artifacts = new ArrayList<Artifact>();
 
         try {
-            bis = new BufferedInputStream(new FileInputStream(xlsFile));
-            HSSFWorkbook workBook = new HSSFWorkbook(bis);
+            bis = new BufferedInputStream(new FileInputStream(xlsxFile));
+            XSSFWorkbook workBook = new XSSFWorkbook(bis);
 
-            HSSFSheet sheet = workBook.getSheetAt(0);
+            XSSFSheet sheet = workBook.getSheetAt(0);
 
             Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
             Integer typeColumn = columnHeaders.get(ColumnType.TYPE_COLUMN);
@@ -61,9 +43,9 @@ public class XlsParser implements SpreadsheetParser {
             String classifier = "";
 
             for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
-                HSSFRow row = sheet.getRow(i);
+                XSSFRow row = sheet.getRow(i);
                 if (row != null) {
-                    HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN).intValue());
+                    XSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN).intValue());
                     if (cell != null) {
                         String gId = cell.getStringCellValue().trim();
                         if (!gId.isEmpty()) {
@@ -116,7 +98,7 @@ public class XlsParser implements SpreadsheetParser {
                 type = JAR;
             }
             
-            project.log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_VERBOSE);
+            project.log(sheet.getLastRowNum() + " rows read from " + xlsxFile, Project.MSG_VERBOSE);
         } finally {
             Closer.close(bis);
         }
@@ -124,14 +106,14 @@ public class XlsParser implements SpreadsheetParser {
         return artifacts;
 	}
 	
-   private Map<ColumnType, Integer> getColumnInfo(HSSFSheet sheet) {
+   private Map<ColumnType, Integer> getColumnInfo(XSSFSheet sheet) {
         int firstRow = sheet.getFirstRowNum();
-        HSSFRow row = sheet.getRow(firstRow);
+        XSSFRow row = sheet.getRow(firstRow);
 
         Map<ColumnType, Integer> columnHeaders = new EnumMap<ColumnType, Integer>(ColumnType.class);
 
         for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
-            HSSFCell cell = row.getCell(i);
+            XSSFCell cell = row.getCell(i);
             
             if (cell != null) {
                 String value = cell.getStringCellValue();
@@ -159,6 +141,6 @@ public class XlsParser implements SpreadsheetParser {
         if (columnHeaders.size() >= 3)
             return columnHeaders;
 
-        throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
+        throw new BuildException("Input yank xlsx file (" + xlsxFile + ") does not contains GroupId, ArtifactId, or Version columns");
 	}
 }
