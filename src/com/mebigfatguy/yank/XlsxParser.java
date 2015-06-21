@@ -4,143 +4,248 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
-public class XlsxParser implements SpreadsheetParser {
+public class XlsxParser  implements SpreadsheetParser {
 
+	private static final String SHARED_STRINGS = "xl/sharedStrings.xml";
+	private static final String CONTENT_STREAM = "xl/worksheets/sheet1.xml";
+	private static final String SHARED_INDEX = "si";
+	private static final String TABLE_ROW = "row";
+	private static final String TABLE_CELL = "c";
+	
+	private Project project;
 	private File xlsxFile;
+	private Map<Integer, String> sharedStrings = new HashMap<Integer, String>();
+	private List<Artifact> artifacts = new ArrayList<Artifact>();
+	
 	@Override
-	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
+	public List<Artifact> getArtifactList(Project proj, File spreadsheet) throws IOException {
+		
+		project = proj;
 		xlsxFile = spreadsheet;
 		
-        BufferedInputStream bis = null;
-        List<Artifact> artifacts = new ArrayList<Artifact>();
+		readSharedStrings();
+		
+		ZipInputStream zipIs = null;
+		InputStream contentStream = null;
+		try {
+			zipIs = new ZipInputStream(new BufferedInputStream(new FileInputStream(xlsxFile)));
+			contentStream = findContentStream(zipIs);
+			XMLReader r = XMLReaderFactory.createXMLReader();
+			r.setContentHandler(new XlsxHandler());
+			r.parse(new InputSource(contentStream));
+		} catch (SAXException e) {
+			throw new IOException("Failed creating xml reader for xlsx file (" + xlsxFile +")", e);
+		} finally {
+			Closer.close(contentStream);
+			Closer.close(zipIs);
+		}
+		
+		return artifacts;
+	}
 
-        try {
-            bis = new BufferedInputStream(new FileInputStream(xlsxFile));
-            XSSFWorkbook workBook = new XSSFWorkbook(bis);
+	private void readSharedStrings() throws IOException {
+		ZipInputStream zipIs = null;
+		InputStream contentStream = null;
+		try {
+			zipIs = new ZipInputStream(new BufferedInputStream(new FileInputStream(xlsxFile)));
+			contentStream = findSharedStringsStream(zipIs);
+			XMLReader r = XMLReaderFactory.createXMLReader();
+			r.setContentHandler(new SharedStringHandler());
+			r.parse(new InputSource(contentStream));
+		} catch (SAXException e) {
+			throw new IOException("Failed creating xml reader for xlsx file (" + xlsxFile +")", e);
+		} finally {
+			Closer.close(contentStream);
+			Closer.close(zipIs);
+		}
+	}
+	
+	private InputStream findSharedStringsStream(ZipInputStream zipIs) throws IOException {
+		ZipEntry entry;
+		while ((entry = zipIs.getNextEntry()) != null) {
+			if (SHARED_STRINGS.equals(entry.getName())) {
+				long size = entry.getSize();
+				return new LengthLimitingInputStream(zipIs, (size < 0) ? Long.MAX_VALUE : size);
+			}
+		}
+		
+		throw new IOException("xlsx file has no shared strings stream (" + xlsxFile +")");
+	}
+	
+	private InputStream findContentStream(ZipInputStream zipIs) throws IOException {
+		ZipEntry entry;
+		while ((entry = zipIs.getNextEntry()) != null) {
+			if (CONTENT_STREAM.equals(entry.getName())) {
+				long size = entry.getSize();
+				return new LengthLimitingInputStream(zipIs, (size < 0) ? Long.MAX_VALUE : size);
+			}
+		}
+		
+		throw new IOException("ods file has no content stream (" + xlsxFile +")");
+	}
+	
+	class SharedStringHandler extends DefaultHandler {
 
-            XSSFSheet sheet = workBook.getSheetAt(0);
+		private StringBuilder contents = new StringBuilder();
+		private int index = 0;
+		
+		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+			if (SHARED_INDEX.equals(localName)) {
+				contents.setLength(0);
+			}
+		}
 
-            Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
-            Integer typeColumn = columnHeaders.get(ColumnType.TYPE_COLUMN);
-            Integer classifierColumn = columnHeaders.get(ColumnType.CLASSIFIER_COLUMN);
-            String groupId = "";
-            String artifactId = "";
-            String type = JAR;
-            String version = "";
-            String classifier = "";
+		@Override
+		public void endElement(String uri, String localName, String qName) throws SAXException {
+			if (SHARED_INDEX.equals(localName)) {
+				String value = contents.toString().trim();
+				sharedStrings.put(Integer.valueOf(index++), value);
+			}
+		}
 
-            for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
-                XSSFRow row = sheet.getRow(i);
-                if (row != null) {
-                    XSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN).intValue());
-                    if (cell != null) {
-                        String gId = cell.getStringCellValue().trim();
-                        if (!gId.isEmpty()) {
-                            groupId = gId;
-                        }
-                    }
+		@Override
+		public void characters(char[] ch, int start, int length) throws SAXException {
+			contents.append(ch, start, length);
+		}
+	}
+	
+	class XlsxHandler extends DefaultHandler {
 
-                    cell = row.getCell(columnHeaders.get(ColumnType.ARTIFACT_COLUMN).intValue());
-                    if (cell != null) {
-                        String aId = cell.getStringCellValue().trim();
-                        if (!aId.isEmpty()) {
-                            artifactId = aId;
-                        }
-                    }
+		private int curRow = 0;
+		private int curCol = 0;
+		private boolean parsingColumnHeaders = true;
+		private Map<Integer, ColumnType> columnHeaders = new HashMap<Integer, ColumnType>();
+		private StringBuilder contents = new StringBuilder();
+		private String groupId = "";
+        private String artifactId = "";
+        private String type = JAR;
+        private String version = "";
+        private String classifier = "";
+		
+		@Override
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+			contents.setLength(0);
+			
+			if (TABLE_ROW.equals(localName)) {
+				curRow++;
+				curCol = 0;
 
-                    cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN).intValue());
-                    if (cell != null) {
-                        String v;
-                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                            v = String.valueOf(cell.getNumericCellValue());
-                        } else {
-                            v = cell.getStringCellValue().trim();
-                        }
-                        if (!v.isEmpty()) {
-                            version = v;
-                        }
-                    }
+			} else if (TABLE_CELL.equals(localName)) {
+				contents.setLength(0);
+			}
+		}
 
-                    cell = (typeColumn != null) ? row.getCell(typeColumn.intValue()) : null;
-                    if (cell != null) {
-                        type = cell.getStringCellValue().trim();
-                    }
-                    
-                    cell = (classifierColumn != null) ? row.getCell(classifierColumn.intValue()) : null;
-                    if (cell != null) {
-                        classifier = cell.getStringCellValue().trim();
-                    }
-
-                    if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                    	if (groupId.isEmpty() || version.isEmpty()) {
-                    		project.log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
-                    	}
+		@Override
+		public void endElement(String uri, String localName, String qName) throws SAXException {
+			if (TABLE_ROW.equals(localName)) {
+				if (parsingColumnHeaders) {
+					if (columnHeaders.size() > 0) {
+						if (columnHeaders.size() < 3)
+							throw new BuildException("Input yank xlsx file (" + xlsxFile + ") does not contains GroupId, ArtifactId, or Version columns");
+						parsingColumnHeaders = false;
+					}
+				} else {
+					if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
+						if (!(groupId.isEmpty() && artifactId.isEmpty() && version.isEmpty())) {
+	                    	if (groupId.isEmpty() || version.isEmpty()) {
+	                    		project.log("Row " + curRow + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
+	                    	}
+						}
                     } else {
                         artifacts.add(new Artifact(groupId, artifactId, type, classifier, version));
                     }
-                }
+					
+	                artifactId = "";
+	                classifier = "";
+	                type = JAR;
+				}
+			} else if (TABLE_CELL.equals(localName)) {
+				curCol++;
+				String value = contents.toString().trim();
+				contents.setLength(0);
 
-                artifactId = "";
-                classifier = "";
-                type = JAR;
-            }
-            
-            project.log(sheet.getLastRowNum() + " rows read from " + xlsxFile, Project.MSG_VERBOSE);
-        } finally {
-            Closer.close(bis);
-        }
-
-        return artifacts;
-	}
-	
-   private Map<ColumnType, Integer> getColumnInfo(XSSFSheet sheet) {
-        int firstRow = sheet.getFirstRowNum();
-        XSSFRow row = sheet.getRow(firstRow);
-
-        Map<ColumnType, Integer> columnHeaders = new EnumMap<ColumnType, Integer>(ColumnType.class);
-
-        for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
-            XSSFCell cell = row.getCell(i);
-            
-            if (cell != null) {
-                String value = cell.getStringCellValue();
-                if (value != null) {
-                	Integer colNum = Integer.valueOf(i);
-                    value = value.trim().toLowerCase();
-                    if (value.startsWith("group")) {
-                        columnHeaders.put(ColumnType.GROUP_COLUMN, colNum);
+				if (!value.isEmpty()) {
+					int index = Integer.parseInt(value);
+					value = sharedStrings.get(index);
+					if (value == null) {
+						throw new BuildException("Input yank xlsx file (" + xlsxFile + ") has missing shared string for index " + index + " at row " + curRow);
+					}
+				}
+				
+				if (parsingColumnHeaders) {
+					value = value.toLowerCase();
+					if (value.startsWith("group")) {
+                        columnHeaders.put(curCol, ColumnType.GROUP_COLUMN);
                     } else if (value.startsWith("artifact")) {
-                        columnHeaders.put(ColumnType.ARTIFACT_COLUMN, colNum);
+                        columnHeaders.put(curCol, ColumnType.ARTIFACT_COLUMN);
                     } else if (value.startsWith("type")) {
-                        columnHeaders.put(ColumnType.TYPE_COLUMN,  colNum);
+                        columnHeaders.put(curCol, ColumnType.TYPE_COLUMN);
                     } else if (value.startsWith("version")) {
-                        columnHeaders.put(ColumnType.VERSION_COLUMN, colNum);
+                        columnHeaders.put(curCol, ColumnType.VERSION_COLUMN);
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
-                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  colNum);
+                        columnHeaders.put(curCol, ColumnType.CLASSIFIER_COLUMN);
                     }
-                    if (columnHeaders.size() == 5) {
-                        return columnHeaders;
-                    }
-                }
-            }
-        }
-        
-        if (columnHeaders.size() >= 3)
-            return columnHeaders;
+				} else {
+					ColumnType colType = columnHeaders.get(curCol);
+					if (colType != null) {
+						switch (colType) {
+							case GROUP_COLUMN:
+								if (!value.isEmpty()) {
+									groupId = value;
+								}
+								break;
+							case ARTIFACT_COLUMN:
+								if (!value.isEmpty()) {
+									artifactId = value;
+								}
+								break;
+							case TYPE_COLUMN:
+								if (!value.isEmpty()) {
+									type = value;
+								}
+								break;
+							case VERSION_COLUMN:
+								if (!value.isEmpty()) {
+									version = value;
+								}
+								break;
+							case CLASSIFIER_COLUMN:
+								if (!value.isEmpty()) {
+									classifier = value;
+								}
+								break;
+						}
+					}
+				}
+			}
+		}
 
-        throw new BuildException("Input yank xlsx file (" + xlsxFile + ") does not contains GroupId, ArtifactId, or Version columns");
+		@Override
+		public void endDocument() throws SAXException {
+			project.log(curRow + " rows read from " + xlsxFile, Project.MSG_VERBOSE);
+		}
+
+		@Override
+		public void characters(char[] ch, int start, int length) throws SAXException {
+			contents.append(ch, start, length);
+		}
 	}
 }
