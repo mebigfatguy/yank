@@ -123,6 +123,7 @@
         	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
         	<rule pattern="org.openxmlformats.schemas.**" result="com.mebigfatguy.org.openxmlformats.schemas.@1" />
         	<rule pattern="org.apache.xmlbeans.**" result="com.mebigfatguy.org.apache.xmlbeans.@1" />
+        	<rule pattern="com.microsoft.**" result="com.mebigfatguy.com.microsoft.@1" />
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
