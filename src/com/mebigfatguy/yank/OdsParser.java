@@ -71,7 +71,6 @@ public class OdsParser implements SpreadsheetParser {
 			Closer.close(zipIs);
 		}
 		
-		System.out.println(artifacts);
 		return artifacts;
 	}
 
