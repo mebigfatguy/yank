@@ -31,6 +31,7 @@ public class Closer {
                 c.close();
             }
         } catch (Exception e) {
+        	//don't care
         }
     }
 
@@ -40,6 +41,7 @@ public class Closer {
                 c.disconnect();
             }
         } catch (Exception e) {
+        	//don't care
         }
     }
 }
