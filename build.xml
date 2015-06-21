@@ -146,7 +146,7 @@
     </target>
 	
 	<target name="test" depends="jar" description="test yank">
-		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${basedir}/yank-${yank.version}.jar"/>
+		<taskdef name="yank" classname="com.mebigfatguy.yank.YankTask" classpath="${lib.dir}/ant-${ant_.version}.jar;${basedir}/target/yank-${yank.version}.jar"/>
 		<yank yankFile="${sample.dir}/yank.xls" destination="${sample.dir}" stripVersions="true" reportMissingDependencies="true" 
 			  source="true" separateClassifierTypes="true" generateLicenses="true" threadPoolSize="30">
 			<generatePath pathXmlFile="${sample.dir}/yank_build.xml" classpathName="yank.path" />
