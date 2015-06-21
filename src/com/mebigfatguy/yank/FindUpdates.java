@@ -10,15 +10,15 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
 
-import org.apache.tools.ant.Project;
-import org.w3c.dom.Document;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+
+import org.apache.tools.ant.Project;
+import org.w3c.dom.Document;
 
 public class FindUpdates implements Runnable {
 
