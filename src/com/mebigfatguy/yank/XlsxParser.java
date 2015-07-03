@@ -184,7 +184,7 @@ public class XlsxParser  implements SpreadsheetParser {
 				contents.setLength(0);
 
 				if (!value.isEmpty()) {
-					int index = Integer.parseInt(value);
+					Integer index = Integer.valueOf(value);
 					value = sharedStrings.get(index);
 					if (value == null) {
 						throw new BuildException("Input yank xlsx file (" + xlsxFile + ") has missing shared string for index " + index + " at row " + curRow);
