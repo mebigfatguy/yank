@@ -24,6 +24,7 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
 import com.mebigfatguy.yank.GeneratePathTask;
+import com.mebigfatguy.yank.GenerateVersionsTask;
 import com.mebigfatguy.yank.ServerTask;
 import com.mebigfatguy.yank.YankTask;
 
@@ -33,7 +34,7 @@ public class Main {
         YankTask yt = new YankTask();
         Project p = new Project();
         yt.setProject(p);
-        
+
         p.setProperty("lib.dir", p.getBaseDir() + "/test/lib");
 
         yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xlsx"));
@@ -53,9 +54,12 @@ public class Main {
         pt.setPathXmlFile(new File("/home/dave/dev/yank/sample/yank_build.xml"));
         yt.addConfiguredGeneratePath(pt);
         yt.setFindUpdatesFile(new File("/home/dave/dev/yank/sample/updates.txt"));
+        GenerateVersionsTask gvTask = new GenerateVersionsTask();
+        gvTask.setPropertyFileName("/home/dave/dev/yank/sample/versions.properties");
+        yt.addConfiguredGenerateVersions(gvTask);
 
         yt.execute();
-        
+
         Java jt = new Java();
         jt.setClasspath((Path) p.getReference("yank.path"));
     }
