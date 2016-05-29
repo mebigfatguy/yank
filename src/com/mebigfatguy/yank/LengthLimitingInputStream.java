@@ -51,13 +51,13 @@ class LengthLimitingInputStream extends FilterInputStream {
 
     @Override
     public int read() throws IOException {
-        if (length > 0) {
-            int value = super.read();
-            length--;
-            return value;
+        if (length <= 0) {
+            return -1;
         }
 
-        return -1;
+        int value = super.read();
+        length--;
+        return value;
     }
 
     @Override
@@ -89,7 +89,7 @@ class LengthLimitingInputStream extends FilterInputStream {
 
     @Override
     public synchronized void mark(int readlimit) {
-    	throw new UnsupportedOperationException("mark not supported on LengthLimitingInputStream");
+        throw new UnsupportedOperationException("mark not supported on LengthLimitingInputStream");
     }
 
     @Override
