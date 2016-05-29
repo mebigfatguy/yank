@@ -28,9 +28,11 @@ import org.xml.sax.helpers.DefaultHandler;
 public class PomHandler extends DefaultHandler {
 
     private enum State {
-        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), NAME("name"), URL("url"), GROUP("groupId"), ARTIFACT("artifactId"), TYPE("type"), CLASSIFIER("classifier"), VERSION("version"), OPTIONAL("optional");
+        NONE(""), PARENT("parent"), DEPENDENCIES("dependencies"), DEPENDENCY("dependency"), LICENSES("licenses"), LICENSE("license"), NAME("name"), URL(
+                "url"), GROUP("groupId"), ARTIFACT("artifactId"), TYPE("type"), CLASSIFIER("classifier"), VERSION("version"), OPTIONAL("optional");
 
         public String elementName;
+
         State(String name) {
             elementName = name;
         }
@@ -63,62 +65,63 @@ public class PomHandler extends DefaultHandler {
     public PomHandler(List<Artifact> transitives) {
         transitiveArtifacts = transitives;
     }
-    
+
     public Pair<String, URI> getLicenseInfo() {
-    	return new Pair<String, URI>(licenseName, licenseURI);
+        return new Pair<String, URI>(licenseName, licenseURI);
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         switch (state) {
-        case NONE:
-            if (localName.equals(State.DEPENDENCIES.elementName)) {
-                state = State.DEPENDENCIES;
-            } else if (localName.equals(State.PARENT.elementName)) {
-                state = State.PARENT;
-            } else if (localName.equals(State.LICENSES.elementName)) {
-            	state = State.LICENSES;
-            }
+            case NONE:
+                if (localName.equals(State.DEPENDENCIES.elementName)) {
+                    state = State.DEPENDENCIES;
+                } else if (localName.equals(State.PARENT.elementName)) {
+                    state = State.PARENT;
+                } else if (localName.equals(State.LICENSES.elementName)) {
+                    state = State.LICENSES;
+                }
             break;
 
-        case DEPENDENCIES:
-            if (localName.equals(State.DEPENDENCY.elementName)) {
-                state = State.DEPENDENCY;
-            }
+            case DEPENDENCIES:
+                if (localName.equals(State.DEPENDENCY.elementName)) {
+                    state = State.DEPENDENCY;
+                }
             break;
 
-        case DEPENDENCY:
-        case PARENT:
-            state = State.getState(localName);
-            if (state == State.NONE){
-                state = State.DEPENDENCY;
-            } else {
+            case DEPENDENCY:
+            case PARENT:
+                state = State.getState(localName);
+                if (state == State.NONE) {
+                    state = State.DEPENDENCY;
+                } else {
+                    value.setLength(0);
+                }
+            break;
+
+            case LICENSES:
+                if (localName.equals(State.LICENSE.elementName)) {
+                    state = State.LICENSE;
+                }
+            break;
+
+            case LICENSE:
+                if (localName.equals(State.NAME.elementName)) {
+                    state = State.NAME;
+                } else if (localName.equals(State.URL.elementName)) {
+                    state = State.URL;
+                }
                 value.setLength(0);
-            }
             break;
-            
-        case LICENSES:
-        	if (localName.equals(State.LICENSE.elementName)) {
-                state = State.LICENSE;
-            }
-        	break;
-        	
-        case LICENSE:
-        	if (localName.equals(State.NAME.elementName))
-        		state = State.NAME;
-        	else if (localName.equals(State.URL.elementName))
-        		state = State.URL;
-        	value.setLength(0);
-            break;
-            
-        case NAME:
-        case URL:
-        case ARTIFACT:
-        case GROUP:
-        case OPTIONAL:
-        case VERSION:
-        case TYPE:
-        case CLASSIFIER:
+
+            case NAME:
+            case URL:
+            case ARTIFACT:
+            case GROUP:
+            case OPTIONAL:
+            case VERSION:
+            case TYPE:
+            case CLASSIFIER:
             break;
         }
     }
@@ -127,91 +130,92 @@ public class PomHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (state) {
 
-        case DEPENDENCIES:
-            if (localName.equals(State.DEPENDENCIES.elementName) && sawLicense) {
-                throw new PomParseCompletedException();
-            }
-            sawDependencies = true;
-            break;
-
-        case DEPENDENCY:
-        case PARENT:
-            if (localName.equals(State.PARENT.elementName)) {
-                state = State.NONE;
-            } else {
-                state = State.DEPENDENCIES;
-                if ((!"true".equals(optional)) && (group != null) && (artifact != null) && (version != null)) {
-                    transitiveArtifacts.add(new Artifact(group, artifact, type, classifier, version));
+            case DEPENDENCIES:
+                if (sawLicense && localName.equals(State.DEPENDENCIES.elementName)) {
+                    throw new PomParseCompletedException();
                 }
-                type = YankTask.JAR;
-                classifier = "";
-            }
-            break;
-            
-        case LICENSES:
-        	if (localName.equals(State.LICENSES.elementName) && sawDependencies) {
-        		throw new PomParseCompletedException();
-        	}
-        	state = State.NONE;
-        	sawLicense = true;
-        	break;
-        	
-        case LICENSE:
-        	if (localName.equals(State.LICENSE.elementName))
-        		state = State.LICENSES;
-        	break;
-        	
-        case NAME:
-        	if (licenseName == null) {
-        		licenseName = value.toString();
-        	}
-        	
-        	state = State.LICENSE;
-        	break;
-        	
-        case URL:
-        	if (licenseURI == null) {
-        		try {
-        			licenseURI = new URI(value.toString());
-        		} catch (URISyntaxException e) {
-        			licenseURI = null;
-        			// just swallow
-        		}
-        	}
-        	state = State.LICENSE;
-        	break;
-
-        case GROUP:
-            group = value.toString().trim();
-            state = State.DEPENDENCY;
+                sawDependencies = true;
             break;
 
-        case ARTIFACT:
-            artifact = value.toString().trim();
-            state = State.DEPENDENCY;
-            break;
-            
-        case TYPE:
-            type = value.toString().trim();
-            state = State.DEPENDENCY;
-            break;
-
-        case VERSION:
-            version = value.toString().trim();
-            state = State.DEPENDENCY;
-            break;
-            
-        case CLASSIFIER:
-            classifier = value.toString().trim();
-            state = State.DEPENDENCY;
+            case DEPENDENCY:
+            case PARENT:
+                if (localName.equals(State.PARENT.elementName)) {
+                    state = State.NONE;
+                } else {
+                    state = State.DEPENDENCIES;
+                    if ((group != null) && (artifact != null) && (version != null) && (!"true".equals(optional))) {
+                        transitiveArtifacts.add(new Artifact(group, artifact, type, classifier, version));
+                    }
+                    type = YankTask.JAR;
+                    classifier = "";
+                }
             break;
 
-        case OPTIONAL:
-            optional = value.toString().trim();
-            state = State.DEPENDENCY;
+            case LICENSES:
+                if (sawDependencies && localName.equals(State.LICENSES.elementName)) {
+                    throw new PomParseCompletedException();
+                }
+                state = State.NONE;
+                sawLicense = true;
             break;
-            
-        case NONE:
+
+            case LICENSE:
+                if (localName.equals(State.LICENSE.elementName)) {
+                    state = State.LICENSES;
+                }
+            break;
+
+            case NAME:
+                if (licenseName == null) {
+                    licenseName = value.toString();
+                }
+
+                state = State.LICENSE;
+            break;
+
+            case URL:
+                if (licenseURI == null) {
+                    try {
+                        licenseURI = new URI(value.toString());
+                    } catch (URISyntaxException e) {
+                        licenseURI = null;
+                        // just swallow
+                    }
+                }
+                state = State.LICENSE;
+            break;
+
+            case GROUP:
+                group = value.toString().trim();
+                state = State.DEPENDENCY;
+            break;
+
+            case ARTIFACT:
+                artifact = value.toString().trim();
+                state = State.DEPENDENCY;
+            break;
+
+            case TYPE:
+                type = value.toString().trim();
+                state = State.DEPENDENCY;
+            break;
+
+            case VERSION:
+                version = value.toString().trim();
+                state = State.DEPENDENCY;
+            break;
+
+            case CLASSIFIER:
+                classifier = value.toString().trim();
+                state = State.DEPENDENCY;
+            break;
+
+            case OPTIONAL:
+                optional = value.toString().trim();
+                state = State.DEPENDENCY;
+            break;
+
+            case NONE:
             break;
         }
     }
@@ -219,23 +223,23 @@ public class PomHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         switch (state) {
-        case GROUP:
-        case ARTIFACT:
-        case TYPE:
-        case VERSION:
-        case CLASSIFIER:
-        case OPTIONAL:
-        case NAME:
-        case URL:
-            value.append(ch, start, length);
+            case GROUP:
+            case ARTIFACT:
+            case TYPE:
+            case VERSION:
+            case CLASSIFIER:
+            case OPTIONAL:
+            case NAME:
+            case URL:
+                value.append(ch, start, length);
             break;
-            
-        case DEPENDENCIES:
-        case DEPENDENCY:
-        case NONE:
-        case PARENT:
-        case LICENSES:
-        case LICENSE:
+
+            case DEPENDENCIES:
+            case DEPENDENCY:
+            case NONE:
+            case PARENT:
+            case LICENSES:
+            case LICENSE:
             break;
         }
     }
