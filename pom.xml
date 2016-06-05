@@ -38,7 +38,7 @@
     <scm>
         <connection>scm:git://github.com/mebigfatguy/yank.git</connection>
         <developerConnection>scm:git://github.com/mebigfatguy/yank.git</developerConnection>
-        <url>https://github.com/mebigfatguy/yank/trunk/</url>    
+        <url>https://github.com/mebigfatguy/yank/</url>    
     </scm>
     
     <properties>
