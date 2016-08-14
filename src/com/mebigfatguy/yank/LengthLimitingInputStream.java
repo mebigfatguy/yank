@@ -94,7 +94,7 @@ class LengthLimitingInputStream extends FilterInputStream {
 
     @Override
     public synchronized void reset() throws IOException {
-        throw new IOException("reset not supported or LengthLimitingInputStream");
+        throw new IOException("reset not supported on LengthLimitingInputStream");
     }
 
 }
