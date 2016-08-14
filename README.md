@@ -105,9 +105,9 @@ You can also add a sub element to generate a properties file containing constant
 </pre>
 
 As for the yank.xls file, the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
-ArtifactId and Version columns. You may also specify an classifier column, which can download jars with names after the version 
+ArtifactId and Version columns. You may also specify a Classifier column, which can download jars with names after the version 
 such as natives. Note that sources jars are automatically handled and you need not use the classifier column for this purpose 
-(See the source attribute above). You may also specify a Type column to support files such as xml, or zip files, if not specified jar 
+(See the source attribute above). You may also specify a Type column to support files such as xml, or zip files, if not specified, 'jar' 
 is assumed. More columns may be added for your governance purposes, such as license, reason, code area, etc, without issue. 
 If values for columns groupId or version are not filled in, the previous value is pulled down from above. Other columns must be
 explicitly specified.

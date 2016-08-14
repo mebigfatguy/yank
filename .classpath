@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/poi-3.12.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.12.jar" sourcepath="/home/dave/.m2/repository/org/apache/poi/poi/3.12/poi-3.12-sources.jar"/>
 	<classpathentry kind="lib" path="lib/ant-1.9.6.jar" sourcepath="/home/dave/.m2/repository/org/apache/ant/ant/1.9.6/ant-1.9.6-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
