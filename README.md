@@ -123,7 +123,7 @@ Here's an example yank.xls file
     <tr><td>org.slf4j</td><td>slf4j-api</td><td>1.7.5</td><td></td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
     <tr><td>ch.qos.logback</td><td>logback-core</td><td>1.0.13</td><td></td></tr>    
-    <tr><td>ch.qos.logback</td><td>logback-classic</td><td></td><td></td></tr>    
+    <tr><td></td><td>logback-classic</td><td></td><td></td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
     <tr><td>org.jogamp.jogl</td><td>jogl-all</td><td>2.0.2</td><td></td></tr>
     <tr><td></td><td>jogl-all</td><td></td><td>natives-linux-amd64</td></tr>
