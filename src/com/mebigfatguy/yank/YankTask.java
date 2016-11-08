@@ -45,6 +45,7 @@ public class YankTask extends Task {
     private File findUpdatesFile;
     private GeneratePathTask generatePathTask;
     private GenerateVersionsTask generateVersionsTask;
+    private boolean checkSHADigests;
     private boolean generateLicenses;
     private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
@@ -65,7 +66,7 @@ public class YankTask extends Task {
     public void setReportMissingDependencies(boolean report) {
         reportMissingDependencies = report;
     }
-    
+
     public void setFindUpdatesFile(File updatesFile) {
         findUpdatesFile = updatesFile;
     }
@@ -77,13 +78,13 @@ public class YankTask extends Task {
     public void setSource(boolean sources) {
         options.setYankSources(sources);
     }
-    
+
     public void setSeparateClassifierTypes(boolean separate) {
-    	options.setSeparateClassifierTypes(separate);
+        options.setSeparateClassifierTypes(separate);
     }
-    
+
     public void setGenerateLicenses(boolean generate) {
-    	generateLicenses = generate;
+        generateLicenses = generate;
     }
 
     public void setThreadPoolSize(int size) {
@@ -96,11 +97,12 @@ public class YankTask extends Task {
 
     public void addConfiguredServer(ServerTask server) {
         String url = server.getUrl().trim();
-        if (!url.endsWith("/"))
+        if (!url.endsWith("/")) {
             url += "/";
+        }
         options.addServer(url);
     }
-    
+
     public void addConfiguredGenerateVersions(GenerateVersionsTask gvTask) {
         generateVersionsTask = gvTask;
     }
@@ -113,26 +115,34 @@ public class YankTask extends Task {
             options.setProxyServer(proxy);
         }
     }
-    
+
+    public void setCheckSHADigests(boolean check) {
+        checkSHADigests = check;
+    }
+
     @Override
     public void execute() throws BuildException {
         getProject().log("Checking attributes...", Project.MSG_VERBOSE);
-        if ((xlsFile == null) || !xlsFile.isFile())
+        if ((xlsFile == null) || !xlsFile.isFile()) {
             throw new BuildException("Yank (xls) file not specified or invalid: " + xlsFile);
-        if ((destination == null) || destination.isFile())
+        }
+        if ((destination == null) || destination.isFile()) {
             throw new BuildException("Yank destination (" + destination + ") is a file, not a directory");
-        if (options.getServers().isEmpty())
+        }
+        if (options.getServers().isEmpty()) {
             throw new BuildException("No specified nested <server> items found");
+        }
 
-        if (!destination.mkdirs() && !destination.exists())
+        if (!destination.mkdirs() && !destination.exists()) {
             throw new BuildException("Failed creating destination directory: " + destination);
+        }
 
         ExecutorService pool = Executors.newFixedThreadPool(threadPoolSize);
         try {
 
             getProject().log("Reading artifact list...", Project.MSG_VERBOSE);
             final List<Artifact> artifacts = SpreadsheetParserFactory.parse(getProject(), xlsFile);
-            List<Future<?>> downloadFutures = new ArrayList<Future<?>>(artifacts.size());
+            List<Future<?>> downloadFutures = new ArrayList<>(artifacts.size());
 
             getProject().log("Scheduling downloaders...", Project.MSG_VERBOSE);
             for (Artifact artifact : artifacts) {
@@ -145,14 +155,17 @@ public class YankTask extends Task {
 
             List<Future<PomDetails>> pomFutures = null;
             if (reportMissingDependencies || generateLicenses) {
-            	if (reportMissingDependencies)
-            		getProject().log("Scheduling missing dependencies check...", Project.MSG_VERBOSE);
-            	if (generateLicenses)
-            		getProject().log("Scheduling license generation...", Project.MSG_VERBOSE);
-                pomFutures = new ArrayList<Future<PomDetails>>(artifacts.size());
+                if (reportMissingDependencies) {
+                    getProject().log("Scheduling missing dependencies check...", Project.MSG_VERBOSE);
+                }
+                if (generateLicenses) {
+                    getProject().log("Scheduling license generation...", Project.MSG_VERBOSE);
+                }
+                pomFutures = new ArrayList<>(artifacts.size());
                 for (Artifact artifact : artifacts) {
-                	if (artifact.getClassifier().length() == 0)
-                		pomFutures.add(pool.submit(new PomDiscovery(getProject(), artifact, options)));
+                    if (artifact.getClassifier().length() == 0) {
+                        pomFutures.add(pool.submit(new PomDiscovery(getProject(), artifact, options)));
+                    }
                 }
             }
 
@@ -160,30 +173,30 @@ public class YankTask extends Task {
                 getProject().log("Scheduling path generation task...", Project.MSG_VERBOSE);
                 pool.submit(new PathGenerator(getProject(), artifacts, generatePathTask, destination, options.isStripVersions()));
             }
-            
+
             if (generateVersionsTask != null) {
                 getProject().log("Scheduling version properties generation...", Project.MSG_VERBOSE);
                 pool.submit(new VersionsGenerator(getProject(), artifacts, generateVersionsTask));
-            }  
-            
+            }
+
             if (findUpdatesFile != null) {
                 getProject().log("Scheduling new versions check...", Project.MSG_VERBOSE);
                 pool.submit(new FindUpdates(getProject(), artifacts, findUpdatesFile, options.getServers()));
             }
 
             if (generateLicenses) {
-            	Map<String, URI> licenses = new HashMap<String, URI>();
-            	Set<PomDetails> poms = new HashSet<PomDetails>();
-            	
-            	for (Future<PomDetails> f : pomFutures) {
-            		Pair<String, URI> license = f.get().getLicense();
-            		licenses.put(license.getKey(), license.getValue());
-            		poms.add(f.get());
-            	}
-            	getProject().log("Scheduling license creation...", Project.MSG_VERBOSE);
-                pool.submit(new LicenseGenerator(getProject(), destination, poms, licenses));	
+                Map<String, URI> licenses = new HashMap<>();
+                Set<PomDetails> poms = new HashSet<>();
+
+                for (Future<PomDetails> f : pomFutures) {
+                    Pair<String, URI> license = f.get().getLicense();
+                    licenses.put(license.getKey(), license.getValue());
+                    poms.add(f.get());
+                }
+                getProject().log("Scheduling license creation...", Project.MSG_VERBOSE);
+                pool.submit(new LicenseGenerator(getProject(), destination, poms, licenses));
             }
-            
+
             for (Future<?> f : downloadFutures) {
                 f.get();
             }
@@ -196,18 +209,19 @@ public class YankTask extends Task {
                     }
                 }
             }
-            
+
             if (reportMissingDependencies) {
                 getProject().log("Reporting missing dependencies...", Project.MSG_VERBOSE);
-                Set<Artifact> requiredArtifacts = new HashSet<Artifact>();
+                Set<Artifact> requiredArtifacts = new HashSet<>();
                 for (Future<PomDetails> f : pomFutures) {
                     requiredArtifacts.addAll(f.get().getDependentArtifacts());
                 }
 
                 Iterator<Artifact> it = requiredArtifacts.iterator();
                 while (it.hasNext()) {
-                    if (artifacts.contains(it.next()))
+                    if (artifacts.contains(it.next())) {
                         it.remove();
+                    }
                 }
 
                 if (!requiredArtifacts.isEmpty()) {
@@ -219,7 +233,7 @@ public class YankTask extends Task {
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             if (failOnError) {
                 getProject().log(e.getMessage(), Project.MSG_ERR);
@@ -228,7 +242,7 @@ public class YankTask extends Task {
         } finally {
             pool.shutdown();
         }
-        
+
         getProject().log("Finished.", Project.MSG_VERBOSE);
     }
 }

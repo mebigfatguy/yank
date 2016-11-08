@@ -24,9 +24,10 @@ public class Options {
 
     private boolean stripVersions;
     private boolean yankSources;
-    private String proxyServer="";
-    private List<String> servers = new ArrayList<String>();
+    private String proxyServer = "";
+    private List<String> servers = new ArrayList<>();
     private boolean separateClassifierTypes = false;
+    private boolean checkSHADigests = false;
 
     public boolean isStripVersions() {
         return stripVersions;
@@ -60,11 +61,20 @@ public class Options {
         servers.add(server);
     }
 
-	public boolean isSeparateClassifierTypes() {
-		return separateClassifierTypes;
-	}
+    public boolean isSeparateClassifierTypes() {
+        return separateClassifierTypes;
+    }
 
-	public void setSeparateClassifierTypes(boolean separateClassifierTypes) {
-		this.separateClassifierTypes = separateClassifierTypes;
-	}
+    public void setSeparateClassifierTypes(boolean separateClassifierTypes) {
+        this.separateClassifierTypes = separateClassifierTypes;
+    }
+
+    public boolean isCheckSHADigests() {
+        return checkSHADigests;
+    }
+
+    public void setCheckSHADigests(boolean checkSHADigests) {
+        this.checkSHADigests = checkSHADigests;
+    }
+
 }
