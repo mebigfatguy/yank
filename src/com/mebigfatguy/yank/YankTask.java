@@ -45,7 +45,6 @@ public class YankTask extends Task {
     private File findUpdatesFile;
     private GeneratePathTask generatePathTask;
     private GenerateVersionsTask generateVersionsTask;
-    private boolean checkSHADigests;
     private boolean generateLicenses;
     private boolean failOnError = true;
     private int threadPoolSize = 4 * Runtime.getRuntime().availableProcessors();
@@ -117,7 +116,7 @@ public class YankTask extends Task {
     }
 
     public void setCheckSHADigests(boolean check) {
-        checkSHADigests = check;
+        options.setCheckSHADigests(check);
     }
 
     @Override
