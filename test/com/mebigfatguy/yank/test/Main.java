@@ -44,6 +44,7 @@ public class Main {
         yt.setSeparateClassifierTypes(true);
         yt.setReportMissingDependencies(true);
         yt.setGenerateLicenses(true);
+        yt.setCheckSHADigests(true);
 
         ServerTask st = new ServerTask();
         st.setUrl("http://repo1.maven.org/maven2");

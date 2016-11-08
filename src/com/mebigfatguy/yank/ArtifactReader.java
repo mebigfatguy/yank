@@ -18,8 +18,11 @@
 package com.mebigfatguy.yank;
 
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Deque;
 
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
 class ArtifactReader implements Runnable {
@@ -27,13 +30,21 @@ class ArtifactReader implements Runnable {
     private final InputStream inputStream;
     private final Deque<TransferBuffer> dq;
     private final int bufferSize;
+    private MessageDigest messageDigest;
     private boolean success = false;
 
-    public ArtifactReader(Project p, final InputStream is, final Deque<TransferBuffer> queue, int bufferSize) {
+    public ArtifactReader(Project p, final InputStream is, final Deque<TransferBuffer> queue, int bufferSize, boolean checkSHADigest) {
         project = p;
         inputStream = is;
         dq = queue;
         this.bufferSize = bufferSize;
+        if (checkSHADigest) {
+            try {
+                messageDigest = MessageDigest.getInstance("SHA-1");
+            } catch (NoSuchAlgorithmException e) {
+                throw new BuildException("Can't create SHA-1 digest of artifact", e);
+            }
+        }
     }
 
     @Override
@@ -43,6 +54,10 @@ class ArtifactReader implements Runnable {
             int size = inputStream.read(buffer);
             while (size >= 0) {
                 if (size > 0) {
+                    if (messageDigest != null) {
+                        messageDigest.update(buffer, 0, size);
+                    }
+
                     TransferBuffer queueBuffer = new TransferBuffer(buffer, size);
                     synchronized (dq) {
                         dq.addLast(queueBuffer);
@@ -62,6 +77,13 @@ class ArtifactReader implements Runnable {
                 dq.notifyAll();
             }
         }
+    }
+
+    public byte[] getDigest() {
+        if (messageDigest == null) {
+            throw new BuildException("Asking for digest which has not been calculated");
+        }
+        return messageDigest.digest();
     }
 
     public boolean wasSuccessful() {

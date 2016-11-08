@@ -38,14 +38,13 @@ public class Downloader implements Runnable {
     private File destination;
     private Options options;
 
-
     public Downloader(Project p, Artifact artifact, File dest, Options options) {
         project = p;
         this.artifact = artifact;
         destination = dest;
         if (options.isSeparateClassifierTypes() && !artifact.getClassifier().isEmpty()) {
-        	destination = new File(destination, artifact.getClassifier());
-        	destination.mkdirs();
+            destination = new File(destination, artifact.getClassifier());
+            destination.mkdirs();
         }
         this.options = options;
 
@@ -53,7 +52,8 @@ public class Downloader implements Runnable {
 
     @Override
     public void run() {
-        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion()) + (artifact.getClassifier().isEmpty() ? "" : ("-" + artifact.getClassifier())) + ".jar");
+        File destinationFile = new File(destination, artifact.getArtifactId() + ((options.isStripVersions()) ? "" : "-" + artifact.getVersion())
+                + (artifact.getClassifier().isEmpty() ? "" : ("-" + artifact.getClassifier())) + ".jar");
         for (String server : options.getServers()) {
             URL u = artifact.toURL(server);
             HttpURLConnection con = null;
@@ -68,9 +68,9 @@ public class Downloader implements Runnable {
 
                     bis = new BufferedInputStream(con.getInputStream());
                     bos = new BufferedOutputStream(new FileOutputStream(destinationFile));
-                    Deque<TransferBuffer> dq = new ArrayDeque<TransferBuffer>();
+                    Deque<TransferBuffer> dq = new ArrayDeque<>();
 
-                    ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE);
+                    ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE, options.isCheckSHADigests());
                     Thread rt = new Thread(r);
                     rt.start();
 

@@ -41,108 +41,109 @@ import org.apache.tools.ant.Project;
 public class LicenseGenerator implements Callable<Void> {
 
     private static final int BUFFER_SIZE = 2048;
-    
-	private Project project;
-	private File destination;
-	private Set<PomDetails> pomDetails;
-	private Map<Pair<String, URI>, byte[]> pomLicenses;
-	
-	public LicenseGenerator(Project proj, File dest, Set<PomDetails> poms, Map<String, URI> licenses) {
-		project = proj;
-		pomDetails = poms;
-		pomLicenses = new HashMap<Pair<String, URI>, byte[]>();
-		for (Map.Entry<String, URI> entry : licenses.entrySet()) {
-			if ((entry.getKey() != null) || (entry.getValue() != null))
-				pomLicenses.put(new Pair<String, URI>(entry.getKey(), entry.getValue()),  null);
-		}
-		destination = new File(dest, "licenses");
-		destination.mkdirs();
-	}
 
-	@Override
-	public Void call() throws Exception {
+    private Project project;
+    private File destination;
+    private Set<PomDetails> pomDetails;
+    private Map<Pair<String, URI>, byte[]> pomLicenses;
 
-		pullLicenses();
-		writeLicenses();
-		
-		return null;
-	}
-	
-	private void pullLicenses() {
-		for (Pair<String, URI> entry : pomLicenses.keySet()) {
+    public LicenseGenerator(Project proj, File dest, Set<PomDetails> poms, Map<String, URI> licenses) {
+        project = proj;
+        pomDetails = poms;
+        pomLicenses = new HashMap<>();
+        for (Map.Entry<String, URI> entry : licenses.entrySet()) {
+            if ((entry.getKey() != null) || (entry.getValue() != null)) {
+                pomLicenses.put(new Pair<>(entry.getKey(), entry.getValue()), null);
+            }
+        }
+        destination = new File(dest, "licenses");
+        destination.mkdirs();
+    }
+
+    @Override
+    public Void call() throws Exception {
+
+        pullLicenses();
+        writeLicenses();
+
+        return null;
+    }
+
+    private void pullLicenses() {
+        for (Pair<String, URI> entry : pomLicenses.keySet()) {
             BufferedInputStream bis = null;
             ByteArrayOutputStream baos = null;
 
             try {
-            	URL url = getLicenseURL(entry.getKey(), entry.getValue());
-            	if (url != null) {
-	
-	                bis = new BufferedInputStream(url.openStream());
-	                baos = new ByteArrayOutputStream();
-	                
-	                if (copy(bis, baos)) {
-	                    pomLicenses.put(entry, baos.toByteArray());
-	                }
-            	}
+                URL url = getLicenseURL(entry.getKey(), entry.getValue());
+                if (url != null) {
+
+                    bis = new BufferedInputStream(url.openStream());
+                    baos = new ByteArrayOutputStream();
+
+                    if (copy(bis, baos)) {
+                        pomLicenses.put(entry, baos.toByteArray());
+                    }
+                }
             } catch (Exception e) {
-            	project.log(e.getMessage(), e, Project.MSG_VERBOSE);
-            	project.log("failed retrieving license file from " + entry, Project.MSG_ERR);
+                project.log(e.getMessage(), e, Project.MSG_VERBOSE);
+                project.log("failed retrieving license file from " + entry, Project.MSG_ERR);
             } finally {
                 Closer.close(bis);
                 Closer.close(baos);
             }
-		}
-	}
-	
-	private void writeLicenses() {
-		for (PomDetails pom : pomDetails) {
-			Pair<String, URI> license = pom.getLicense();
-			if (license != null) {
-				byte[] data = pomLicenses.get(license);
-				if (data != null) {
-					Artifact a = pom.getJarArtifact();
-					File licenseFile = new File(destination, a.getArtifactId() + ".license");
-					
-					ByteArrayInputStream bais = null;
-		            BufferedOutputStream bos = null;
+        }
+    }
 
-		            try {
-		            	bais = new ByteArrayInputStream(data);
-		            	bos = new BufferedOutputStream(new FileOutputStream(licenseFile));
-		            	
-		            	copy(bais, bos);
-		            } catch (Exception e) {
-		            	if (licenseFile.exists()) {
-		            		licenseFile.deleteOnExit();
-		            	}
-		            	project.log("Failed to write license file for " + license, Project.MSG_DEBUG);
-		            } finally {
-		            	Closer.close(bais);
-		            	Closer.close(bos);
-		            }
-				}
-			}
-					
-		}
-	}
-	
-	private static URL getLicenseURL(String name, URI uri) throws MalformedURLException {
-		URL url = null;
-		if (name != null) {
-			url = LicenseGenerator.class.getResource("/knownlicenses/" + name.toLowerCase(Locale.ENGLISH));
-		}
-		
-		if ((url == null) && (uri != null)) {
-			url = uri.toURL();
-		}
-		
-		return url;
-	}
-	
-	private boolean copy(InputStream is, OutputStream os) throws InterruptedException {
-        Deque<TransferBuffer> dq = new ArrayDeque<TransferBuffer>();
+    private void writeLicenses() {
+        for (PomDetails pom : pomDetails) {
+            Pair<String, URI> license = pom.getLicense();
+            if (license != null) {
+                byte[] data = pomLicenses.get(license);
+                if (data != null) {
+                    Artifact a = pom.getJarArtifact();
+                    File licenseFile = new File(destination, a.getArtifactId() + ".license");
 
-        ArtifactReader r = new ArtifactReader(project, is, dq, BUFFER_SIZE);
+                    ByteArrayInputStream bais = null;
+                    BufferedOutputStream bos = null;
+
+                    try {
+                        bais = new ByteArrayInputStream(data);
+                        bos = new BufferedOutputStream(new FileOutputStream(licenseFile));
+
+                        copy(bais, bos);
+                    } catch (Exception e) {
+                        if (licenseFile.exists()) {
+                            licenseFile.deleteOnExit();
+                        }
+                        project.log("Failed to write license file for " + license, Project.MSG_DEBUG);
+                    } finally {
+                        Closer.close(bais);
+                        Closer.close(bos);
+                    }
+                }
+            }
+
+        }
+    }
+
+    private static URL getLicenseURL(String name, URI uri) throws MalformedURLException {
+        URL url = null;
+        if (name != null) {
+            url = LicenseGenerator.class.getResource("/knownlicenses/" + name.toLowerCase(Locale.ENGLISH));
+        }
+
+        if ((url == null) && (uri != null)) {
+            url = uri.toURL();
+        }
+
+        return url;
+    }
+
+    private boolean copy(InputStream is, OutputStream os) throws InterruptedException {
+        Deque<TransferBuffer> dq = new ArrayDeque<>();
+
+        ArtifactReader r = new ArtifactReader(project, is, dq, BUFFER_SIZE, false);
         Thread rt = new Thread(r);
         rt.start();
 
@@ -154,5 +155,5 @@ public class LicenseGenerator implements Callable<Void> {
         wt.join();
 
         return (r.wasSuccessful() && w.wasSuccessful());
-	}
+    }
 }
