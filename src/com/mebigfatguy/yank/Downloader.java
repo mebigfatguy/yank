@@ -83,6 +83,7 @@ public class Downloader implements Runnable {
 
                     if (r.wasSuccessful() && w.wasSuccessful()) {
                         artifact.setStatus(Artifact.Status.DOWNLOADED);
+                        artifact.setDigest(r.getDigest());
                     }
                 } else {
                     artifact.setStatus(Artifact.Status.UPTODATE);

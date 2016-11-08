@@ -81,7 +81,7 @@ class ArtifactReader implements Runnable {
 
     public byte[] getDigest() {
         if (messageDigest == null) {
-            throw new BuildException("Asking for digest which has not been calculated");
+            return null;
         }
         return messageDigest.digest();
     }

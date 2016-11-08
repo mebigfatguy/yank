@@ -21,13 +21,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class Artifact implements Comparable<Artifact> {
-    public enum Status {UPTODATE, DOWNLOADED, FAILED, UNKNOWN};
+    public enum Status {
+        UPTODATE, DOWNLOADED, FAILED, UNKNOWN
+    };
 
     private String groupId;
     private String artifactId;
     private String type;
     private String version;
     private String classifier;
+    private byte[] digest;
     private Status status = Status.UNKNOWN;
 
     public Artifact(String groupId, String artifactId, String type, String classifier, String version) {
@@ -53,9 +56,17 @@ public class Artifact implements Comparable<Artifact> {
     public String getVersion() {
         return version;
     }
-    
+
     public String getClassifier() {
         return classifier;
+    }
+
+    public byte[] getDigest() {
+        return digest;
+    }
+
+    public void setDigest(byte[] digest) {
+        this.digest = digest;
     }
 
     public Status getStatus() {
@@ -73,11 +84,13 @@ public class Artifact implements Comparable<Artifact> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Artifact))
+        if (!(o instanceof Artifact)) {
             return false;
+        }
 
         Artifact that = (Artifact) o;
-        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && type.equals(that.type) && classifier.equals(that.classifier) && version.equals(that.version);
+        return groupId.equals(that.groupId) && artifactId.equals(that.artifactId) && type.equals(that.type) && classifier.equals(that.classifier)
+                && version.equals(that.version);
     }
 
     @Override
@@ -91,16 +104,17 @@ public class Artifact implements Comparable<Artifact> {
         if (cmp != 0) {
             return cmp;
         }
-        
+
         cmp = type.compareTo(a.type);
         if (cmp != 0) {
             return cmp;
         }
-        
+
         cmp = classifier.compareTo(a.classifier);
         if (cmp != 0) {
             return cmp;
-        };
+        }
+        ;
 
         return version.compareTo(a.version);
     }
@@ -134,11 +148,11 @@ public class Artifact implements Comparable<Artifact> {
             url.append('-');
 
             url.append(version);
-            
+
             if (!classifier.isEmpty()) {
                 url.append('-').append(classifier);
             }
-                
+
             url.append(extension);
 
             return new URL(url.toString());
@@ -146,7 +160,7 @@ public class Artifact implements Comparable<Artifact> {
             return null;
         }
     }
-    
+
     public URL toMetaDataURL(String server) {
         try {
             StringBuilder url = new StringBuilder(server);
@@ -165,8 +179,7 @@ public class Artifact implements Comparable<Artifact> {
 
     @Override
     public String toString() {
-        return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId + ", type=" + type
-                + (!classifier.isEmpty() ? ", classifier=" + classifier : "") + ", version=" + version + ", status="
-                + status + "]";
+        return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId + ", type=" + type + (!classifier.isEmpty() ? ", classifier=" + classifier : "")
+                + ", version=" + version + ", status=" + status + "]";
     }
 }
