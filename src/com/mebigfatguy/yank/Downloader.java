@@ -87,8 +87,8 @@ public class Downloader implements Runnable {
                             if (!digestEquals(artifact, r.getDigest())) {
                                 artifact.setStatus(Artifact.Status.DIGEST_MISMATCH);
                                 destinationFile.deleteOnExit();
-                                project.log("download failed with incorrect digest: " + artifact + "- expected: " + artifact.getDigest() + " actual: "
-                                        + Arrays.toString(r.getDigest()), Project.MSG_ERR);
+                                project.log("download failed with incorrect digest: " + artifact + " - actual: " + byteArrayDigestToHexString(r.getDigest()),
+                                        Project.MSG_ERR);
                                 return;
                             }
                         }
@@ -153,5 +153,17 @@ public class Downloader implements Runnable {
             digest[i / 2] = (byte) ((Character.digit(hexDigest.charAt(i), 16) << 4) + Character.digit(hexDigest.charAt(i + 1), 16));
         }
         return digest;
+    }
+
+    final private static char[] hexChars = "0123456789ABCDEF".toCharArray();
+
+    public static String byteArrayDigestToHexString(byte[] digest) {
+        char[] hexDigest = new char[digest.length * 2];
+        for (int i = 0; i < digest.length; i++) {
+            int b = digest[i] & 0xFF;
+            hexDigest[i << 1] = hexChars[b >>> 4];
+            hexDigest[i << (1 + 1)] = hexChars[b & 0x0F];
+        }
+        return new String(hexDigest);
     }
 }
