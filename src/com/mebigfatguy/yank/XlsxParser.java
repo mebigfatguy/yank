@@ -32,8 +32,8 @@ public class XlsxParser implements SpreadsheetParser {
 
     private Project project;
     private File xlsxFile;
-    private Map<Integer, String> sharedStrings = new HashMap<Integer, String>();
-    private List<Artifact> artifacts = new ArrayList<Artifact>();
+    private Map<Integer, String> sharedStrings = new HashMap<>();
+    private List<Artifact> artifacts = new ArrayList<>();
 
     @Override
     public List<Artifact> getArtifactList(Project proj, File spreadsheet) throws IOException {
@@ -133,13 +133,14 @@ public class XlsxParser implements SpreadsheetParser {
         private int curRow = 0;
         private int curCol = 0;
         private boolean parsingColumnHeaders = true;
-        private Map<Integer, ColumnType> columnHeaders = new HashMap<Integer, ColumnType>();
+        private Map<Integer, ColumnType> columnHeaders = new HashMap<>();
         private StringBuilder contents = new StringBuilder();
         private String groupId = "";
         private String artifactId = "";
         private String type = JAR;
         private String version = "";
         private String classifier = "";
+        private String digest = "";
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -170,15 +171,16 @@ public class XlsxParser implements SpreadsheetParser {
                         if (!(groupId.isEmpty() && artifactId.isEmpty() && version.isEmpty())) {
                             if (groupId.isEmpty() || version.isEmpty()) {
                                 project.log("Row " + curRow + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId
-                                        + ", classifier: " + classifier + ", version: " + version + "]");
+                                        + ", classifier: " + classifier + ", version: " + version + ", digest: " + digest + "]");
                             }
                         }
                     } else {
-                        artifacts.add(new Artifact(groupId, artifactId, type, classifier, version));
+                        artifacts.add(new Artifact(groupId, artifactId, type, classifier, version, digest));
                     }
 
                     artifactId = "";
                     classifier = "";
+                    digest = "";
                     type = JAR;
                 }
             } else if (TABLE_CELL.equals(localName)) {
@@ -205,6 +207,8 @@ public class XlsxParser implements SpreadsheetParser {
                         columnHeaders.put(curCol, ColumnType.VERSION_COLUMN);
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
                         columnHeaders.put(curCol, ColumnType.CLASSIFIER_COLUMN);
+                    } else if (value.startsWith("digest")) {
+                        columnHeaders.put(curCol, ColumnType.DIGEST_COLUMN);
                     }
                 } else {
                     ColumnType colType = columnHeaders.get(curCol);
@@ -235,6 +239,10 @@ public class XlsxParser implements SpreadsheetParser {
                                     classifier = value;
                                 }
                             break;
+                            case DIGEST_COLUMN:
+                                if (!value.isEmpty()) {
+                                    digest = value;
+                                }
                         }
                     }
                 }

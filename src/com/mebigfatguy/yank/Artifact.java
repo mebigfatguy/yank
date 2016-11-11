@@ -22,7 +22,7 @@ import java.net.URL;
 
 public class Artifact implements Comparable<Artifact> {
     public enum Status {
-        UPTODATE, DOWNLOADED, FAILED, UNKNOWN
+        UPTODATE, DOWNLOADED, FAILED, DIGEST_MISMATCH, UNKNOWN
     };
 
     private String groupId;
@@ -30,15 +30,16 @@ public class Artifact implements Comparable<Artifact> {
     private String type;
     private String version;
     private String classifier;
-    private byte[] digest;
+    private String digest;
     private Status status = Status.UNKNOWN;
 
-    public Artifact(String groupId, String artifactId, String type, String classifier, String version) {
+    public Artifact(String groupId, String artifactId, String type, String classifier, String version, String digest) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.type = type;
         this.classifier = classifier;
         this.version = version;
+        this.digest = digest;
     }
 
     public String getGroupId() {
@@ -61,12 +62,8 @@ public class Artifact implements Comparable<Artifact> {
         return classifier;
     }
 
-    public byte[] getDigest() {
+    public String getDigest() {
         return digest;
-    }
-
-    public void setDigest(byte[] digest) {
-        this.digest = digest;
     }
 
     public Status getStatus() {
@@ -180,6 +177,6 @@ public class Artifact implements Comparable<Artifact> {
     @Override
     public String toString() {
         return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId + ", type=" + type + (!classifier.isEmpty() ? ", classifier=" + classifier : "")
-                + ", version=" + version + ", status=" + status + "]";
+                + ", version=" + version + ", status=" + status + ", digest=" + digest + "]";
     }
 }

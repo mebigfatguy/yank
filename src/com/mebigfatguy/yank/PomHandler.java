@@ -67,7 +67,7 @@ public class PomHandler extends DefaultHandler {
     }
 
     public Pair<String, URI> getLicenseInfo() {
-        return new Pair<String, URI>(licenseName, licenseURI);
+        return new Pair<>(licenseName, licenseURI);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class PomHandler extends DefaultHandler {
                 } else {
                     state = State.DEPENDENCIES;
                     if ((group != null) && (artifact != null) && (version != null) && (!"true".equals(optional))) {
-                        transitiveArtifacts.add(new Artifact(group, artifact, type, classifier, version));
+                        transitiveArtifacts.add(new Artifact(group, artifact, type, classifier, version, ""));
                     }
                     type = YankTask.JAR;
                     classifier = "";

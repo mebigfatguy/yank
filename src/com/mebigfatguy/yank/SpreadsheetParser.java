@@ -24,10 +24,12 @@ import java.util.List;
 import org.apache.tools.ant.Project;
 
 public interface SpreadsheetParser {
-	
+
     String JAR = "jar";
-    
-    enum ColumnType {GROUP_COLUMN, ARTIFACT_COLUMN, TYPE_COLUMN, CLASSIFIER_COLUMN, VERSION_COLUMN};
-    
-	List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException;
+
+    enum ColumnType {
+        GROUP_COLUMN, ARTIFACT_COLUMN, TYPE_COLUMN, CLASSIFIER_COLUMN, VERSION_COLUMN, DIGEST_COLUMN
+    };
+
+    List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException;
 }

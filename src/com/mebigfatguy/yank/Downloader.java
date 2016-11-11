@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 
 import org.apache.tools.ant.Project;
@@ -70,7 +71,7 @@ public class Downloader implements Runnable {
                     bos = new BufferedOutputStream(new FileOutputStream(destinationFile));
                     Deque<TransferBuffer> dq = new ArrayDeque<>();
 
-                    ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE, options.isCheckSHADigests());
+                    ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE, options.isCheckSHADigests() && !artifact.getDigest().isEmpty());
                     Thread rt = new Thread(r);
                     rt.start();
 
@@ -82,8 +83,16 @@ public class Downloader implements Runnable {
                     wt.join();
 
                     if (r.wasSuccessful() && w.wasSuccessful()) {
+                        if (options.isCheckSHADigests() && !artifact.getDigest().isEmpty()) {
+                            if (!digestEquals(artifact, r.getDigest())) {
+                                artifact.setStatus(Artifact.Status.DIGEST_MISMATCH);
+                                destinationFile.deleteOnExit();
+                                project.log("download failed with incorrect digest: " + artifact + "- expected: " + artifact.getDigest() + " actual: "
+                                        + Arrays.toString(r.getDigest()), Project.MSG_ERR);
+                                return;
+                            }
+                        }
                         artifact.setStatus(Artifact.Status.DOWNLOADED);
-                        artifact.setDigest(r.getDigest());
                     }
                 } else {
                     artifact.setStatus(Artifact.Status.UPTODATE);
@@ -130,5 +139,19 @@ public class Downloader implements Runnable {
         } finally {
             Closer.close(con);
         }
+    }
+
+    private boolean digestEquals(Artifact artifact, byte[] computedDigest) {
+        byte[] expectedDigest = hexStringDigestToByteArray(artifact.getDigest());
+        return (Arrays.equals(expectedDigest, computedDigest));
+    }
+
+    private static byte[] hexStringDigestToByteArray(String hexDigest) {
+        int len = hexDigest.length();
+        byte[] digest = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            digest[i / 2] = (byte) ((Character.digit(hexDigest.charAt(i), 16) << 4) + Character.digit(hexDigest.charAt(i + 1), 16));
+        }
+        return digest;
     }
 }

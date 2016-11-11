@@ -37,14 +37,15 @@ import org.apache.tools.ant.Project;
 
 public class XlsParser implements SpreadsheetParser {
 
-	private File xlsFile;
-	@Override
-	public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
-		xlsFile = spreadsheet;
-		
+    private File xlsFile;
+
+    @Override
+    public List<Artifact> getArtifactList(Project project, File spreadsheet) throws IOException {
+        xlsFile = spreadsheet;
+
         BufferedInputStream bis = null;
         HSSFWorkbook workBook = null;
-        List<Artifact> artifacts = new ArrayList<Artifact>();
+        List<Artifact> artifacts = new ArrayList<>();
 
         try {
             bis = new BufferedInputStream(new FileInputStream(xlsFile));
@@ -55,13 +56,15 @@ public class XlsParser implements SpreadsheetParser {
             Map<ColumnType, Integer> columnHeaders = getColumnInfo(sheet);
             Integer typeColumn = columnHeaders.get(ColumnType.TYPE_COLUMN);
             Integer classifierColumn = columnHeaders.get(ColumnType.CLASSIFIER_COLUMN);
+            Integer digestColumn = columnHeaders.get(ColumnType.DIGEST_COLUMN);
             String groupId = "";
             String artifactId = "";
             String type = JAR;
             String version = "";
             String classifier = "";
+            String digest = "";
 
-            for (int i = sheet.getFirstRowNum()+1; i <= sheet.getLastRowNum(); ++i) {
+            for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); ++i) {
                 HSSFRow row = sheet.getRow(i);
                 if (row != null) {
                     HSSFCell cell = row.getCell(columnHeaders.get(ColumnType.GROUP_COLUMN).intValue());
@@ -97,72 +100,83 @@ public class XlsParser implements SpreadsheetParser {
                     if (cell != null) {
                         type = cell.getStringCellValue().trim();
                     }
-                    
+
                     cell = (classifierColumn != null) ? row.getCell(classifierColumn.intValue()) : null;
                     if (cell != null) {
                         classifier = cell.getStringCellValue().trim();
                     }
 
+                    cell = (digestColumn != null) ? row.getCell(digestColumn.intValue()) : null;
+                    if (cell != null) {
+                        digest = cell.getStringCellValue().trim();
+                    }
+
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                    	if (groupId.isEmpty() || version.isEmpty()) {
-                    		project.log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId + ", classifier: " + classifier + ", version: " + version + "]");
-                    	}
+                        if (groupId.isEmpty() || version.isEmpty()) {
+                            project.log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId
+                                    + ", classifier: " + classifier + ", version: " + version + ", digest: " + digest + "]");
+                        }
                     } else {
-                        artifacts.add(new Artifact(groupId, artifactId, type, classifier, version));
+                        artifacts.add(new Artifact(groupId, artifactId, type, classifier, version, digest));
                     }
                 }
 
                 artifactId = "";
                 classifier = "";
+                digest = "";
                 type = JAR;
             }
-            
+
             project.log(sheet.getLastRowNum() + " rows read from " + xlsFile, Project.MSG_VERBOSE);
         } finally {
-        	if (workBook != null) {
-        		workBook.close();
-        	}
+            if (workBook != null) {
+                workBook.close();
+            }
             Closer.close(bis);
         }
 
         return artifacts;
-	}
-	
-   private Map<ColumnType, Integer> getColumnInfo(HSSFSheet sheet) {
+    }
+
+    private Map<ColumnType, Integer> getColumnInfo(HSSFSheet sheet) {
         int firstRow = sheet.getFirstRowNum();
         HSSFRow row = sheet.getRow(firstRow);
 
-        Map<ColumnType, Integer> columnHeaders = new EnumMap<ColumnType, Integer>(ColumnType.class);
+        Map<ColumnType, Integer> columnHeaders = new EnumMap<>(ColumnType.class);
 
         for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
             HSSFCell cell = row.getCell(i);
-            
+
             if (cell != null) {
                 String value = cell.getStringCellValue();
                 if (value != null) {
-                	Integer colNum = Integer.valueOf(i);
+                    Integer colNum = Integer.valueOf(i);
                     value = value.trim().toLowerCase(Locale.ENGLISH);
                     if (value.startsWith("group")) {
                         columnHeaders.put(ColumnType.GROUP_COLUMN, colNum);
                     } else if (value.startsWith("artifact")) {
                         columnHeaders.put(ColumnType.ARTIFACT_COLUMN, colNum);
                     } else if (value.startsWith("type")) {
-                        columnHeaders.put(ColumnType.TYPE_COLUMN,  colNum);
+                        columnHeaders.put(ColumnType.TYPE_COLUMN, colNum);
                     } else if (value.startsWith("version")) {
                         columnHeaders.put(ColumnType.VERSION_COLUMN, colNum);
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
-                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN,  colNum);
+                        columnHeaders.put(ColumnType.CLASSIFIER_COLUMN, colNum);
+                    } else if (value.startsWith("digest")) {
+                        columnHeaders.put(ColumnType.DIGEST_COLUMN, colNum);
                     }
-                    if (columnHeaders.size() == 5) {
+
+                    if (columnHeaders.size() == 6) {
                         return columnHeaders;
                     }
                 }
             }
         }
-        
-        if (columnHeaders.size() >= 3)
+
+        if (columnHeaders.size() >= 3) {
             return columnHeaders;
+        }
 
         throw new BuildException("Input yank xls file (" + xlsFile + ") does not contains GroupId, ArtifactId, or Version columns");
-	}
+    }
 }

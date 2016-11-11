@@ -147,7 +147,7 @@ public class YankTask extends Task {
             for (Artifact artifact : artifacts) {
                 downloadFutures.add(pool.submit(new Downloader(getProject(), artifact, destination, options)));
                 if (options.isYankSources() && (artifact.getClassifier().isEmpty())) {
-                    Artifact sourceArtifact = new Artifact(artifact.getGroupId(), artifact.getArtifactId(), JAR, SOURCE_CLASSIFIER, artifact.getVersion());
+                    Artifact sourceArtifact = new Artifact(artifact.getGroupId(), artifact.getArtifactId(), JAR, SOURCE_CLASSIFIER, artifact.getVersion(), "");
                     downloadFutures.add(pool.submit(new Downloader(getProject(), sourceArtifact, destination, options)));
                 }
             }
@@ -203,7 +203,7 @@ public class YankTask extends Task {
 
             if (failOnError) {
                 for (Artifact artifact : artifacts) {
-                    if (artifact.getStatus() == Artifact.Status.FAILED) {
+                    if ((artifact.getStatus() == Artifact.Status.FAILED) || (artifact.getStatus() == Artifact.Status.DIGEST_MISMATCH)) {
                         throw new BuildException("Failed downloading artifacts (First Failure: " + artifact + ")");
                     }
                 }
