@@ -81,6 +81,11 @@ There are a few optional attributes to the yank task that you can add as follows
       <td>(integer)</td>
       <td>4 * numProcessors</td>
    </tr>
+   <tr>
+      <td>checkSHADigests</td>
+      <td>compare provided SHA-1 digest against calculated digest</td>
+      <td>(true/false)</td>
+      <td>false</td>
 </table>
 
 In addition, you can add a sub element to generate an ant path element, such as
@@ -108,7 +113,9 @@ As for the yank.xls file, the excel spreadsheet is just a normal spread sheet of
 ArtifactId and Version columns. You may also specify a Classifier column, which can download jars with names after the version 
 such as natives. Note that sources jars are automatically handled and you need not use the classifier column for this purpose 
 (See the source attribute above). You may also specify a Type column to support files such as xml, or zip files, if not specified, 'jar' 
-is assumed. More columns may be added for your governance purposes, such as license, reason, code area, etc, without issue. 
+is assumed. A Digest column may be added that if populated with SHA-1 digest of the jar, and the checkSHADigests attribute is set, yank
+will validate that the downloaded jar has the expected digest, and if not fails the build. More columns may be added for your governance purposes, 
+such as license, reason, code area, etc, without issue. 
 If values for columns groupId or version are not filled in, the previous value is pulled down from above. Other columns must be
 explicitly specified.
 
@@ -117,8 +124,8 @@ explicitly specified.
 Here's an example yank.xls file
 
 <table>
-    <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th></tr>
-    <tr><td>org.ow2.asm</td><td>asm</td><td>4.1</td><td></td></tr>
+    <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Digest</th></tr>
+    <tr><td>org.ow2.asm</td><td>asm</td><td>4.1</td><td></td><td>ad568238ee36a820bd6c6806807e8a14ea34684d</td</tr>
     <tr><td></td><td></td><td></td><td></td></tr>    
     <tr><td>org.slf4j</td><td>slf4j-api</td><td>1.7.5</td><td></td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
@@ -143,7 +150,7 @@ Below is a simplistic example of a build.xml file that uses yank to manage depen
     &lt;/target&gt;
     &lt;target name="yank" description="fetch 3rdparty jars from maven central"&gt;
         &lt;mkdir dir="${lib.dir}" /&gt;
-        &lt;yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true"&gt;
+        &lt;yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true" checkSHADigests="true"&gt;
             &lt;server url="http://repo1.maven.org/maven2"/&gt;
             &lt;generatePath classpathName="ty.classpath" libraryDirName="$${lib.dir}" /&gt;
         &lt;/yank:yank&gt;
