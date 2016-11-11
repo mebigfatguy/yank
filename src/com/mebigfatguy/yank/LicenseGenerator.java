@@ -50,10 +50,10 @@ public class LicenseGenerator implements Callable<Void> {
     public LicenseGenerator(Project proj, File dest, Set<PomDetails> poms, Map<String, URI> licenses) {
         project = proj;
         pomDetails = poms;
-        pomLicenses = new HashMap<>();
+        pomLicenses = new HashMap();
         for (Map.Entry<String, URI> entry : licenses.entrySet()) {
             if ((entry.getKey() != null) || (entry.getValue() != null)) {
-                pomLicenses.put(new Pair<>(entry.getKey(), entry.getValue()), null);
+                pomLicenses.put(new Pair(entry.getKey(), entry.getValue()), null);
             }
         }
         destination = new File(dest, "licenses");
@@ -141,7 +141,7 @@ public class LicenseGenerator implements Callable<Void> {
     }
 
     private boolean copy(InputStream is, OutputStream os) throws InterruptedException {
-        Deque<TransferBuffer> dq = new ArrayDeque<>();
+        Deque<TransferBuffer> dq = new ArrayDeque();
 
         ArtifactReader r = new ArtifactReader(project, is, dq, BUFFER_SIZE, false);
         Thread rt = new Thread(r);

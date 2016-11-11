@@ -25,7 +25,7 @@ public class Options {
     private boolean stripVersions;
     private boolean yankSources;
     private String proxyServer = "";
-    private List<String> servers = new ArrayList<>();
+    private List<String> servers = new ArrayList();
     private boolean separateClassifierTypes = false;
     private boolean checkSHADigests = false;
 

@@ -32,8 +32,8 @@ public class XlsxParser implements SpreadsheetParser {
 
     private Project project;
     private File xlsxFile;
-    private Map<Integer, String> sharedStrings = new HashMap<>();
-    private List<Artifact> artifacts = new ArrayList<>();
+    private Map<Integer, String> sharedStrings = new HashMap();
+    private List<Artifact> artifacts = new ArrayList();
 
     @Override
     public List<Artifact> getArtifactList(Project proj, File spreadsheet) throws IOException {
@@ -133,7 +133,7 @@ public class XlsxParser implements SpreadsheetParser {
         private int curRow = 0;
         private int curCol = 0;
         private boolean parsingColumnHeaders = true;
-        private Map<Integer, ColumnType> columnHeaders = new HashMap<>();
+        private Map<Integer, ColumnType> columnHeaders = new HashMap();
         private StringBuilder contents = new StringBuilder();
         private String groupId = "";
         private String artifactId = "";

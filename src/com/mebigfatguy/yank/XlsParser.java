@@ -45,7 +45,7 @@ public class XlsParser implements SpreadsheetParser {
 
         BufferedInputStream bis = null;
         HSSFWorkbook workBook = null;
-        List<Artifact> artifacts = new ArrayList<>();
+        List<Artifact> artifacts = new ArrayList();
 
         try {
             bis = new BufferedInputStream(new FileInputStream(xlsFile));
@@ -142,7 +142,7 @@ public class XlsParser implements SpreadsheetParser {
         int firstRow = sheet.getFirstRowNum();
         HSSFRow row = sheet.getRow(firstRow);
 
-        Map<ColumnType, Integer> columnHeaders = new EnumMap<>(ColumnType.class);
+        Map<ColumnType, Integer> columnHeaders = new EnumMap(ColumnType.class);
 
         for (int i = row.getFirstCellNum(); i <= row.getLastCellNum(); ++i) {
             HSSFCell cell = row.getCell(i);

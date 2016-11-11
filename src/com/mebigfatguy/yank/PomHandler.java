@@ -67,7 +67,7 @@ public class PomHandler extends DefaultHandler {
     }
 
     public Pair<String, URI> getLicenseInfo() {
-        return new Pair<>(licenseName, licenseURI);
+        return new Pair(licenseName, licenseURI);
     }
 
     @Override
