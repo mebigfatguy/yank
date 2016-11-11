@@ -132,10 +132,10 @@ Here's an example yank.xls file
     <tr><td>ch.qos.logback</td><td>logback-core</td><td>1.0.12</td><td></td><td>2d23694879c2c12f125dac5076bdfd5d771cc4cb</td></tr>    
     <tr><td></td><td>logback-classic</td><td></td><td></td><td>030748760198d5071e139fa3d48cd1e57031fed6</td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
-    <tr><td>org.jogamp.jogl</td><td>jogl-all</td><td>2.0.2</td><td></td></tr>
-    <tr><td></td><td>jogl-all</td><td></td><td>natives-linux-amd64</td></tr>
-    <tr><td></td><td>jogl-all</td><td></td><td>natives-macosx-universal</td></tr>
-    <tr><td></td><td>jogl-all</td><td></td><td>natives-windows-amd64</td></tr>                     
+    <tr><td>org.jogamp.jogl</td><td>jogl-all</td><td>2.0.2</td><td></td><td></td></tr>
+    <tr><td></td><td>jogl-all</td><td></td><td>natives-linux-amd64</td><td></td></tr>
+    <tr><td></td><td>jogl-all</td><td></td><td>natives-macosx-universal</td><td></td></tr>
+    <tr><td></td><td>jogl-all</td><td></td><td>natives-windows-amd64</td><td></td></tr>                     
 </table>
 
 Below is a simplistic example of a build.xml file that uses yank to manage dependencies
