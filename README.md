@@ -127,10 +127,10 @@ Here's an example yank.xls file
     <tr><th>GroupId</th><th>ArtifactId</th><th>Version</th><th>Classifier</th><th>Digest</th></tr>
     <tr><td>org.ow2.asm</td><td>asm</td><td>4.1</td><td></td><td>ad568238ee36a820bd6c6806807e8a14ea34684d</td</tr>
     <tr><td></td><td></td><td></td><td></td></tr>    
-    <tr><td>org.slf4j</td><td>slf4j-api</td><td>1.7.5</td><td></td></tr>    
+    <tr><td>org.slf4j</td><td>slf4j-api</td><td>1.7.5</td><td></td><td>6b262da268f8ad9eff941b25503a9198f0a0ac93</td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
-    <tr><td>ch.qos.logback</td><td>logback-core</td><td>1.0.13</td><td></td></tr>    
-    <tr><td></td><td>logback-classic</td><td></td><td></td></tr>    
+    <tr><td>ch.qos.logback</td><td>logback-core</td><td>1.0.12</td><td></td><td>2d23694879c2c12f125dac5076bdfd5d771cc4cb</td></tr>    
+    <tr><td></td><td>logback-classic</td><td></td><td></td><td>030748760198d5071e139fa3d48cd1e57031fed6</td></tr>    
     <tr><td></td><td></td><td></td><td></td></tr>    
     <tr><td>org.jogamp.jogl</td><td>jogl-all</td><td>2.0.2</td><td></td></tr>
     <tr><td></td><td>jogl-all</td><td></td><td>natives-linux-amd64</td></tr>
