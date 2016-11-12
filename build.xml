@@ -77,6 +77,7 @@
     <path id="yank.classpath">
         <pathelement location="${lib.dir}/ant-${ant_.version}.jar" />
         <pathelement location="${lib.dir}/poi-${poi.version}.jar" />
+        <pathelement location="${lib.dir}/json-${json.version}.jar" />
         <pathelement location="${lib.dir}/jarjar-${jarjar.version}.jar" />
     </path>
 
@@ -109,8 +110,10 @@
             	<include name="knownlicenses/*" />
             	<exclude name="**/test/*.*" />
             </fileset>
-        	<zipfileset src="${lib.dir}/poi-${poi.version}.jar" />    	
+           	<zipfileset src="${lib.dir}/poi-${poi.version}.jar" />    	
+           	<zipfileset src="${lib.dir}/json-${json.version}.jar" />    	
         	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
+        	<rule pattern="org.json.**" result="com.mebigfatguy.org.json.@1" />
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />

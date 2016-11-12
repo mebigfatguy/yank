@@ -1,0 +1,8 @@
+[
+	{
+		'groupId' : 'org.jogamp.jogl',
+		'artifactId' : 'jogl-all',
+		'version' : '2.0.2',
+		'classifier' : 'natives-linux-i586'
+	}
+]

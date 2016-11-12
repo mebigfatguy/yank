@@ -25,28 +25,31 @@ import org.apache.tools.ant.Project;
 
 public class SpreadsheetParserFactory {
 
-	private static final String ODS_EXTENSION = "ods";
-	private static final String XLS_EXTENSION = "xlsx";
-	
-	private SpreadsheetParserFactory() {
-		
-	}
-	
-	public static List<Artifact> parse(Project project, File spreadsheet) throws IOException {
-		int extPos = spreadsheet.getName().lastIndexOf('.');
-		
-		String extension = (extPos < 0) ? "" : spreadsheet.getName().substring(extPos + 1).toLowerCase();
-		
-		SpreadsheetParser parser;
-		
-		if (ODS_EXTENSION.equals(extension)) {
-			parser = new OdsParser();
-		} else if (XLS_EXTENSION.equals(extension)) {
-			parser = new XlsxParser();
-		} else {
-			parser = new XlsParser();
-		}
-		
-		return parser.getArtifactList(project, spreadsheet);
-	}
+    private static final String ODS_EXTENSION = "ods";
+    private static final String XLSX_EXTENSION = "xlsx";
+    private static final String JSON_EXTENSION = "json";
+
+    private SpreadsheetParserFactory() {
+
+    }
+
+    public static List<Artifact> parse(Project project, File spreadsheet) throws IOException {
+        int extPos = spreadsheet.getName().lastIndexOf('.');
+
+        String extension = (extPos < 0) ? "" : spreadsheet.getName().substring(extPos + 1).toLowerCase();
+
+        SpreadsheetParser parser;
+
+        if (ODS_EXTENSION.equals(extension)) {
+            parser = new OdsParser();
+        } else if (XLSX_EXTENSION.equals(extension)) {
+            parser = new XlsxParser();
+        } else if (JSON_EXTENSION.equals(extension)) {
+            parser = new JsonParser();
+        } else {
+            parser = new XlsParser();
+        }
+
+        return parser.getArtifactList(project, spreadsheet);
+    }
 }
