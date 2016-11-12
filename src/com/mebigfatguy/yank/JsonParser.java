@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tools.ant.Project;
@@ -43,6 +44,23 @@ public class JsonParser implements SpreadsheetParser {
             int length = array.length();
             for (int i = 0; i < length; i++) {
                 JSONObject obj = array.getJSONObject(i);
+                Iterator<String> keys = obj.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (key.equalsIgnoreCase("groupId")) {
+                        groupId = obj.optString(key, groupId);
+                    } else if (key.equalsIgnoreCase("artifactId")) {
+                        artifactId = obj.optString(key);
+                    } else if (key.equalsIgnoreCase("version")) {
+                        version = obj.optString(key, version);
+                    } else if (key.equalsIgnoreCase("type")) {
+                        type = obj.optString(key, JAR);
+                    } else if (key.equalsIgnoreCase("classifier")) {
+                        classifier = obj.optString(key);
+                    } else if (key.equals("digest")) {
+                        digest = obj.optString(key);
+                    }
+                }
                 groupId = obj.optString("groupId", groupId);
                 artifactId = obj.optString("artifactId");
                 version = obj.optString("version", version);
