@@ -123,7 +123,7 @@ public class YankTask extends Task {
     public void execute() throws BuildException {
         getProject().log("Checking attributes...", Project.MSG_VERBOSE);
         if ((xlsFile == null) || !xlsFile.isFile()) {
-            throw new BuildException("Yank (xls) file not specified or invalid: " + xlsFile);
+            throw new BuildException("Yank (*.xls, *.xlsx, *.ods, *.json) file not specified or invalid: " + xlsFile);
         }
         if ((destination == null) || destination.isFile()) {
             throw new BuildException("Yank destination (" + destination + ") is a file, not a directory");
