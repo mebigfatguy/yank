@@ -16,16 +16,18 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="1.8.0" />
+	<property name="yank.version" value="1.9.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
     <property name="ant_.version" value="1.9.6" />
     <property name="poi.version" value="3.12" />
+    <property name="json.version" value="20160810" />
 	<property name="jarjar.version" value="1.3" />
 	
     <property name="ant-url" value="http://repo1.maven.org/maven2/org/apache/ant/ant/${ant_.version}/ant-${ant_.version}.jar" />
     <property name="poi-url" value="http://repo1.maven.org/maven2/org/apache/poi/poi/${poi.version}/poi-${poi.version}.jar" />
+    <property name="json-url" value="http://repo1.maven.org/maven2/org/json/json/${json.version}/json-${json.version}.jar" />
     <property name="jarjar-url" value="http://repo1.maven.org/maven2/com/googlecode/jarjar/jarjar/${jarjar.version}/jarjar-${jarjar.version}.jar" />
 
     <target name="check">
@@ -55,6 +57,7 @@
     <target name="pullall">
         <pull url="${ant-url}" dest="${lib.dir}" name="ant" version="${ant_.version}" />
         <pull url="${poi-url}" dest="${lib.dir}" name="poi" version="${poi.version}" />
+        <pull url="${json-url}" dest="${lib.dir}" name="json" version="${json.version}" />
         <pull url="${jarjar-url}" dest="${lib.dir}" name="jarjar" version="${jarjar.version}" />
     </target>
 	
