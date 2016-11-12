@@ -46,7 +46,7 @@ public class JsonParser implements SpreadsheetParser {
                 groupId = obj.optString("groupId", groupId);
                 artifactId = obj.optString("artifactId");
                 version = obj.optString("version", version);
-                type = obj.optString("type");
+                type = obj.optString("type", JAR);
                 classifier = obj.optString("classifier");
                 digest = obj.optString("digest");
 
