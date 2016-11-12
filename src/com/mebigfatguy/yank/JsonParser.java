@@ -62,6 +62,8 @@ public class JsonParser implements SpreadsheetParser {
                 }
             }
 
+            project.log(length + " artifacts read from " + jsonFile, Project.MSG_VERBOSE);
+
         } catch (JSONException e) {
             throw new IOException("Failed parsing json file (" + jsonFile + ")", e);
         } finally {

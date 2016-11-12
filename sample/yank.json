@@ -4,5 +4,10 @@
 		'artifactId' : 'jogl-all',
 		'version' : '2.0.2',
 		'classifier' : 'natives-linux-i586'
+	},
+	{
+		'groupId' : 'asm',
+		'artifactId' : 'asm',
+		'version' : '3.3.1'
 	}
 ]
