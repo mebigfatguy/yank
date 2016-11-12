@@ -19,6 +19,8 @@ package com.mebigfatguy.yank.test;
 
 import java.io.File;
 
+import org.apache.tools.ant.BuildEvent;
+import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
@@ -31,13 +33,23 @@ import com.mebigfatguy.yank.YankTask;
 public class Main {
 
     public static void main(String[] args) {
+
+        String[] inputs = { "yank.xls", "yank.xlsx", "yank.ods", "yank.json" };
+
+        for (String input : inputs) {
+            yank(input);
+        }
+
+    }
+
+    private static void yank(String fileName) {
         YankTask yt = new YankTask();
         Project p = new Project();
         yt.setProject(p);
 
         p.setProperty("lib.dir", p.getBaseDir() + "/test/lib");
 
-        yt.setYankFile(new File("/home/dave/dev/yank/sample/yank.xlsx"));
+        yt.setYankFile(new File("/home/dave/dev/yank/sample/" + fileName));
         yt.setDestination(new File("/home/dave/dev/yank/sample"));
         yt.setThreadPoolSize(30);
         yt.setStripVersions(true);
@@ -58,6 +70,38 @@ public class Main {
         GenerateVersionsTask gvTask = new GenerateVersionsTask();
         gvTask.setPropertyFileName("/home/dave/dev/yank/sample/versions.properties");
         yt.addConfiguredGenerateVersions(gvTask);
+
+        p.addBuildListener(new BuildListener() {
+
+            @Override
+            public void buildFinished(BuildEvent event) {
+            }
+
+            @Override
+            public void buildStarted(BuildEvent event) {
+            }
+
+            @Override
+            public void messageLogged(BuildEvent event) {
+                System.out.println("[" + fileName + "] " + event.getMessage());
+            }
+
+            @Override
+            public void targetFinished(BuildEvent event) {
+            }
+
+            @Override
+            public void targetStarted(BuildEvent event) {
+            }
+
+            @Override
+            public void taskFinished(BuildEvent event) {
+            }
+
+            @Override
+            public void taskStarted(BuildEvent event) {
+            }
+        });
 
         yt.execute();
 
