@@ -1,6 +1,7 @@
 
 *.jar
 lib
+dependency-reduced-pom.xml
 sample/yank_build.xml
 sample/yank.xls.properties
 sample/yank.ods.properties
