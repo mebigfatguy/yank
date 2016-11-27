@@ -177,6 +177,6 @@ public class Artifact implements Comparable<Artifact> {
     @Override
     public String toString() {
         return "Artifact [groupId=" + groupId + ", artifactId=" + artifactId + ", type=" + type + (!classifier.isEmpty() ? ", classifier=" + classifier : "")
-                + ", version=" + version + ", status=" + status + ", digest=" + digest + "]";
+                + ", version=" + version + ", digest=" + digest + ", status=" + status + "]";
     }
 }
