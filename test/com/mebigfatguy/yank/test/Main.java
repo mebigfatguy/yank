@@ -42,7 +42,7 @@ public class Main {
 
     }
 
-    private static void yank(String fileName) {
+    private static void yank(final String fileName) {
         YankTask yt = new YankTask();
         Project p = new Project();
         yt.setProject(p);
