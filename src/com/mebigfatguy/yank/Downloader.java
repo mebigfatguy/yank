@@ -69,7 +69,7 @@ public class Downloader implements Runnable {
 
                     bis = new BufferedInputStream(con.getInputStream());
                     bos = new BufferedOutputStream(new FileOutputStream(destinationFile));
-                    Deque<TransferBuffer> dq = new ArrayDeque();
+                    Deque<TransferBuffer> dq = new ArrayDeque<TransferBuffer>();
 
                     ArtifactReader r = new ArtifactReader(project, bis, dq, BUFFER_SIZE, options.isCheckSHADigests() && !artifact.getDigest().isEmpty());
                     Thread rt = new Thread(r);

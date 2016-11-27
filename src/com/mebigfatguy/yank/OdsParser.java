@@ -49,7 +49,7 @@ public class OdsParser implements SpreadsheetParser {
 
     private Project project;
     private File odsFile;
-    private List<Artifact> artifacts = new ArrayList();
+    private List<Artifact> artifacts = new ArrayList<Artifact>();
 
     @Override
     public List<Artifact> getArtifactList(Project proj, File spreadsheet) throws IOException {
@@ -92,7 +92,7 @@ public class OdsParser implements SpreadsheetParser {
         private int curRow = 0;
         private int curCol = 0;
         private boolean parsingColumnHeaders = true;
-        private Map<Integer, ColumnType> columnHeaders = new HashMap();
+        private Map<Integer, ColumnType> columnHeaders = new HashMap<Integer, ColumnType>();
         private StringBuilder contents = new StringBuilder();
         private String groupId = "";
         private String artifactId = "";

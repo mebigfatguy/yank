@@ -141,7 +141,7 @@ public class YankTask extends Task {
 
             getProject().log("Reading artifact list...", Project.MSG_VERBOSE);
             final List<Artifact> artifacts = SpreadsheetParserFactory.parse(getProject(), xlsFile);
-            List<Future<?>> downloadFutures = new ArrayList(artifacts.size());
+            List<Future<?>> downloadFutures = new ArrayList<Future<?>>(artifacts.size());
 
             getProject().log("Scheduling downloaders...", Project.MSG_VERBOSE);
             for (Artifact artifact : artifacts) {
@@ -160,7 +160,7 @@ public class YankTask extends Task {
                 if (generateLicenses) {
                     getProject().log("Scheduling license generation...", Project.MSG_VERBOSE);
                 }
-                pomFutures = new ArrayList(artifacts.size());
+                pomFutures = new ArrayList<Future<PomDetails>>(artifacts.size());
                 for (Artifact artifact : artifacts) {
                     if (artifact.getClassifier().length() == 0) {
                         pomFutures.add(pool.submit(new PomDiscovery(getProject(), artifact, options)));
@@ -184,8 +184,8 @@ public class YankTask extends Task {
             }
 
             if (generateLicenses) {
-                Map<String, URI> licenses = new HashMap();
-                Set<PomDetails> poms = new HashSet();
+                Map<String, URI> licenses = new HashMap<String, URI>();
+                Set<PomDetails> poms = new HashSet<PomDetails>();
 
                 for (Future<PomDetails> f : pomFutures) {
                     Pair<String, URI> license = f.get().getLicense();
@@ -211,7 +211,7 @@ public class YankTask extends Task {
 
             if (reportMissingDependencies) {
                 getProject().log("Reporting missing dependencies...", Project.MSG_VERBOSE);
-                Set<Artifact> requiredArtifacts = new HashSet();
+                Set<Artifact> requiredArtifacts = new HashSet<Artifact>();
                 for (Future<PomDetails> f : pomFutures) {
                     requiredArtifacts.addAll(f.get().getDependentArtifacts());
                 }

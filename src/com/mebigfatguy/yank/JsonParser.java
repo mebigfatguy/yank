@@ -19,7 +19,7 @@ public class JsonParser implements SpreadsheetParser {
 
     private Project project;
     private File jsonFile;
-    private List<Artifact> artifacts = new ArrayList();
+    private List<Artifact> artifacts = new ArrayList<Artifact>();
 
     @Override
     public List<Artifact> getArtifactList(Project proj, File spreadsheet) throws IOException {
