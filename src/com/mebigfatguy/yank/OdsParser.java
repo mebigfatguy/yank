@@ -154,23 +154,24 @@ public class OdsParser implements SpreadsheetParser {
                 contents.setLength(0);
 
                 if (parsingColumnHeaders) {
+                    Integer headerCol = Integer.valueOf(curCol);
                     value = value.toLowerCase(Locale.ENGLISH);
                     if (value.startsWith("group")) {
-                        columnHeaders.put(curCol, ColumnType.GROUP_COLUMN);
+                        columnHeaders.put(headerCol, ColumnType.GROUP_COLUMN);
                     } else if (value.startsWith("artifact")) {
-                        columnHeaders.put(curCol, ColumnType.ARTIFACT_COLUMN);
+                        columnHeaders.put(headerCol, ColumnType.ARTIFACT_COLUMN);
                     } else if (value.startsWith("type")) {
-                        columnHeaders.put(curCol, ColumnType.TYPE_COLUMN);
+                        columnHeaders.put(headerCol, ColumnType.TYPE_COLUMN);
                     } else if (value.startsWith("version")) {
-                        columnHeaders.put(curCol, ColumnType.VERSION_COLUMN);
+                        columnHeaders.put(headerCol, ColumnType.VERSION_COLUMN);
                     } else if (value.startsWith("classifier") || value.startsWith("alternate")) {
-                        columnHeaders.put(curCol, ColumnType.CLASSIFIER_COLUMN);
+                        columnHeaders.put(headerCol, ColumnType.CLASSIFIER_COLUMN);
                     } else if (value.startsWith("digest")) {
-                        columnHeaders.put(curCol, ColumnType.DIGEST_COLUMN);
+                        columnHeaders.put(headerCol, ColumnType.DIGEST_COLUMN);
                     }
                 } else {
                     while (repeatCount > 0) {
-                        ColumnType colType = columnHeaders.get(curCol);
+                        ColumnType colType = columnHeaders.get(Integer.valueOf(curCol));
                         if (colType != null) {
                             switch (colType) {
                                 case GROUP_COLUMN:
