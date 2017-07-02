@@ -141,8 +141,8 @@ public class Downloader implements Runnable {
         }
     }
 
-    private boolean digestEquals(Artifact artifact, byte[] computedDigest) {
-        byte[] expectedDigest = hexStringDigestToByteArray(artifact.getDigest());
+    private boolean digestEquals(Artifact artf, byte[] computedDigest) {
+        byte[] expectedDigest = hexStringDigestToByteArray(artf.getDigest());
         return (Arrays.equals(expectedDigest, computedDigest));
     }
 
