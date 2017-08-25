@@ -1,6 +1,7 @@
 <Project projectName="yank">
-  <Jar>./target/classes</Jar>
-  <AuxClasspathEntry>./lib/ant-1.9.6.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>./lib/poi-3.12.jar</AuxClasspathEntry>
-  <SrcDir>./src</SrcDir>
+  <Jar>././target/classes</Jar>
+  <AuxClasspathEntry>././lib/ant-1.9.6.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>././lib/poi-3.12.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./lib/json-20160810.jar</AuxClasspathEntry>
+  <SrcDir>././src</SrcDir>
 </Project>
