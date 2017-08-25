@@ -184,8 +184,8 @@ public class YankTask extends Task {
             }
 
             if (generateLicenses) {
-                Map<String, URI> licenses = new HashMap<String, URI>();
-                Set<PomDetails> poms = new HashSet<PomDetails>();
+                Map<String, URI> licenses = new HashMap<String, URI>(pomFutures.size() * 2);
+                Set<PomDetails> poms = new HashSet<PomDetails>(pomFutures.size() * 2);
 
                 for (Future<PomDetails> f : pomFutures) {
                     Pair<String, URI> license = f.get().getLicense();
