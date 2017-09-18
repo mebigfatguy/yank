@@ -28,6 +28,8 @@ public class SpreadsheetParserFactory {
     private static final String ODS_EXTENSION = "ods";
     private static final String XLSX_EXTENSION = "xlsx";
     private static final String JSON_EXTENSION = "json";
+    private static final String CSV_EXTENSION = "csv";
+    private static final String TXT_EXTENSION = "txt";
 
     private SpreadsheetParserFactory() {
 
@@ -46,6 +48,10 @@ public class SpreadsheetParserFactory {
             parser = new XlsxParser();
         } else if (JSON_EXTENSION.equals(extension)) {
             parser = new JsonParser();
+        } else if (CSV_EXTENSION.equals(extension)) {
+            parser = new CsvParser();
+        } else if (TXT_EXTENSION.equals(extension)) {
+            parser = new TdfParser();
         } else {
             parser = new XlsParser();
         }

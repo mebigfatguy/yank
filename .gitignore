@@ -12,3 +12,4 @@ sample/.~lock.yank.*
 sample/licenses
 target
 /target
+.settings/
