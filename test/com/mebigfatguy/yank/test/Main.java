@@ -34,7 +34,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String[] inputs = { "yank.xls", "yank.xlsx", "yank.ods", "yank.json" };
+        String[] inputs = { "yank.xls", "yank.xlsx", "yank.ods", "yank.json", "yank.csv", "yank.txt" };
 
         for (String input : inputs) {
             yank(input);

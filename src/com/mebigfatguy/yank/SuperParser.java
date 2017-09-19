@@ -80,7 +80,7 @@ public abstract class SuperParser implements SpreadsheetParser {
                 cell = row.get(columnHeaders.get(ColumnType.VERSION_COLUMN).intValue());
                 if (cell != null) {
                     String v = cell.trim();
-                    if (!version.isEmpty()) {
+                    if (!v.isEmpty()) {
                         version = v;
                     }
                 }
