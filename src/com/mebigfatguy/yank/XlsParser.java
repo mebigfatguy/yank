@@ -112,9 +112,11 @@ public class XlsParser implements SpreadsheetParser {
                     }
 
                     if (groupId.isEmpty() || artifactId.isEmpty() || version.isEmpty()) {
-                        if (groupId.isEmpty() || version.isEmpty()) {
-                            project.log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId
-                                    + ", classifier: " + classifier + ", version: " + version + ", digest: " + digest + "]");
+                        if (!(groupId.isEmpty() && artifactId.isEmpty() && version.isEmpty())) {
+                            if (groupId.isEmpty() || version.isEmpty()) {
+                                project.log("Row " + row.getRowNum() + ": Invalid artifact specified: [groupId: " + groupId + ", artifactId: " + artifactId
+                                        + ", classifier: " + classifier + ", version: " + version + ", digest: " + digest + "]");
+                            }
                         }
                     } else {
                         artifacts.add(new Artifact(groupId, artifactId, type, classifier, version, digest));
