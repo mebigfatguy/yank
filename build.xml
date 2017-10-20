@@ -115,9 +115,11 @@
             	<exclude name="**/test/*.*" />
             </fileset>
            	<zipfileset src="${lib.dir}/poi-${poi.version}.jar" />    	
-           	<zipfileset src="${lib.dir}/json-${json.version}.jar" />    	
+        	<zipfileset src="${lib.dir}/json-${json.version}.jar" />    	
+        	<zipfileset src="${lib.dir}/super-csv-${supercsv.version}.jar" />    	
         	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
         	<rule pattern="org.json.**" result="com.mebigfatguy.org.json.@1" />
+        	<rule pattern="org.supercsv.**" result="com.mebigfatguy.org.supercsv.@1" />
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
