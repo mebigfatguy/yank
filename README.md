@@ -8,7 +8,7 @@ yank is an ant task that can retrieve maven artifacts from public and private se
 
 However yank is meant for corporate environments where governance rules are more strict than transitive 
 dependency managers allow. yank only pulls down what you ask for, and the the files to be pulled are documented
-in an excel spread sheet (xls, xlsx or ods files) for easy use of corporate approvals, etc.
+in a spread sheet (xls, xlsx, ods, csv or txt files) for easy use of corporate approvals, etc.
 
 You can add this task, as
 <pre>
@@ -109,7 +109,7 @@ You can also add a sub element to generate a properties file containing constant
 &lt;generateVersions propertyFileName="${basedir}/version.properties" /&gt;
 </pre>
 
-As for the yank.xls file, the excel spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
+As for the yank.xls file, the spreadsheet is just a normal spread sheet of your own design, so long as there are GroupId, 
 ArtifactId and Version columns. You may also specify a Classifier column, which can download jars with names after the version 
 such as natives. Note that sources jars are automatically handled and you need not use the classifier column for this purpose 
 (See the source attribute above). You may also specify a Type column to support files such as xml, or zip files, if not specified, 'jar' 
@@ -119,7 +119,7 @@ such as license, reason, code area, etc, without issue.
 If values for columns groupId or version are not filled in, the previous value is pulled down from above. Other columns must be
 explicitly specified.
 
-* Spread sheets can be defined using *.xls, *.xlsx or *.ods formats
+* Spread sheets can be defined using *.xls, *.xlsx, *.ods, csv or txt (tab delimited) formats
 
 Here's an example yank.xls file
 
