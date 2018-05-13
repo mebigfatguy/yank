@@ -163,7 +163,7 @@ Below is a simplistic example of a build.xml file that uses yank to manage depen
              &lt;classpath refid="ty.classpath" /&gt;
         &lt;/javac&gt;
     &lt;/target&gt;
-    &lt;target name="jar" depends="compile" description="produces the ty jar file"&gt;
+    &lt;target name="jar" depends="compile" description="produces the try jar file"&gt;
         &lt;jar destfile="${basedir}/try.jar"&gt;
             &lt;fileset dir="${classes.dir}"&gt;
                 &lt;include name="**/*.class" /&gt;
