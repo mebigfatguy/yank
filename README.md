@@ -3,6 +3,11 @@ yank
 
 a non transitive maven artifact fetcher for corporate environments.
 
+# Maven Coordinates #
+groupId: com.mebigfatguy.yank
+artifactId: yank
+version: 2.0.1
+
 
 yank is an ant task that can retrieve maven artifacts from public and private servers, similar to maven and ivy.
 
