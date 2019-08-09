@@ -31,7 +31,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -86,7 +86,7 @@ public class XlsParser implements SpreadsheetParser {
                     cell = row.getCell(columnHeaders.get(ColumnType.VERSION_COLUMN).intValue());
                     if (cell != null) {
                         String v;
-                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                        if (cell.getCellType() == CellType.NUMERIC) {
                             v = String.valueOf(cell.getNumericCellValue());
                         } else {
                             v = cell.getStringCellValue().trim();
