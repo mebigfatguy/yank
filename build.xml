@@ -22,7 +22,7 @@
 	
     <property name="ant_.version" value="1.10.7" />
     <property name="poi.version" value="4.1.0" />
-    <property name="json.version" value="20180130" />
+    <property name="json.version" value="20190722" />
 	<property name="supercsv.version" value="2.4.0" />
 	<property name="jarjar.version" value="1.3" />
 	
