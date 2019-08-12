@@ -1,8 +1,8 @@
 <Project projectName="yank">
   <Jar>./././target/classes</Jar>
   <AuxClasspathEntry>./././lib/ant-1.10.7.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>./././lib/poi-3.12.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././lib/json-20160810.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./././lib/poi-4.1.0.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>././lib/json-20190722.jar</AuxClasspathEntry>
   <AuxClasspathEntry>./lib/super-csv-2.4.0.jar</AuxClasspathEntry>
   <SrcDir>./././src</SrcDir>
 </Project>
