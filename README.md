@@ -18,7 +18,7 @@ in a spread sheet (xls, xlsx, ods, csv or txt files) for easy use of corporate a
 You can add this task, as
 <pre>
 &lt;yank yankFile="${lib.dir}/yank.xls" destination="${lib.dir}"&gt;
-        &lt;server url="http://repo1.maven.org/maven2"/&gt;
+        &lt;server url="https://repo1.maven.org/maven2"/&gt;
 &lt;/yank&gt;
 </pre>
 
@@ -156,7 +156,7 @@ Below is a simplistic example of a build.xml file that uses yank to manage depen
     &lt;target name="yank" description="fetch 3rdparty jars from maven central"&gt;
         &lt;mkdir dir="${lib.dir}" /&gt;
         &lt;yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true" checkSHADigests="true"&gt;
-            &lt;server url="http://repo1.maven.org/maven2"/&gt;
+            &lt;server url="https://repo1.maven.org/maven2"/&gt;
             &lt;generatePath classpathName="ty.classpath" libraryDirName="$${lib.dir}" /&gt;
         &lt;/yank:yank&gt;
     &lt;/target&gt;

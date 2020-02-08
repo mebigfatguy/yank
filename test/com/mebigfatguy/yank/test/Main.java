@@ -59,7 +59,7 @@ public class Main {
         yt.setCheckSHADigests(true);
 
         ServerTask st = new ServerTask();
-        st.setUrl("http://repo1.maven.org/maven2");
+        st.setUrl("https://repo1.maven.org/maven2");
         yt.addConfiguredServer(st);
 
         GeneratePathTask pt = new GeneratePathTask();
