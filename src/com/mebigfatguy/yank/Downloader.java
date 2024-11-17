@@ -162,7 +162,7 @@ public class Downloader implements Runnable {
         for (int i = 0; i < digest.length; i++) {
             int b = digest[i] & 0xFF;
             hexDigest[i << 1] = hexChars[b >>> 4];
-            hexDigest[i << (1 + 1)] = hexChars[b & 0x0F];
+            hexDigest[(i << 1) + 1] = hexChars[b & 0x0F];
         }
         return new String(hexDigest);
     }

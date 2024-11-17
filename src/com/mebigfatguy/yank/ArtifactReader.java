@@ -31,6 +31,7 @@ class ArtifactReader implements Runnable {
     private final Deque<TransferBuffer> dq;
     private final int bufferSize;
     private MessageDigest messageDigest;
+    private byte[] actualDigest;
     private boolean success = false;
 
     public ArtifactReader(Project p, final InputStream is, final Deque<TransferBuffer> queue, int bufferSize, boolean checkSHADigest) {
@@ -80,10 +81,15 @@ class ArtifactReader implements Runnable {
     }
 
     public byte[] getDigest() {
+    	if (actualDigest != null) {
+    		return actualDigest;
+    	}
+    	
         if (messageDigest == null) {
             return null;
         }
-        return messageDigest.digest();
+        actualDigest = messageDigest.digest();
+        return actualDigest;
     }
 
     public boolean wasSuccessful() {

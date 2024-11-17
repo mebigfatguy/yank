@@ -49,8 +49,8 @@ public class Main {
 
         p.setProperty("lib.dir", p.getBaseDir() + "/test/lib");
 
-        yt.setYankFile(new File("/home/dave/dev/yank/sample/" + fileName));
-        yt.setDestination(new File("/home/dave/dev/yank/sample"));
+        yt.setYankFile(new File("/home/dave/dev2/yank/sample/" + fileName));
+        yt.setDestination(new File("/home/dave/dev2/yank/sample"));
         yt.setThreadPoolSize(30);
         yt.setStripVersions(true);
         yt.setSeparateClassifierTypes(true);
@@ -64,11 +64,11 @@ public class Main {
 
         GeneratePathTask pt = new GeneratePathTask();
         pt.setClasspathName("yank.path");
-        pt.setPathXmlFile(new File("/home/dave/dev/yank/sample/yank_build.xml"));
+        pt.setPathXmlFile(new File("/home/dave/dev2/yank/sample/yank_build.xml"));
         yt.addConfiguredGeneratePath(pt);
-        yt.setFindUpdatesFile(new File("/home/dave/dev/yank/sample/updates.txt"));
+        yt.setFindUpdatesFile(new File("/home/dave/dev2/yank/sample/updates.txt"));
         GenerateVersionsTask gvTask = new GenerateVersionsTask();
-        gvTask.setPropertyFileName("/home/dave/dev/yank/sample/versions.properties");
+        gvTask.setPropertyFileName("/home/dave/dev2/yank/sample/versions.properties");
         yt.addConfiguredGenerateVersions(gvTask);
 
         p.addBuildListener(new BuildListener() {
