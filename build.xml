@@ -16,11 +16,11 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="2.0.2" />
+	<property name="yank.version" value="2.0.3" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
-    <property name="ant_.version" value="1.10.7" />
+    <property name="ant_.version" value="1.10.15" />
     <property name="poi.version" value="4.1.0" />
     <property name="json.version" value="20190722" />
 	<property name="supercsv.version" value="2.4.0" />
@@ -120,6 +120,8 @@
         	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
         	<rule pattern="org.json.**" result="com.mebigfatguy.org.json.@1" />
         	<rule pattern="org.supercsv.**" result="com.mebigfatguy.org.supercsv.@1" />
+            <keep pattern="com.mebigfatguy.yank.**"/>            
+            <keep pattern="org.supercsv.io.**"/>
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
