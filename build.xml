@@ -11,12 +11,12 @@
     <property name="javadoc.dir" value="${target.dir}/javadoc" />
     <property name="sample.dir" value="${basedir}/sample" />
 	
-	<property name="javac.source" value="1.5" />
-	<property name="javac.target" value="1.5" />
+	<property name="javac.source" value="1.8" />
+	<property name="javac.target" value="1.8" />
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 	
-	<property name="yank.version" value="2.0.3" />
+	<property name="yank.version" value="2.0.4" />
 	
 	<property name="sonatype.dir" value="${user.home}/.yank-${yank.version}-sonatype" />
 	
@@ -122,6 +122,8 @@
         	<rule pattern="org.supercsv.**" result="com.mebigfatguy.org.supercsv.@1" />
             <keep pattern="com.mebigfatguy.yank.**"/>            
             <keep pattern="org.supercsv.io.**"/>
+            <keep pattern="org.apache.poi.**"/>
+
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
                 <attribute name="Main-Class" value="com.mebigfatguy.yank.YankTask" />
