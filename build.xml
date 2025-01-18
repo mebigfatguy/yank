@@ -117,12 +117,6 @@
            	<zipfileset src="${lib.dir}/poi-${poi.version}.jar" />    	
         	<zipfileset src="${lib.dir}/json-${json.version}.jar" />    	
         	<zipfileset src="${lib.dir}/super-csv-${supercsv.version}.jar" />    	
-        	<rule pattern="org.apache.poi.**" result="com.mebigfatguy.org.apache.poi.@1" />
-        	<rule pattern="org.json.**" result="com.mebigfatguy.org.json.@1" />
-        	<rule pattern="org.supercsv.**" result="com.mebigfatguy.org.supercsv.@1" />
-            <keep pattern="com.mebigfatguy.yank.**"/>            
-            <keep pattern="org.supercsv.io.**"/>
-            <keep pattern="org.apache.poi.**"/>
 
             <manifest>
                 <attribute name="yank-version" value="${yank.version}" />
